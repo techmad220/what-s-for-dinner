@@ -1,6 +1,8 @@
 # What's for Dinner
 
-This is a simple interactive command-line app. Select the ingredients you have and it will tell you which dinners you can make.
+This application provides a graphical interface for selecting ingredients and
+discovering what you can cook. Check the boxes for the items you have, and the
+app lists any dinners that match. You can even add your own recipes.
 
 ## Setup
 
@@ -18,4 +20,5 @@ Run the app with:
 python -m dinner_app.main
 ```
 
-You will be presented with a checklist of ingredients. After selecting what you have, the app lists any matching dinner options.
+A window will open displaying the available ingredients and possible dinners.
+Use the **Add Recipe** button to contribute new ideas.
