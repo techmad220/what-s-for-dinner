@@ -7,6 +7,7 @@ from .recipes import (
     add_recipe,
     get_available_ingredients,
     get_recipe_ingredients,
+    get_recipe_directions,
     possible_dinners,
 )
 
@@ -63,7 +64,7 @@ class DinnerApp(tk.Tk):
         self.dinner_var.set(sorted(dinners))
 
     def show_recipe(self, event) -> None:
-        """Display the ingredients for the selected recipe."""
+        """Display the full recipe for the selected dinner."""
 
         selection = self.dinner_list.curselection()
         if not selection:
@@ -73,7 +74,12 @@ class DinnerApp(tk.Tk):
         if ingredients is None:
             messagebox.showerror("Error", f"Recipe for {name} not found.")
             return
-        msg = f"Ingredients for {name}:\n" + "\n".join(f"- {i}" for i in ingredients)
+        directions = get_recipe_directions(name)
+        msg = (
+            f"Ingredients for {name}:\n" + "\n".join(f"- {i}" for i in ingredients)
+        )
+        if directions:
+            msg += "\n\nDirections:\n" + directions
         messagebox.showinfo(name, msg)
 
     def add_recipe_dialog(self) -> None:

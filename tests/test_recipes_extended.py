@@ -8,14 +8,26 @@ from dinner_app import recipes  # noqa: E402
 
 def test_add_recipe_without_persist():
     recipes.reset_recipes()
-    recipes.add_recipe("Test Dish", ["test ingredient"], persist=False)
+    recipes.add_recipe(
+        "Test Dish",
+        ["test ingredient"],
+        "Mix everything and serve.",
+        persist=False,
+    )
     assert "Test Dish" in recipes.get_recipes()
     dinners = recipes.possible_dinners({"test ingredient"})
     assert dinners == ["Test Dish"]
     recipes.reset_recipes()
+    assert recipes.get_recipe_directions("Test Dish") is None
 
 
 def test_get_recipe_ingredients():
     recipes.reset_recipes()
     ingredients = recipes.get_recipe_ingredients("Grilled Cheese")
     assert ingredients == ["bread", "cheese", "butter"]
+
+
+def test_get_recipe_directions():
+    recipes.reset_recipes()
+    directions = recipes.get_recipe_directions("Grilled Cheese")
+    assert "grill" in directions.lower()

@@ -21,5 +21,5 @@ python -m dinner_app.main
 ```
 
 A window will open displaying the available ingredients and possible dinners.
-Double-click a dinner to view its ingredients.
+Double-click a dinner to view its full recipe with ingredients and directions.
 Use the **Add Recipe** button to contribute new ideas.
