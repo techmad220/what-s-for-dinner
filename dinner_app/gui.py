@@ -6,6 +6,7 @@ from tkinter import ttk, messagebox, simpledialog
 from .recipes import (
     add_recipe,
     get_available_ingredients,
+    get_recipe_ingredients,
     possible_dinners,
 )
 
@@ -36,6 +37,7 @@ class DinnerApp(tk.Tk):
         self.dinner_var = tk.StringVar(value=[])
         self.dinner_list = tk.Listbox(dinner_box, listvariable=self.dinner_var)
         self.dinner_list.pack(fill="both", expand=True)
+        self.dinner_list.bind("<Double-1>", self.show_recipe)
 
         add_btn = ttk.Button(right, text="Add Recipe", command=self.add_recipe_dialog)
         add_btn.pack(pady=5)
@@ -59,6 +61,20 @@ class DinnerApp(tk.Tk):
     def update_dinners(self, *args) -> None:
         dinners = possible_dinners(self.owned_ingredients())
         self.dinner_var.set(sorted(dinners))
+
+    def show_recipe(self, event) -> None:
+        """Display the ingredients for the selected recipe."""
+
+        selection = self.dinner_list.curselection()
+        if not selection:
+            return
+        name = self.dinner_list.get(selection[0])
+        ingredients = get_recipe_ingredients(name)
+        if ingredients is None:
+            messagebox.showerror("Error", f"Recipe for {name} not found.")
+            return
+        msg = f"Ingredients for {name}:\n" + "\n".join(f"- {i}" for i in ingredients)
+        messagebox.showinfo(name, msg)
 
     def add_recipe_dialog(self) -> None:
         name = simpledialog.askstring("New Recipe", "Recipe name:", parent=self)

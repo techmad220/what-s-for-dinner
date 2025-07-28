@@ -13,3 +13,9 @@ def test_add_recipe_without_persist():
     dinners = recipes.possible_dinners({"test ingredient"})
     assert dinners == ["Test Dish"]
     recipes.reset_recipes()
+
+
+def test_get_recipe_ingredients():
+    recipes.reset_recipes()
+    ingredients = recipes.get_recipe_ingredients("Grilled Cheese")
+    assert ingredients == ["bread", "cheese", "butter"]
