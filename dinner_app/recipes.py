@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 RECIPES_FILE = Path(__file__).with_name("recipes.json")
 
@@ -27,6 +27,12 @@ _recipes = load_recipes()
 def get_recipes() -> Dict[str, List[str]]:
     """Return the in-memory recipes dictionary."""
     return _recipes
+
+
+def get_recipe_ingredients(name: str) -> Optional[List[str]]:
+    """Return a list of ingredients for ``name`` if it exists."""
+
+    return _recipes.get(name)
 
 
 def add_recipe(name: str, ingredients: List[str], *, persist: bool = True) -> None:
