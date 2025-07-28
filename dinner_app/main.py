@@ -1,23 +1,12 @@
-import questionary
-from .recipes import get_available_ingredients, possible_dinners
+"""Entry point for the What's for Dinner application."""
+
+from .gui import run_app
 
 
 def main() -> None:
-    ingredients = list(get_available_ingredients())
-    answer = questionary.checkbox(
-        "Select the ingredients you have:", choices=ingredients
-    ).ask()
-    if answer is None:
-        print("No ingredients selected.")
-        return
-    owned = set(answer)
-    dinners = possible_dinners(owned)
-    if dinners:
-        print("You can make:")
-        for dinner in dinners:
-            print(f"- {dinner}")
-    else:
-        print("No dinners match your ingredients.")
+    """Launch the graphical application."""
+
+    run_app()
 
 
 if __name__ == "__main__":
