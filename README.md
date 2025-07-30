@@ -27,3 +27,7 @@ category using the fields above the dinner list.
 Double-click a dinner to view its ingredients and cooking directions and export
 a shopping list of missing items.
 Use the **Add Recipe**, **Edit**, and **Delete** buttons to manage your recipes.
+Use the **Add** and **Remove** buttons to manage your ingredient list.
+Double-click a dinner to view its ingredients and cooking directions.
+Use the **Add Recipe** button to contribute new ideas.
+

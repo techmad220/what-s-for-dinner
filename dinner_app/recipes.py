@@ -11,6 +11,7 @@ EXTRA_ING_FILE = Path(__file__).with_name("extra_ingredients.json")
 SELECTED_FILE = Path(__file__).with_name("selected_ingredients.json")
 
 
+
 def load_recipes() -> Dict[str, Dict[str, object]]:
     """Load recipes from :data:`RECIPES_FILE`."""
 
@@ -34,6 +35,7 @@ def save_recipes(recipes: Dict[str, Dict[str, object]]) -> None:
 _recipes = load_recipes()
 
 
+
 def load_selected_ingredients() -> set[str]:
     if SELECTED_FILE.exists():
         with SELECTED_FILE.open() as fh:
@@ -44,6 +46,7 @@ def load_selected_ingredients() -> set[str]:
 def save_selected_ingredients(selected: set[str]) -> None:
     with SELECTED_FILE.open("w") as fh:
         json.dump(sorted(selected), fh, indent=2)
+
 
 
 def load_extra_ingredients() -> set[str]:
@@ -85,6 +88,7 @@ def get_recipe_directions(name: str) -> Optional[str]:
     return None
 
 
+
 def get_recipe_categories(name: str) -> Optional[List[str]]:
     """Return categories for ``name`` if present."""
 
@@ -109,6 +113,15 @@ def add_recipe(
         "directions": directions,
         "categories": categories or [],
     }
+
+
+
+def add_recipe(
+    name: str, ingredients: List[str], directions: str = "", *, persist: bool = True
+) -> None:
+    """Add a recipe and optionally persist it to disk."""
+
+    _recipes[name] = {"ingredients": ingredients, "directions": directions}
     if persist:
         save_recipes(_recipes)
 
@@ -152,6 +165,7 @@ def update_recipe(
         save_recipes(_recipes)
 
 
+
 def reset_extra_ingredients() -> None:
     """Reload extra ingredients from disk, discarding in-memory changes."""
 
@@ -182,6 +196,7 @@ def get_extra_ingredients() -> set[str]:
     return set(_extra_ingredients)
 
 
+
 def get_all_categories() -> list[str]:
     """Return a sorted list of all categories in the recipes."""
 
@@ -189,6 +204,7 @@ def get_all_categories() -> list[str]:
     for rec in _recipes.values():
         cats.update(rec.get("categories", []))
     return sorted(cats)
+
 
 
 def get_available_ingredients() -> set:

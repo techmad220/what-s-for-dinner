@@ -13,6 +13,9 @@ from .recipes import (
     get_recipe_directions,
     get_recipe_ingredients,
     load_selected_ingredients,
+    get_recipe_directions,
+    get_recipe_ingredients,
+    remove_extra_ingredient,
     possible_dinners,
     remove_extra_ingredient,
     remove_recipe,
@@ -33,6 +36,7 @@ class DinnerApp(tk.Tk):
         self.selected: set[str] = load_selected_ingredients()
         self.search_var = tk.StringVar()
         self.category_var = tk.StringVar(value="All")
+
         self._setup_ui()
         self.update_dinners()
 
@@ -201,6 +205,7 @@ class DinnerApp(tk.Tk):
             else []
         )
         add_recipe(name, ing_list, directions, cat_list, persist=True)
+
         self._populate_ingredients()
         self.update_dinners()
         messagebox.showinfo("Recipe Added", f"{name} has been added.")

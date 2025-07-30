@@ -18,5 +18,19 @@
     "ingredients": ["broccoli", "carrot", "soy sauce"],
     "directions": "Stir fry vegetables with soy sauce.",
     "categories": ["vegetarian"]
+=======
+    "directions": "Cook spaghetti. Brown ground beef with tomato sauce. Combine."
+  },
+  "Grilled Cheese": {
+    "ingredients": ["bread", "cheese", "butter"],
+    "directions": "Butter bread, add cheese, and grill until golden."
+  },
+  "Chicken Salad": {
+    "ingredients": ["chicken", "lettuce", "tomato"],
+    "directions": "Cook chicken, chop veggies, and mix together."
+  },
+  "Veggie Stir Fry": {
+    "ingredients": ["broccoli", "carrot", "soy sauce"],
+    "directions": "Stir fry vegetables with soy sauce."
   }
 }
