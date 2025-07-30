@@ -1,17 +1,26 @@
 from __future__ import annotations
 
 import tkinter as tk
-from tkinter import ttk, messagebox, simpledialog
+from tkinter import filedialog, ttk, messagebox, simpledialog
 
 from .recipes import (
     add_extra_ingredient,
     add_recipe,
+    get_all_categories,
     get_available_ingredients,
     get_extra_ingredients,
+    get_recipe_categories,
+    get_recipe_directions,
+    get_recipe_ingredients,
+    load_selected_ingredients,
     get_recipe_directions,
     get_recipe_ingredients,
     remove_extra_ingredient,
     possible_dinners,
+    remove_extra_ingredient,
+    remove_recipe,
+    save_selected_ingredients,
+    update_recipe,
 )
 
 
@@ -24,6 +33,10 @@ class DinnerApp(tk.Tk):
         self.geometry("600x400")
         self.vars: dict[str, tk.BooleanVar] = {}
         self.checkbuttons: dict[str, ttk.Checkbutton] = {}
+        self.selected: set[str] = load_selected_ingredients()
+        self.search_var = tk.StringVar()
+        self.category_var = tk.StringVar(value="All")
+
         self._setup_ui()
         self.update_dinners()
 
@@ -47,13 +60,30 @@ class DinnerApp(tk.Tk):
 
         dinner_box = ttk.LabelFrame(right, text="Possible Dinners")
         dinner_box.pack(fill="both", expand=True)
+        search = ttk.Entry(dinner_box, textvariable=self.search_var)
+        search.pack(fill="x", padx=5, pady=2)
+        cat_opts = ["All"] + get_all_categories()
+        self.category_cb = ttk.Combobox(
+            dinner_box,
+            textvariable=self.category_var,
+            values=cat_opts,
+            state="readonly",
+        )
+        self.category_cb.pack(fill="x", padx=5, pady=2)
+        self.category_cb.bind("<<ComboboxSelected>>", self.update_dinners)
         self.dinner_var = tk.StringVar(value=[])
         self.dinner_list = tk.Listbox(dinner_box, listvariable=self.dinner_var)
         self.dinner_list.pack(fill="both", expand=True)
         self.dinner_list.bind("<Double-1>", self.show_recipe)
 
-        add_btn = ttk.Button(right, text="Add Recipe", command=self.add_recipe_dialog)
-        add_btn.pack(pady=5)
+        btns = ttk.Frame(right)
+        btns.pack(pady=5)
+        add_btn = ttk.Button(btns, text="Add Recipe", command=self.add_recipe_dialog)
+        add_btn.pack(side="left", padx=2)
+        edit_btn = ttk.Button(btns, text="Edit", command=self.edit_recipe_dialog)
+        edit_btn.pack(side="left", padx=2)
+        del_btn = ttk.Button(btns, text="Delete", command=self.delete_recipe)
+        del_btn.pack(side="left", padx=2)
 
     def _populate_ingredients(self) -> None:
         current = set(get_available_ingredients())
@@ -66,7 +96,7 @@ class DinnerApp(tk.Tk):
 
         for ing in sorted(current):
             if ing not in self.vars:
-                var = tk.BooleanVar()
+                var = tk.BooleanVar(value=ing in self.selected)
                 self.vars[ing] = var
                 cb = ttk.Checkbutton(
                     self.ing_list_frame,
@@ -76,12 +106,22 @@ class DinnerApp(tk.Tk):
                 )
                 cb.pack(anchor="w")
                 self.checkbuttons[ing] = cb
+            else:
+                self.vars[ing].set(ing in self.selected)
 
     def owned_ingredients(self) -> set[str]:
         return {i for i, v in self.vars.items() if v.get()}
 
     def update_dinners(self, *args) -> None:
-        dinners = possible_dinners(self.owned_ingredients())
+        self.selected = self.owned_ingredients()
+        save_selected_ingredients(self.selected)
+        dinners = possible_dinners(self.selected)
+        term = self.search_var.get().lower()
+        if term:
+            dinners = [d for d in dinners if term in d.lower()]
+        cat = self.category_var.get()
+        if cat and cat != "All":
+            dinners = [d for d in dinners if cat in (get_recipe_categories(d) or [])]
         self.dinner_var.set(sorted(dinners))
 
     def add_ingredient(self) -> None:
@@ -124,6 +164,19 @@ class DinnerApp(tk.Tk):
             + directions
         )
         messagebox.showinfo(name, msg)
+        missing = set(ingredients) - self.selected
+        if missing and messagebox.askyesno(
+            "Export Shopping List", "Export missing ingredients to file?"
+        ):
+            path = filedialog.asksaveasfilename(
+                title="Save Shopping List", defaultextension=".txt"
+            )
+            if path:
+                with open(path, "w") as fh:
+                    fh.write(f"Shopping list for {name}:\n")
+                    for item in sorted(missing):
+                        fh.write(f"- {item}\n")
+                messagebox.showinfo("Saved", f"Shopping list saved to {path}")
 
     def add_recipe_dialog(self) -> None:
         name = simpledialog.askstring("New Recipe", "Recipe name:", parent=self)
@@ -143,10 +196,72 @@ class DinnerApp(tk.Tk):
         )
         if directions is None:
             return
-        add_recipe(name, ing_list, directions, persist=True)
+        categories = simpledialog.askstring(
+            "Categories", "Categories (comma separated):", parent=self
+        )
+        cat_list = (
+            [c.strip() for c in categories.split(",") if c.strip()]
+            if categories
+            else []
+        )
+        add_recipe(name, ing_list, directions, cat_list, persist=True)
+
         self._populate_ingredients()
         self.update_dinners()
         messagebox.showinfo("Recipe Added", f"{name} has been added.")
+
+    def edit_recipe_dialog(self) -> None:
+        selection = self.dinner_list.curselection()
+        if not selection:
+            messagebox.showerror("Error", "No recipe selected.")
+            return
+        name = self.dinner_list.get(selection[0])
+        ingredients = get_recipe_ingredients(name) or []
+        directions = get_recipe_directions(name) or ""
+        categories = get_recipe_categories(name) or []
+        ing = simpledialog.askstring(
+            "Ingredients",
+            "Ingredients (comma separated):",
+            initialvalue=", ".join(ingredients),
+            parent=self,
+        )
+        if ing is None:
+            return
+        new_dirs = simpledialog.askstring(
+            "Directions", "Cooking directions:", initialvalue=directions, parent=self
+        )
+        if new_dirs is None:
+            return
+        cat_str = simpledialog.askstring(
+            "Categories",
+            "Categories (comma separated):",
+            initialvalue=", ".join(categories),
+            parent=self,
+        )
+        cat_list = (
+            [c.strip() for c in cat_str.split(",") if c.strip()]
+            if cat_str
+            else []
+        )
+        update_recipe(
+            name,
+            [i.strip() for i in ing.split(",") if i.strip()],
+            new_dirs,
+            cat_list,
+        )
+        self._populate_ingredients()
+        self.update_dinners()
+
+    def delete_recipe(self) -> None:
+        selection = self.dinner_list.curselection()
+        if not selection:
+            messagebox.showerror("Error", "No recipe selected.")
+            return
+        name = self.dinner_list.get(selection[0])
+        if messagebox.askyesno("Delete", f"Delete {name}?"):
+            remove_recipe(name)
+            self._populate_ingredients()
+            self.update_dinners()
 
 
 def run_app() -> None:
