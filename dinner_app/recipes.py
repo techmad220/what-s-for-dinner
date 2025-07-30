@@ -7,16 +7,25 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 RECIPES_FILE = Path(__file__).with_name("recipes.json")
+EXTRA_ING_FILE = Path(__file__).with_name("extra_ingredients.json")
 
 
-def load_recipes() -> Dict[str, List[str]]:
+def load_recipes() -> Dict[str, Dict[str, object]]:
     """Load recipes from :data:`RECIPES_FILE`."""
+
     with RECIPES_FILE.open() as fh:
-        return json.load(fh)
+        data = json.load(fh)
+
+    # Support legacy format where values are just a list of ingredients
+    for name, value in list(data.items()):
+        if isinstance(value, list):
+            data[name] = {"ingredients": value, "directions": ""}
+    return data
 
 
-def save_recipes(recipes: Dict[str, List[str]]) -> None:
+def save_recipes(recipes: Dict[str, Dict[str, object]]) -> None:
     """Save recipes to :data:`RECIPES_FILE`."""
+
     with RECIPES_FILE.open("w") as fh:
         json.dump(recipes, fh, indent=2)
 
@@ -24,21 +33,51 @@ def save_recipes(recipes: Dict[str, List[str]]) -> None:
 _recipes = load_recipes()
 
 
-def get_recipes() -> Dict[str, List[str]]:
+def load_extra_ingredients() -> set[str]:
+    if EXTRA_ING_FILE.exists():
+        with EXTRA_ING_FILE.open() as fh:
+            return set(json.load(fh))
+    return set()
+
+
+def save_extra_ingredients(ingredients: set[str]) -> None:
+    with EXTRA_ING_FILE.open("w") as fh:
+        json.dump(sorted(ingredients), fh, indent=2)
+
+
+_extra_ingredients = load_extra_ingredients()
+
+
+def get_recipes() -> Dict[str, Dict[str, object]]:
     """Return the in-memory recipes dictionary."""
+
     return _recipes
 
 
 def get_recipe_ingredients(name: str) -> Optional[List[str]]:
     """Return a list of ingredients for ``name`` if it exists."""
 
-    return _recipes.get(name)
+    recipe = _recipes.get(name)
+    if recipe:
+        return list(recipe.get("ingredients", []))
+    return None
 
 
-def add_recipe(name: str, ingredients: List[str], *, persist: bool = True) -> None:
+def get_recipe_directions(name: str) -> Optional[str]:
+    """Return cooking directions for ``name`` if they exist."""
+
+    recipe = _recipes.get(name)
+    if recipe:
+        return str(recipe.get("directions", ""))
+    return None
+
+
+def add_recipe(
+    name: str, ingredients: List[str], directions: str = "", *, persist: bool = True
+) -> None:
     """Add a recipe and optionally persist it to disk."""
 
-    _recipes[name] = ingredients
+    _recipes[name] = {"ingredients": ingredients, "directions": directions}
     if persist:
         save_recipes(_recipes)
 
@@ -50,16 +89,51 @@ def reset_recipes() -> None:
     _recipes = load_recipes()
 
 
+def reset_extra_ingredients() -> None:
+    """Reload extra ingredients from disk, discarding in-memory changes."""
+
+    global _extra_ingredients
+    _extra_ingredients = load_extra_ingredients()
+
+
+def add_extra_ingredient(name: str, *, persist: bool = True) -> None:
+    """Add an extra ingredient to the list."""
+
+    _extra_ingredients.add(name)
+    if persist:
+        save_extra_ingredients(_extra_ingredients)
+
+
+def remove_extra_ingredient(name: str, *, persist: bool = True) -> None:
+    """Remove an extra ingredient if it exists."""
+
+    if name in _extra_ingredients:
+        _extra_ingredients.remove(name)
+        if persist:
+            save_extra_ingredients(_extra_ingredients)
+
+
+def get_extra_ingredients() -> set[str]:
+    """Return the set of user-added ingredients."""
+
+    return set(_extra_ingredients)
+
+
 def get_available_ingredients() -> set:
-    """Return a set of all ingredients used in recipes."""
+    """Return a set of all ingredients used in recipes and extras."""
 
     ingredients: set[str] = set()
-    for items in _recipes.values():
-        ingredients.update(items)
+    for rec in _recipes.values():
+        ingredients.update(rec.get("ingredients", []))
+    ingredients.update(_extra_ingredients)
     return ingredients
 
 
 def possible_dinners(owned: set[str]) -> list[str]:
     """Return a list of recipes that can be made with the owned ingredients."""
 
-    return [name for name, reqs in _recipes.items() if set(reqs).issubset(owned)]
+    return [
+        name
+        for name, recipe in _recipes.items()
+        if set(recipe.get("ingredients", [])).issubset(owned)
+    ]
