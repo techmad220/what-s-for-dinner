@@ -1,18 +1,22 @@
 {
   "Spaghetti Bolognese": {
     "ingredients": ["spaghetti", "ground beef", "tomato sauce"],
-    "directions": "Cook spaghetti. Brown ground beef with tomato sauce. Combine."
+    "directions": "Cook spaghetti. Brown ground beef with tomato sauce. Combine.",
+    "categories": ["meat"]
   },
   "Grilled Cheese": {
     "ingredients": ["bread", "cheese", "butter"],
-    "directions": "Butter bread, add cheese, and grill until golden."
+    "directions": "Butter bread, add cheese, and grill until golden.",
+    "categories": ["quick"]
   },
   "Chicken Salad": {
     "ingredients": ["chicken", "lettuce", "tomato"],
-    "directions": "Cook chicken, chop veggies, and mix together."
+    "directions": "Cook chicken, chop veggies, and mix together.",
+    "categories": ["meat"]
   },
   "Veggie Stir Fry": {
     "ingredients": ["broccoli", "carrot", "soy sauce"],
-    "directions": "Stir fry vegetables with soy sauce."
+    "directions": "Stir fry vegetables with soy sauce.",
+    "categories": ["vegetarian"]
   }
 }

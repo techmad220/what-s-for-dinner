@@ -8,6 +8,7 @@ from typing import Dict, List, Optional
 
 RECIPES_FILE = Path(__file__).with_name("recipes.json")
 EXTRA_ING_FILE = Path(__file__).with_name("extra_ingredients.json")
+SELECTED_FILE = Path(__file__).with_name("selected_ingredients.json")
 
 
 def load_recipes() -> Dict[str, Dict[str, object]]:
@@ -31,6 +32,18 @@ def save_recipes(recipes: Dict[str, Dict[str, object]]) -> None:
 
 
 _recipes = load_recipes()
+
+
+def load_selected_ingredients() -> set[str]:
+    if SELECTED_FILE.exists():
+        with SELECTED_FILE.open() as fh:
+            return set(json.load(fh))
+    return set()
+
+
+def save_selected_ingredients(selected: set[str]) -> None:
+    with SELECTED_FILE.open("w") as fh:
+        json.dump(sorted(selected), fh, indent=2)
 
 
 def load_extra_ingredients() -> set[str]:
@@ -72,12 +85,30 @@ def get_recipe_directions(name: str) -> Optional[str]:
     return None
 
 
+def get_recipe_categories(name: str) -> Optional[List[str]]:
+    """Return categories for ``name`` if present."""
+
+    recipe = _recipes.get(name)
+    if recipe is not None:
+        return list(recipe.get("categories", []))
+    return None
+
+
 def add_recipe(
-    name: str, ingredients: List[str], directions: str = "", *, persist: bool = True
+    name: str,
+    ingredients: List[str],
+    directions: str = "",
+    categories: Optional[List[str]] = None,
+    *,
+    persist: bool = True,
 ) -> None:
     """Add a recipe and optionally persist it to disk."""
 
-    _recipes[name] = {"ingredients": ingredients, "directions": directions}
+    _recipes[name] = {
+        "ingredients": ingredients,
+        "directions": directions,
+        "categories": categories or [],
+    }
     if persist:
         save_recipes(_recipes)
 
@@ -87,6 +118,38 @@ def reset_recipes() -> None:
 
     global _recipes
     _recipes = load_recipes()
+
+
+def remove_recipe(name: str, *, persist: bool = True) -> None:
+    """Delete a recipe if it exists."""
+
+    if name in _recipes:
+        del _recipes[name]
+        if persist:
+            save_recipes(_recipes)
+
+
+def update_recipe(
+    name: str,
+    ingredients: Optional[List[str]] | None = None,
+    directions: Optional[str] | None = None,
+    categories: Optional[List[str]] | None = None,
+    *,
+    persist: bool = True,
+) -> None:
+    """Modify an existing recipe."""
+
+    rec = _recipes.get(name)
+    if rec is None:
+        raise KeyError(name)
+    if ingredients is not None:
+        rec["ingredients"] = list(ingredients)
+    if directions is not None:
+        rec["directions"] = directions
+    if categories is not None:
+        rec["categories"] = list(categories)
+    if persist:
+        save_recipes(_recipes)
 
 
 def reset_extra_ingredients() -> None:
@@ -117,6 +180,15 @@ def get_extra_ingredients() -> set[str]:
     """Return the set of user-added ingredients."""
 
     return set(_extra_ingredients)
+
+
+def get_all_categories() -> list[str]:
+    """Return a sorted list of all categories in the recipes."""
+
+    cats: set[str] = set()
+    for rec in _recipes.values():
+        cats.update(rec.get("categories", []))
+    return sorted(cats)
 
 
 def get_available_ingredients() -> set:

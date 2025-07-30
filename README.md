@@ -21,6 +21,9 @@ python -m dinner_app.main
 ```
 
 A window will open displaying the available ingredients and possible dinners.
-Use the **Add** and **Remove** buttons to manage your ingredient list.
-Double-click a dinner to view its ingredients and cooking directions.
-Use the **Add Recipe** button to contribute new ideas.
+Use the **Add** and **Remove** buttons to manage your ingredient list. Checked
+items are remembered the next time you run the app. Search or filter meals by
+category using the fields above the dinner list.
+Double-click a dinner to view its ingredients and cooking directions and export
+a shopping list of missing items.
+Use the **Add Recipe**, **Edit**, and **Delete** buttons to manage your recipes.
