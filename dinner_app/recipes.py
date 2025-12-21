@@ -107,21 +107,11 @@ def add_recipe(
     persist: bool = True,
 ) -> None:
     """Add a recipe and optionally persist it to disk."""
-
     _recipes[name] = {
         "ingredients": ingredients,
         "directions": directions,
         "categories": categories or [],
     }
-
-
-
-def add_recipe(
-    name: str, ingredients: List[str], directions: str = "", *, persist: bool = True
-) -> None:
-    """Add a recipe and optionally persist it to disk."""
-
-    _recipes[name] = {"ingredients": ingredients, "directions": directions}
     if persist:
         save_recipes(_recipes)
 
@@ -219,9 +209,146 @@ def get_available_ingredients() -> set:
 
 def possible_dinners(owned: set[str]) -> list[str]:
     """Return a list of recipes that can be made with the owned ingredients."""
-
     return [
         name
         for name, recipe in _recipes.items()
         if set(recipe.get("ingredients", [])).issubset(owned)
     ]
+
+
+def get_all_recipe_names() -> list[str]:
+    """Return a sorted list of all recipe names."""
+    return sorted(_recipes.keys())
+
+
+def search_recipes(
+    query: str = "",
+    category: str = "",
+    owned_ingredients: set[str] | None = None,
+    require_all_ingredients: bool = False,
+) -> list[str]:
+    """Search recipes with multiple filters."""
+    results = []
+    query_lower = query.lower()
+
+    for name, recipe in _recipes.items():
+        # Text search in name and directions
+        if query_lower:
+            name_match = query_lower in name.lower()
+            dir_match = query_lower in recipe.get("directions", "").lower()
+            if not (name_match or dir_match):
+                continue
+
+        # Category filter
+        if category and category != "All":
+            cats = recipe.get("categories", [])
+            if category not in cats:
+                continue
+
+        # Ingredient filter
+        if owned_ingredients is not None and require_all_ingredients:
+            recipe_ings = set(recipe.get("ingredients", []))
+            if recipe_ings and not recipe_ings.issubset(owned_ingredients):
+                continue
+
+        results.append(name)
+
+    return sorted(results)
+
+
+import random
+
+def choose_random_recipe(
+    category: str = "",
+    owned_ingredients: set[str] | None = None,
+    require_all_ingredients: bool = False,
+) -> str | None:
+    """Pick a random recipe, optionally filtered."""
+    candidates = search_recipes(
+        query="",
+        category=category,
+        owned_ingredients=owned_ingredients,
+        require_all_ingredients=require_all_ingredients,
+    )
+    if not candidates:
+        return None
+    return random.choice(candidates)
+
+
+def get_missing_ingredients(recipe_name: str, owned: set[str]) -> set[str]:
+    """Return ingredients missing for a recipe."""
+    recipe = _recipes.get(recipe_name)
+    if not recipe:
+        return set()
+    recipe_ings = set(recipe.get("ingredients", []))
+    return recipe_ings - owned
+
+
+def find_almost_makeable(owned: set[str], max_missing: int = 4) -> list[tuple[str, set[str]]]:
+    """Find recipes where we're missing at most max_missing ingredients.
+
+    Returns list of (recipe_name, missing_ingredients) sorted by fewest missing.
+    """
+    results = []
+    for name, recipe in _recipes.items():
+        recipe_ings = set(recipe.get("ingredients", []))
+        if not recipe_ings:  # Skip recipes with no ingredients listed
+            continue
+        missing = recipe_ings - owned
+        if 0 < len(missing) <= max_missing:
+            results.append((name, missing))
+
+    # Sort by number of missing ingredients
+    results.sort(key=lambda x: len(x[1]))
+    return results
+
+
+def search_recipes_advanced(
+    query: str = "",
+    category: str = "",
+    owned_ingredients: set[str] | None = None,
+    filter_mode: str = "all",  # "all", "can_make", "almost"
+    max_missing: int = 4,
+) -> list[tuple[str, int]]:
+    """Advanced search returning (recipe_name, missing_count) tuples."""
+    results = []
+    query_lower = query.lower()
+
+    for name, recipe in _recipes.items():
+        # Text search in name and directions
+        if query_lower:
+            name_match = query_lower in name.lower()
+            dir_match = query_lower in recipe.get("directions", "").lower()
+            if not (name_match or dir_match):
+                continue
+
+        # Category filter
+        if category and category != "All":
+            cats = recipe.get("categories", [])
+            if category not in cats:
+                continue
+
+        # Ingredient filter
+        recipe_ings = set(recipe.get("ingredients", []))
+        missing_count = 0
+
+        if owned_ingredients is not None and filter_mode != "all":
+            missing = recipe_ings - owned_ingredients if recipe_ings else set()
+            missing_count = len(missing)
+
+            if filter_mode == "can_make":
+                if missing_count > 0:
+                    continue
+            elif filter_mode == "almost":
+                if missing_count == 0 or missing_count > max_missing:
+                    continue
+
+        results.append((name, missing_count))
+
+    # Sort by name, then by missing count for "almost" mode
+    if filter_mode == "almost":
+        results.sort(key=lambda x: (x[1], x[0]))
+    else:
+        results.sort(key=lambda x: x[0])
+
+    return results

@@ -1,271 +1,857 @@
 from __future__ import annotations
 
-import tkinter as tk
-from tkinter import filedialog, ttk, messagebox, simpledialog
+import customtkinter as ctk
+from tkinter import messagebox, filedialog
+import random
 
 from .recipes import (
     add_extra_ingredient,
     add_recipe,
     get_all_categories,
+    get_all_recipe_names,
     get_available_ingredients,
     get_extra_ingredients,
+    get_missing_ingredients,
     get_recipe_categories,
     get_recipe_directions,
     get_recipe_ingredients,
     load_selected_ingredients,
-    get_recipe_directions,
-    get_recipe_ingredients,
-    remove_extra_ingredient,
-    possible_dinners,
     remove_extra_ingredient,
     remove_recipe,
     save_selected_ingredients,
+    search_recipes_advanced,
     update_recipe,
 )
 
+# Set appearance and theme
+ctk.set_appearance_mode("dark")
+ctk.set_default_color_theme("blue")
 
-class DinnerApp(tk.Tk):
-    """Tkinter GUI for selecting ingredients and viewing possible dinners."""
+
+class DinnerApp(ctk.CTk):
+    """Modern GUI for What's for Dinner app using CustomTkinter."""
 
     def __init__(self) -> None:
         super().__init__()
-        self.title("What's for Dinner")
-        self.geometry("600x400")
-        self.vars: dict[str, tk.BooleanVar] = {}
-        self.checkbuttons: dict[str, ttk.Checkbutton] = {}
-        self.selected: set[str] = load_selected_ingredients()
-        self.search_var = tk.StringVar()
-        self.category_var = tk.StringVar(value="All")
+        self.title("What's for Dinner?")
+        self.geometry("1400x900")
+        self.minsize(1200, 800)
+
+        # Variables
+        self.search_var = ctk.StringVar()
+        self.ing_search_var = ctk.StringVar()
+        self.category_var = ctk.StringVar(value="All")
+        self.filter_mode_var = ctk.StringVar(value="all")
+        self.max_missing_var = ctk.IntVar(value=4)
+        self.selected_ingredients: set[str] = load_selected_ingredients()
+
+        # Ingredient checkbox vars
+        self.ing_vars: dict[str, ctk.BooleanVar] = {}
+        self.ing_checkboxes: list[ctk.CTkCheckBox] = []
+
+        # Debounce timer for search
+        self._search_timer = None
+        self._ing_search_timer = None
+
+        # Cache
+        self._all_ingredients: list[str] = []
+        self._categories_cache: list[str] = []
 
         self._setup_ui()
-        self.update_dinners()
+        self._load_initial_data()
+
+    def _load_initial_data(self) -> None:
+        """Load data once at startup."""
+        self._all_ingredients = sorted(get_available_ingredients())
+        self._categories_cache = self._get_category_options()
+        self._populate_ingredients()
+        self._refresh_recipes()
 
     def _setup_ui(self) -> None:
-        # Left side: ingredient checkboxes
-        self.ing_frame = ttk.LabelFrame(self, text="Ingredients")
-        self.ing_frame.pack(side="left", fill="both", expand=True, padx=10, pady=10)
-        self.ing_list_frame = ttk.Frame(self.ing_frame)
-        self.ing_list_frame.pack(fill="both", expand=True)
-        btn_frame = ttk.Frame(self.ing_frame)
-        btn_frame.pack(fill="x", pady=5)
-        add_btn = ttk.Button(btn_frame, text="Add", command=self.add_ingredient)
-        add_btn.pack(side="left", padx=5)
-        rem_btn = ttk.Button(btn_frame, text="Remove", command=self.remove_ingredient)
-        rem_btn.pack(side="left", padx=5)
-        self._populate_ingredients()
+        # Configure grid
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(0, weight=1)
 
-        # Right side: dinners list and add recipe button
-        right = ttk.Frame(self)
-        right.pack(side="right", fill="both", expand=True, padx=10, pady=10)
+        # === LEFT SIDEBAR ===
+        self.sidebar = ctk.CTkFrame(self, width=280, corner_radius=0)
+        self.sidebar.grid(row=0, column=0, sticky="nsew")
+        self.sidebar.grid_rowconfigure(4, weight=1)
 
-        dinner_box = ttk.LabelFrame(right, text="Possible Dinners")
-        dinner_box.pack(fill="both", expand=True)
-        search = ttk.Entry(dinner_box, textvariable=self.search_var)
-        search.pack(fill="x", padx=5, pady=2)
-        cat_opts = ["All"] + get_all_categories()
-        self.category_cb = ttk.Combobox(
-            dinner_box,
-            textvariable=self.category_var,
-            values=cat_opts,
-            state="readonly",
+        # App title
+        self.logo_label = ctk.CTkLabel(
+            self.sidebar,
+            text="What's for\nDinner?",
+            font=ctk.CTkFont(size=28, weight="bold")
         )
-        self.category_cb.pack(fill="x", padx=5, pady=2)
-        self.category_cb.bind("<<ComboboxSelected>>", self.update_dinners)
-        self.dinner_var = tk.StringVar(value=[])
-        self.dinner_list = tk.Listbox(dinner_box, listvariable=self.dinner_var)
-        self.dinner_list.pack(fill="both", expand=True)
-        self.dinner_list.bind("<Double-1>", self.show_recipe)
+        self.logo_label.grid(row=0, column=0, padx=20, pady=(30, 20))
 
-        btns = ttk.Frame(right)
-        btns.pack(pady=5)
-        add_btn = ttk.Button(btns, text="Add Recipe", command=self.add_recipe_dialog)
-        add_btn.pack(side="left", padx=2)
-        edit_btn = ttk.Button(btns, text="Edit", command=self.edit_recipe_dialog)
-        edit_btn.pack(side="left", padx=2)
-        del_btn = ttk.Button(btns, text="Delete", command=self.delete_recipe)
-        del_btn.pack(side="left", padx=2)
+        # Pantry section
+        self.pantry_label = ctk.CTkLabel(
+            self.sidebar,
+            text="My Pantry",
+            font=ctk.CTkFont(size=16, weight="bold")
+        )
+        self.pantry_label.grid(row=1, column=0, padx=20, pady=(10, 5), sticky="w")
+
+        # Ingredient search
+        self.ing_search_entry = ctk.CTkEntry(
+            self.sidebar,
+            placeholder_text="Search ingredients...",
+            textvariable=self.ing_search_var,
+            width=240
+        )
+        self.ing_search_entry.grid(row=2, column=0, padx=20, pady=(5, 10))
+        self.ing_search_var.trace_add("write", self._on_ing_search_change)
+
+        # Quick action buttons
+        self.action_frame = ctk.CTkFrame(self.sidebar, fg_color="transparent")
+        self.action_frame.grid(row=3, column=0, padx=20, pady=5, sticky="ew")
+
+        self.select_all_btn = ctk.CTkButton(
+            self.action_frame,
+            text="Select All",
+            width=110,
+            command=self._select_all_visible
+        )
+        self.select_all_btn.pack(side="left", padx=(0, 5))
+
+        self.clear_btn = ctk.CTkButton(
+            self.action_frame,
+            text="Clear All",
+            width=110,
+            fg_color="transparent",
+            border_width=1,
+            command=self._clear_ingredients
+        )
+        self.clear_btn.pack(side="right")
+
+        # Scrollable ingredient list
+        self.ing_scroll_frame = ctk.CTkScrollableFrame(
+            self.sidebar,
+            label_text="Ingredients",
+            width=240,
+            height=400
+        )
+        self.ing_scroll_frame.grid(row=4, column=0, padx=20, pady=10, sticky="nsew")
+
+        # Selected count
+        self.count_label = ctk.CTkLabel(
+            self.sidebar,
+            text="0 selected",
+            font=ctk.CTkFont(size=14)
+        )
+        self.count_label.grid(row=5, column=0, padx=20, pady=5)
+
+        # Add/Remove buttons
+        self.custom_frame = ctk.CTkFrame(self.sidebar, fg_color="transparent")
+        self.custom_frame.grid(row=6, column=0, padx=20, pady=(5, 20), sticky="ew")
+
+        ctk.CTkButton(
+            self.custom_frame,
+            text="+ Add",
+            width=110,
+            command=self._add_ingredient
+        ).pack(side="left", padx=(0, 5))
+
+        ctk.CTkButton(
+            self.custom_frame,
+            text="- Remove",
+            width=110,
+            fg_color="transparent",
+            border_width=1,
+            command=self._remove_ingredient
+        ).pack(side="right")
+
+        # === MAIN CONTENT ===
+        self.main_frame = ctk.CTkFrame(self, corner_radius=0, fg_color="transparent")
+        self.main_frame.grid(row=0, column=1, sticky="nsew", padx=20, pady=20)
+        self.main_frame.grid_columnconfigure(0, weight=1)
+        self.main_frame.grid_rowconfigure(2, weight=1)
+
+        # === TOP SECTION: SEARCH & FILTERS ===
+        self.filter_frame = ctk.CTkFrame(self.main_frame)
+        self.filter_frame.grid(row=0, column=0, sticky="ew", pady=(0, 15))
+        self.filter_frame.grid_columnconfigure(1, weight=1)
+
+        # Search
+        ctk.CTkLabel(
+            self.filter_frame,
+            text="Search Recipes",
+            font=ctk.CTkFont(size=14, weight="bold")
+        ).grid(row=0, column=0, padx=20, pady=(15, 5), sticky="w")
+
+        self.search_entry = ctk.CTkEntry(
+            self.filter_frame,
+            placeholder_text="Type to search recipes...",
+            textvariable=self.search_var,
+            height=40
+        )
+        self.search_entry.grid(row=0, column=1, padx=(10, 20), pady=(15, 5), sticky="ew")
+        self.search_var.trace_add("write", self._on_search_change)
+
+        # Category dropdown
+        ctk.CTkLabel(
+            self.filter_frame,
+            text="Category",
+            font=ctk.CTkFont(size=14, weight="bold")
+        ).grid(row=1, column=0, padx=20, pady=10, sticky="w")
+
+        self.category_menu = ctk.CTkOptionMenu(
+            self.filter_frame,
+            values=["All"],  # Will be populated later
+            variable=self.category_var,
+            command=lambda _: self._refresh_recipes(),
+            width=200
+        )
+        self.category_menu.grid(row=1, column=1, padx=(10, 20), pady=10, sticky="w")
+
+        # Filter mode
+        self.filter_mode_frame = ctk.CTkFrame(self.filter_frame, fg_color="transparent")
+        self.filter_mode_frame.grid(row=2, column=0, columnspan=2, padx=20, pady=(5, 10), sticky="w")
+
+        ctk.CTkLabel(
+            self.filter_mode_frame,
+            text="Show:",
+            font=ctk.CTkFont(size=13)
+        ).pack(side="left", padx=(0, 15))
+
+        self.radio_all = ctk.CTkRadioButton(
+            self.filter_mode_frame,
+            text="All Recipes",
+            variable=self.filter_mode_var,
+            value="all",
+            command=self._refresh_recipes
+        )
+        self.radio_all.pack(side="left", padx=10)
+
+        self.radio_can_make = ctk.CTkRadioButton(
+            self.filter_mode_frame,
+            text="Can Make",
+            variable=self.filter_mode_var,
+            value="can_make",
+            command=self._refresh_recipes
+        )
+        self.radio_can_make.pack(side="left", padx=10)
+
+        self.radio_almost = ctk.CTkRadioButton(
+            self.filter_mode_frame,
+            text="Almost Ready",
+            variable=self.filter_mode_var,
+            value="almost",
+            command=self._refresh_recipes
+        )
+        self.radio_almost.pack(side="left", padx=10)
+
+        # Missing ingredients slider
+        self.missing_frame = ctk.CTkFrame(self.filter_frame, fg_color="transparent")
+        self.missing_frame.grid(row=3, column=0, columnspan=2, padx=20, pady=(0, 15), sticky="w")
+
+        ctk.CTkLabel(
+            self.missing_frame,
+            text="Max missing ingredients:",
+            font=ctk.CTkFont(size=12)
+        ).pack(side="left", padx=(0, 10))
+
+        self.missing_slider = ctk.CTkSlider(
+            self.missing_frame,
+            from_=1,
+            to=10,
+            number_of_steps=9,
+            variable=self.max_missing_var,
+            width=200,
+            command=self._on_slider_change
+        )
+        self.missing_slider.pack(side="left", padx=5)
+
+        self.missing_label = ctk.CTkLabel(
+            self.missing_frame,
+            text="4",
+            font=ctk.CTkFont(size=14, weight="bold"),
+            width=30
+        )
+        self.missing_label.pack(side="left", padx=5)
+
+        # === CHOOSE FOR ME SECTION ===
+        self.choose_frame = ctk.CTkFrame(self.main_frame)
+        self.choose_frame.grid(row=1, column=0, sticky="ew", pady=(0, 15))
+
+        ctk.CTkLabel(
+            self.choose_frame,
+            text="Choose For Me!",
+            font=ctk.CTkFont(size=16, weight="bold")
+        ).pack(pady=(15, 10))
+
+        self.random_btn_frame = ctk.CTkFrame(self.choose_frame, fg_color="transparent")
+        self.random_btn_frame.pack(pady=(0, 15))
+
+        ctk.CTkButton(
+            self.random_btn_frame,
+            text="Random Any",
+            width=150,
+            height=45,
+            font=ctk.CTkFont(size=14, weight="bold"),
+            command=lambda: self._choose_random("all")
+        ).pack(side="left", padx=10)
+
+        ctk.CTkButton(
+            self.random_btn_frame,
+            text="From My Pantry",
+            width=150,
+            height=45,
+            font=ctk.CTkFont(size=14, weight="bold"),
+            fg_color="#10b981",
+            hover_color="#059669",
+            command=lambda: self._choose_random("can_make")
+        ).pack(side="left", padx=10)
+
+        ctk.CTkButton(
+            self.random_btn_frame,
+            text="Almost Ready",
+            width=150,
+            height=45,
+            font=ctk.CTkFont(size=14, weight="bold"),
+            fg_color="#f59e0b",
+            hover_color="#d97706",
+            command=lambda: self._choose_random("almost")
+        ).pack(side="left", padx=10)
+
+        # === RECIPE LIST ===
+        self.recipe_frame = ctk.CTkFrame(self.main_frame)
+        self.recipe_frame.grid(row=2, column=0, sticky="nsew")
+        self.recipe_frame.grid_columnconfigure(0, weight=1)
+        self.recipe_frame.grid_rowconfigure(1, weight=1)
+
+        # Header with count
+        self.recipe_header = ctk.CTkFrame(self.recipe_frame, fg_color="transparent")
+        self.recipe_header.grid(row=0, column=0, sticky="ew", padx=20, pady=(15, 10))
+
+        ctk.CTkLabel(
+            self.recipe_header,
+            text="Recipes",
+            font=ctk.CTkFont(size=18, weight="bold")
+        ).pack(side="left")
+
+        self.recipe_count_label = ctk.CTkLabel(
+            self.recipe_header,
+            text="0 recipes",
+            font=ctk.CTkFont(size=14),
+            text_color="gray"
+        )
+        self.recipe_count_label.pack(side="right")
+
+        # Scrollable recipe list
+        self.recipe_scroll = ctk.CTkScrollableFrame(
+            self.recipe_frame,
+            fg_color="transparent"
+        )
+        self.recipe_scroll.grid(row=1, column=0, sticky="nsew", padx=10, pady=(0, 10))
+        self.recipe_scroll.grid_columnconfigure(0, weight=1)
+
+        # Action buttons
+        self.action_btn_frame = ctk.CTkFrame(self.recipe_frame, fg_color="transparent")
+        self.action_btn_frame.grid(row=2, column=0, sticky="ew", padx=20, pady=(5, 15))
+
+        ctk.CTkButton(
+            self.action_btn_frame,
+            text="Add Recipe",
+            width=120,
+            command=self._add_recipe_dialog
+        ).pack(side="left", padx=5)
+
+        ctk.CTkButton(
+            self.action_btn_frame,
+            text="Edit Selected",
+            width=120,
+            fg_color="transparent",
+            border_width=1,
+            command=self._edit_recipe_dialog
+        ).pack(side="left", padx=5)
+
+        ctk.CTkButton(
+            self.action_btn_frame,
+            text="Delete Selected",
+            width=120,
+            fg_color="transparent",
+            border_width=1,
+            hover_color="#ef4444",
+            command=self._delete_recipe
+        ).pack(side="left", padx=5)
+
+        # Store recipe buttons for selection
+        self.recipe_buttons: list[ctk.CTkButton] = []
+        self.selected_recipe: str | None = None
+
+    def _get_category_options(self) -> list[str]:
+        cats = get_all_categories()
+        return ["All"] + sorted(cats) if cats else ["All"]
+
+    def _on_slider_change(self, value: float) -> None:
+        """Update slider label and refresh if in almost mode."""
+        val = int(value)
+        self.missing_label.configure(text=str(val))
+        if self.filter_mode_var.get() == "almost":
+            self._refresh_recipes()
+
+    def _on_search_change(self, *args) -> None:
+        """Debounced search for recipes."""
+        if self._search_timer:
+            self.after_cancel(self._search_timer)
+        self._search_timer = self.after(150, self._refresh_recipes)
+
+    def _on_ing_search_change(self, *args) -> None:
+        """Debounced search for ingredients."""
+        if self._ing_search_timer:
+            self.after_cancel(self._ing_search_timer)
+        self._ing_search_timer = self.after(150, self._filter_ingredients)
 
     def _populate_ingredients(self) -> None:
-        current = set(get_available_ingredients())
-        # Remove checkboxes for ingredients that no longer exist
-        for name in list(self.vars.keys()):
-            if name not in current:
-                self.vars.pop(name)
-                cb = self.checkbuttons.pop(name)
-                cb.destroy()
+        """Populate ingredient checkboxes - optimized."""
+        # Clear existing
+        for widget in self.ing_scroll_frame.winfo_children():
+            widget.destroy()
+        self.ing_vars.clear()
+        self.ing_checkboxes.clear()
 
-        for ing in sorted(current):
-            if ing not in self.vars:
-                var = tk.BooleanVar(value=ing in self.selected)
-                self.vars[ing] = var
-                cb = ttk.Checkbutton(
-                    self.ing_list_frame,
-                    text=ing,
-                    variable=var,
-                    command=self.update_dinners,
-                )
-                cb.pack(anchor="w")
-                self.checkbuttons[ing] = cb
-            else:
-                self.vars[ing].set(ing in self.selected)
+        search_term = self.ing_search_var.get().lower()
 
-    def owned_ingredients(self) -> set[str]:
-        return {i for i, v in self.vars.items() if v.get()}
+        # Filter ingredients
+        if search_term:
+            filtered = [ing for ing in self._all_ingredients if search_term in ing.lower()]
+        else:
+            filtered = self._all_ingredients
 
-    def update_dinners(self, *args) -> None:
-        self.selected = self.owned_ingredients()
-        save_selected_ingredients(self.selected)
-        dinners = possible_dinners(self.selected)
-        term = self.search_var.get().lower()
-        if term:
-            dinners = [d for d in dinners if term in d.lower()]
-        cat = self.category_var.get()
-        if cat and cat != "All":
-            dinners = [d for d in dinners if cat in (get_recipe_categories(d) or [])]
-        self.dinner_var.set(sorted(dinners))
+        # Limit display for performance (show first 200)
+        display_list = filtered[:200]
 
-    def add_ingredient(self) -> None:
-        name = simpledialog.askstring("Add Ingredient", "Ingredient name:", parent=self)
-        if not name:
-            return
-        add_extra_ingredient(name)
-        self._populate_ingredients()
+        for ing in display_list:
+            var = ctk.BooleanVar(value=ing in self.selected_ingredients)
+            self.ing_vars[ing] = var
 
-    def remove_ingredient(self) -> None:
-        name = simpledialog.askstring(
-            "Remove Ingredient",
-            "Ingredient name to remove:",
-            parent=self,
-        )
-        if not name:
-            return
-        if name not in get_extra_ingredients():
-            messagebox.showerror("Error", f"Cannot remove {name}.")
-            return
-        remove_extra_ingredient(name)
-        self._populate_ingredients()
-
-    def show_recipe(self, event) -> None:
-        """Display the ingredients for the selected recipe."""
-
-        selection = self.dinner_list.curselection()
-        if not selection:
-            return
-        name = self.dinner_list.get(selection[0])
-        ingredients = get_recipe_ingredients(name)
-        if ingredients is None:
-            messagebox.showerror("Error", f"Recipe for {name} not found.")
-            return
-        directions = get_recipe_directions(name) or "No directions provided."
-        msg = (
-            f"Ingredients for {name}:\n"
-            + "\n".join(f"- {i}" for i in ingredients)
-            + "\n\nDirections:\n"
-            + directions
-        )
-        messagebox.showinfo(name, msg)
-        missing = set(ingredients) - self.selected
-        if missing and messagebox.askyesno(
-            "Export Shopping List", "Export missing ingredients to file?"
-        ):
-            path = filedialog.asksaveasfilename(
-                title="Save Shopping List", defaultextension=".txt"
+            cb = ctk.CTkCheckBox(
+                self.ing_scroll_frame,
+                text=ing,
+                variable=var,
+                command=lambda i=ing: self._on_single_ingredient_toggle(i),
+                font=ctk.CTkFont(size=12),
+                height=25
             )
-            if path:
-                with open(path, "w") as fh:
-                    fh.write(f"Shopping list for {name}:\n")
-                    for item in sorted(missing):
-                        fh.write(f"- {item}\n")
-                messagebox.showinfo("Saved", f"Shopping list saved to {path}")
+            cb.pack(anchor="w", pady=1)
+            self.ing_checkboxes.append(cb)
 
-    def add_recipe_dialog(self) -> None:
-        name = simpledialog.askstring("New Recipe", "Recipe name:", parent=self)
+        if len(filtered) > 200:
+            ctk.CTkLabel(
+                self.ing_scroll_frame,
+                text=f"...and {len(filtered) - 200} more (search to find)",
+                font=ctk.CTkFont(size=11),
+                text_color="gray"
+            ).pack(anchor="w", pady=5)
+
+        self._update_selected_count()
+
+    def _filter_ingredients(self) -> None:
+        """Filter ingredient list."""
+        self._populate_ingredients()
+
+    def _update_selected_count(self) -> None:
+        count = len(self.selected_ingredients)
+        self.count_label.configure(text=f"{count} selected")
+
+    def _on_single_ingredient_toggle(self, ingredient: str) -> None:
+        """Handle single ingredient toggle - faster than full rebuild."""
+        if ingredient in self.ing_vars:
+            if self.ing_vars[ingredient].get():
+                self.selected_ingredients.add(ingredient)
+            else:
+                self.selected_ingredients.discard(ingredient)
+
+        save_selected_ingredients(self.selected_ingredients)
+        self._update_selected_count()
+
+        if self.filter_mode_var.get() != "all":
+            # Debounce recipe refresh
+            if self._search_timer:
+                self.after_cancel(self._search_timer)
+            self._search_timer = self.after(200, self._refresh_recipes)
+
+    def _select_all_visible(self) -> None:
+        for ing, var in self.ing_vars.items():
+            var.set(True)
+            self.selected_ingredients.add(ing)
+        save_selected_ingredients(self.selected_ingredients)
+        self._update_selected_count()
+        if self.filter_mode_var.get() != "all":
+            self._refresh_recipes()
+
+    def _clear_ingredients(self) -> None:
+        for var in self.ing_vars.values():
+            var.set(False)
+        self.selected_ingredients.clear()
+        save_selected_ingredients(self.selected_ingredients)
+        self._update_selected_count()
+        if self.filter_mode_var.get() != "all":
+            self._refresh_recipes()
+
+    def _refresh_recipes(self) -> None:
+        """Refresh recipe list - optimized."""
+        # Clear existing
+        for widget in self.recipe_scroll.winfo_children():
+            widget.destroy()
+        self.recipe_buttons.clear()
+        self.selected_recipe = None
+
+        query = self.search_var.get()
+        category = self.category_var.get()
+        filter_mode = self.filter_mode_var.get()
+        max_missing = self.max_missing_var.get()
+
+        results = search_recipes_advanced(
+            query=query,
+            category=category,
+            owned_ingredients=self.selected_ingredients,
+            filter_mode=filter_mode,
+            max_missing=max_missing
+        )
+
+        # Limit display for performance
+        display_results = results[:150]
+
+        for i, (recipe_name, missing_count) in enumerate(display_results):
+            frame = ctk.CTkFrame(self.recipe_scroll, fg_color="transparent", height=45)
+            frame.grid(row=i, column=0, sticky="ew", pady=1)
+            frame.grid_columnconfigure(0, weight=1)
+            frame.grid_propagate(False)
+
+            # Recipe button
+            btn = ctk.CTkButton(
+                frame,
+                text=recipe_name,
+                anchor="w",
+                height=38,
+                fg_color="transparent",
+                hover_color="#374151",
+                font=ctk.CTkFont(size=13),
+                command=lambda n=recipe_name: self._select_recipe(n)
+            )
+            btn.grid(row=0, column=0, sticky="ew", padx=(0, 5))
+
+            # Badge for missing count
+            if filter_mode == "almost" and missing_count > 0:
+                badge = ctk.CTkLabel(
+                    frame,
+                    text=f"-{missing_count}",
+                    font=ctk.CTkFont(size=11, weight="bold"),
+                    fg_color="#f59e0b",
+                    corner_radius=6,
+                    width=35,
+                    height=24
+                )
+                badge.grid(row=0, column=1, padx=5)
+
+            # View button
+            view_btn = ctk.CTkButton(
+                frame,
+                text="View",
+                width=55,
+                height=30,
+                font=ctk.CTkFont(size=11),
+                command=lambda n=recipe_name: self._show_recipe_popup(n)
+            )
+            view_btn.grid(row=0, column=2, padx=(0, 5))
+
+            self.recipe_buttons.append(btn)
+
+        total = len(get_all_recipe_names())
+        shown = len(display_results)
+        if len(results) > 150:
+            self.recipe_count_label.configure(text=f"{shown} of {len(results)} matches ({total} total)")
+        else:
+            self.recipe_count_label.configure(text=f"{len(results)} of {total} recipes")
+
+        # Update category menu if needed
+        if not self._categories_cache or len(self._categories_cache) < 2:
+            self._categories_cache = self._get_category_options()
+            self.category_menu.configure(values=self._categories_cache)
+
+    def _select_recipe(self, name: str) -> None:
+        self.selected_recipe = name
+        for btn in self.recipe_buttons:
+            if btn.cget("text") == name:
+                btn.configure(fg_color="#3b82f6")
+            else:
+                btn.configure(fg_color="transparent")
+
+    def _choose_random(self, mode: str = "all") -> None:
+        category = self.category_var.get()
+        max_missing = self.max_missing_var.get()
+
+        if mode == "all":
+            results = search_recipes_advanced(query="", category=category, owned_ingredients=None, filter_mode="all")
+        elif mode == "can_make":
+            results = search_recipes_advanced(query="", category=category, owned_ingredients=self.selected_ingredients, filter_mode="can_make")
+        else:
+            results = search_recipes_advanced(query="", category=category, owned_ingredients=self.selected_ingredients, filter_mode="almost", max_missing=max_missing)
+
+        if not results:
+            messages = {
+                "can_make": "No recipes can be made with your current ingredients.\n\nTry adding more ingredients!",
+                "almost": "No recipes found that you're close to making.\n\nTry selecting ingredients or increasing max missing!",
+                "all": "No recipes match your filters!"
+            }
+            messagebox.showinfo("No Recipes", messages.get(mode, messages["all"]))
+            return
+
+        choice = random.choice(results)
+        self._show_recipe_popup(choice[0], is_random=True)
+
+    def _safe_grab(self, window) -> None:
+        """Safely grab focus for a window."""
+        try:
+            window.grab_set()
+            window.focus_force()
+        except Exception:
+            pass
+
+    def _show_recipe_popup(self, name: str, is_random: bool = False) -> None:
+        ingredients = get_recipe_ingredients(name) or []
+        directions = get_recipe_directions(name) or "No directions yet - add your own!"
+        categories = get_recipe_categories(name) or []
+        missing = get_missing_ingredients(name, self.selected_ingredients)
+
+        # Create popup
+        popup = ctk.CTkToplevel(self)
+        popup.title(f"{'Random: ' if is_random else ''}{name}")
+        popup.geometry("650x600")
+        popup.transient(self)
+        popup.after(100, lambda: self._safe_grab(popup))
+
+        # Content
+        content = ctk.CTkScrollableFrame(popup, fg_color="transparent")
+        content.pack(fill="both", expand=True, padx=30, pady=30)
+
+        if is_random:
+            ctk.CTkLabel(
+                content,
+                text="Tonight's dinner is...",
+                font=ctk.CTkFont(size=14),
+                text_color="gray"
+            ).pack(pady=(0, 10))
+
+        # Title
+        ctk.CTkLabel(
+            content,
+            text=name,
+            font=ctk.CTkFont(size=24, weight="bold"),
+            wraplength=580
+        ).pack(pady=(0, 15))
+
+        # Categories
+        if categories:
+            cat_frame = ctk.CTkFrame(content, fg_color="transparent")
+            cat_frame.pack(pady=(0, 15))
+            for cat in categories[:8]:
+                ctk.CTkLabel(
+                    cat_frame,
+                    text=cat,
+                    font=ctk.CTkFont(size=11),
+                    fg_color="#3b82f6",
+                    corner_radius=10,
+                    padx=10,
+                    pady=3
+                ).pack(side="left", padx=2)
+
+        # Directions
+        ctk.CTkLabel(
+            content,
+            text="How to Make It",
+            font=ctk.CTkFont(size=15, weight="bold")
+        ).pack(anchor="w", pady=(10, 5))
+
+        dir_box = ctk.CTkTextbox(content, height=100, font=ctk.CTkFont(size=12))
+        dir_box.insert("1.0", directions)
+        dir_box.configure(state="disabled")
+        dir_box.pack(fill="x", pady=(0, 15))
+
+        # Ingredients
+        if ingredients:
+            ctk.CTkLabel(
+                content,
+                text="Ingredients",
+                font=ctk.CTkFont(size=15, weight="bold")
+            ).pack(anchor="w", pady=(5, 5))
+
+            ing_text = " • ".join(ingredients)
+            ctk.CTkLabel(
+                content,
+                text=ing_text,
+                font=ctk.CTkFont(size=12),
+                wraplength=580,
+                justify="left"
+            ).pack(anchor="w", pady=(0, 10))
+
+            # Missing ingredients
+            if missing:
+                missing_frame = ctk.CTkFrame(content, fg_color="#7f1d1d", corner_radius=8)
+                missing_frame.pack(fill="x", pady=8)
+                ctk.CTkLabel(
+                    missing_frame,
+                    text=f"Missing ({len(missing)}): {', '.join(sorted(missing))}",
+                    font=ctk.CTkFont(size=11),
+                    text_color="#fca5a5",
+                    wraplength=550
+                ).pack(padx=12, pady=8)
+            else:
+                success_frame = ctk.CTkFrame(content, fg_color="#064e3b", corner_radius=8)
+                success_frame.pack(fill="x", pady=8)
+                ctk.CTkLabel(
+                    success_frame,
+                    text="You have all the ingredients!",
+                    font=ctk.CTkFont(size=12, weight="bold"),
+                    text_color="#6ee7b7"
+                ).pack(padx=12, pady=8)
+
+        # Buttons
+        btn_frame = ctk.CTkFrame(content, fg_color="transparent")
+        btn_frame.pack(pady=15)
+
+        if is_random:
+            ctk.CTkButton(
+                btn_frame,
+                text="Pick Another",
+                width=120,
+                command=lambda: [popup.destroy(), self._choose_random(
+                    "can_make" if not missing else "almost" if len(missing) <= self.max_missing_var.get() else "all"
+                )]
+            ).pack(side="left", padx=5)
+
+        if missing:
+            ctk.CTkButton(
+                btn_frame,
+                text="Copy Shopping List",
+                width=140,
+                fg_color="#f59e0b",
+                hover_color="#d97706",
+                command=lambda: self._copy_to_clipboard(missing)
+            ).pack(side="left", padx=5)
+
+        ctk.CTkButton(
+            btn_frame,
+            text="Close",
+            width=80,
+            fg_color="transparent",
+            border_width=1,
+            command=popup.destroy
+        ).pack(side="left", padx=5)
+
+    def _copy_to_clipboard(self, items: set[str]) -> None:
+        text = "\n".join(f"• {item}" for item in sorted(items))
+        self.clipboard_clear()
+        self.clipboard_append(text)
+        messagebox.showinfo("Copied!", "Shopping list copied to clipboard!")
+
+    def _add_ingredient(self) -> None:
+        dialog = ctk.CTkInputDialog(text="Enter ingredient name:", title="Add Ingredient")
+        name = dialog.get_input()
+        if name and name.strip():
+            add_extra_ingredient(name.strip())
+            self.selected_ingredients.add(name.strip())
+            save_selected_ingredients(self.selected_ingredients)
+            self._all_ingredients = sorted(get_available_ingredients())
+            self._populate_ingredients()
+            self._refresh_recipes()
+
+    def _remove_ingredient(self) -> None:
+        extras = get_extra_ingredients()
+        if not extras:
+            messagebox.showinfo("No Custom Ingredients", "No custom ingredients to remove.")
+            return
+        dialog = ctk.CTkInputDialog(
+            text=f"Enter ingredient to remove:\n\n{', '.join(sorted(extras))}",
+            title="Remove Ingredient"
+        )
+        name = dialog.get_input()
+        if name and name in extras:
+            remove_extra_ingredient(name)
+            self.selected_ingredients.discard(name)
+            save_selected_ingredients(self.selected_ingredients)
+            self._all_ingredients = sorted(get_available_ingredients())
+            self._populate_ingredients()
+            self._refresh_recipes()
+
+    def _add_recipe_dialog(self) -> None:
+        dialog = ctk.CTkInputDialog(text="Recipe name:", title="New Recipe")
+        name = dialog.get_input()
         if not name:
             return
-        ingredients = simpledialog.askstring(
-            "Ingredients", "Ingredients (comma separated):", parent=self
-        )
-        if not ingredients:
-            return
-        ing_list = [i.strip() for i in ingredients.split(",") if i.strip()]
-        if not ing_list:
-            messagebox.showerror("Error", "No ingredients given.")
-            return
-        directions = simpledialog.askstring(
-            "Directions", "Cooking directions:", parent=self
-        )
+
+        dialog = ctk.CTkInputDialog(text="Cooking directions:", title="Directions")
+        directions = dialog.get_input()
         if directions is None:
             return
-        categories = simpledialog.askstring(
-            "Categories", "Categories (comma separated):", parent=self
-        )
-        cat_list = (
-            [c.strip() for c in categories.split(",") if c.strip()]
-            if categories
-            else []
-        )
-        add_recipe(name, ing_list, directions, cat_list, persist=True)
 
+        dialog = ctk.CTkInputDialog(text="Ingredients (comma separated):", title="Ingredients")
+        ingredients = dialog.get_input()
+        ing_list = [i.strip() for i in (ingredients or "").split(",") if i.strip()]
+
+        dialog = ctk.CTkInputDialog(text="Categories (comma separated):", title="Categories")
+        categories = dialog.get_input()
+        cat_list = [c.strip() for c in (categories or "").split(",") if c.strip()]
+
+        add_recipe(name, ing_list, directions or "", cat_list)
+        self._all_ingredients = sorted(get_available_ingredients())
+        self._categories_cache = self._get_category_options()
         self._populate_ingredients()
-        self.update_dinners()
-        messagebox.showinfo("Recipe Added", f"{name} has been added.")
+        self._refresh_recipes()
+        self.category_menu.configure(values=self._categories_cache)
+        messagebox.showinfo("Success!", f"Recipe '{name}' added!")
 
-    def edit_recipe_dialog(self) -> None:
-        selection = self.dinner_list.curselection()
-        if not selection:
-            messagebox.showerror("Error", "No recipe selected.")
+    def _edit_recipe_dialog(self) -> None:
+        if not self.selected_recipe:
+            messagebox.showinfo("Select Recipe", "Please click a recipe to select it first.")
             return
-        name = self.dinner_list.get(selection[0])
-        ingredients = get_recipe_ingredients(name) or []
-        directions = get_recipe_directions(name) or ""
-        categories = get_recipe_categories(name) or []
-        ing = simpledialog.askstring(
-            "Ingredients",
-            "Ingredients (comma separated):",
-            initialvalue=", ".join(ingredients),
-            parent=self,
-        )
-        if ing is None:
-            return
-        new_dirs = simpledialog.askstring(
-            "Directions", "Cooking directions:", initialvalue=directions, parent=self
-        )
+
+        name = self.selected_recipe
+        current_ings = get_recipe_ingredients(name) or []
+        current_dirs = get_recipe_directions(name) or ""
+        current_cats = get_recipe_categories(name) or []
+
+        dialog = ctk.CTkInputDialog(text="Cooking directions:", title="Edit Directions")
+        new_dirs = dialog.get_input()
         if new_dirs is None:
             return
-        cat_str = simpledialog.askstring(
-            "Categories",
-            "Categories (comma separated):",
-            initialvalue=", ".join(categories),
-            parent=self,
-        )
-        cat_list = (
-            [c.strip() for c in cat_str.split(",") if c.strip()]
-            if cat_str
-            else []
-        )
-        update_recipe(
-            name,
-            [i.strip() for i in ing.split(",") if i.strip()],
-            new_dirs,
-            cat_list,
-        )
-        self._populate_ingredients()
-        self.update_dinners()
 
-    def delete_recipe(self) -> None:
-        selection = self.dinner_list.curselection()
-        if not selection:
-            messagebox.showerror("Error", "No recipe selected.")
+        dialog = ctk.CTkInputDialog(text=f"Ingredients (current: {', '.join(current_ings)}):", title="Edit Ingredients")
+        new_ings = dialog.get_input()
+        if new_ings is None:
             return
-        name = self.dinner_list.get(selection[0])
-        if messagebox.askyesno("Delete", f"Delete {name}?"):
-            remove_recipe(name)
-            self._populate_ingredients()
-            self.update_dinners()
+        ing_list = [i.strip() for i in new_ings.split(",") if i.strip()] if new_ings else current_ings
+
+        dialog = ctk.CTkInputDialog(text=f"Categories (current: {', '.join(current_cats)}):", title="Edit Categories")
+        new_cats = dialog.get_input()
+        cat_list = [c.strip() for c in (new_cats or "").split(",") if c.strip()] if new_cats else current_cats
+
+        update_recipe(name, ing_list, new_dirs or current_dirs, cat_list)
+        self._all_ingredients = sorted(get_available_ingredients())
+        self._categories_cache = self._get_category_options()
+        self._populate_ingredients()
+        self._refresh_recipes()
+        self.category_menu.configure(values=self._categories_cache)
+        messagebox.showinfo("Success!", f"Recipe '{name}' updated!")
+
+    def _delete_recipe(self) -> None:
+        if not self.selected_recipe:
+            messagebox.showinfo("Select Recipe", "Please click a recipe to select it first.")
+            return
+
+        if messagebox.askyesno("Delete Recipe", f"Delete '{self.selected_recipe}'?"):
+            remove_recipe(self.selected_recipe)
+            self.selected_recipe = None
+            self._refresh_recipes()
+            messagebox.showinfo("Deleted", "Recipe deleted.")
 
 
 def run_app() -> None:
-    DinnerApp().mainloop()
+    app = DinnerApp()
+    app.mainloop()
 
 
 if __name__ == "__main__":
