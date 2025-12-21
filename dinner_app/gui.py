@@ -8,13 +8,17 @@ from .recipes import (
     add_extra_ingredient,
     add_recipe,
     get_all_categories,
+    get_all_diets,
     get_all_recipe_names,
+    get_all_time_categories,
     get_available_ingredients,
     get_extra_ingredients,
     get_missing_ingredients,
     get_recipe_categories,
+    get_recipe_diets,
     get_recipe_directions,
     get_recipe_ingredients,
+    get_recipe_time,
     load_selected_ingredients,
     remove_extra_ingredient,
     remove_recipe,
@@ -41,6 +45,8 @@ class DinnerApp(ctk.CTk):
         self.search_var = ctk.StringVar()
         self.ing_search_var = ctk.StringVar()
         self.category_var = ctk.StringVar(value="All")
+        self.diet_var = ctk.StringVar(value="All")
+        self.time_var = ctk.StringVar(value="All")
         self.filter_mode_var = ctk.StringVar(value="all")
         self.max_missing_var = ctk.IntVar(value=4)
         self.selected_ingredients: set[str] = load_selected_ingredients()
@@ -64,6 +70,7 @@ class DinnerApp(ctk.CTk):
         """Load data once at startup."""
         self._all_ingredients = sorted(get_available_ingredients())
         self._categories_cache = self._get_category_options()
+        self.category_menu.configure(values=self._categories_cache)
         self._populate_ingredients()
         self._refresh_recipes()
 
@@ -189,21 +196,57 @@ class DinnerApp(ctk.CTk):
         self.search_entry.grid(row=0, column=1, padx=(10, 20), pady=(15, 5), sticky="ew")
         self.search_var.trace_add("write", self._on_search_change)
 
+        # Filter dropdowns frame
+        self.dropdowns_frame = ctk.CTkFrame(self.filter_frame, fg_color="transparent")
+        self.dropdowns_frame.grid(row=1, column=0, columnspan=2, padx=20, pady=10, sticky="ew")
+
         # Category dropdown
         ctk.CTkLabel(
-            self.filter_frame,
+            self.dropdowns_frame,
             text="Category",
-            font=ctk.CTkFont(size=14, weight="bold")
-        ).grid(row=1, column=0, padx=20, pady=10, sticky="w")
+            font=ctk.CTkFont(size=12, weight="bold")
+        ).pack(side="left", padx=(0, 5))
 
         self.category_menu = ctk.CTkOptionMenu(
-            self.filter_frame,
+            self.dropdowns_frame,
             values=["All"],  # Will be populated later
             variable=self.category_var,
             command=lambda _: self._refresh_recipes(),
-            width=200
+            width=140
         )
-        self.category_menu.grid(row=1, column=1, padx=(10, 20), pady=10, sticky="w")
+        self.category_menu.pack(side="left", padx=(0, 15))
+
+        # Diet dropdown
+        ctk.CTkLabel(
+            self.dropdowns_frame,
+            text="Diet",
+            font=ctk.CTkFont(size=12, weight="bold")
+        ).pack(side="left", padx=(0, 5))
+
+        self.diet_menu = ctk.CTkOptionMenu(
+            self.dropdowns_frame,
+            values=["All", "Vegan", "Vegetarian", "Paleo", "Keto", "Carnivore"],
+            variable=self.diet_var,
+            command=lambda _: self._refresh_recipes(),
+            width=120
+        )
+        self.diet_menu.pack(side="left", padx=(0, 15))
+
+        # Time dropdown
+        ctk.CTkLabel(
+            self.dropdowns_frame,
+            text="Time",
+            font=ctk.CTkFont(size=12, weight="bold")
+        ).pack(side="left", padx=(0, 5))
+
+        self.time_menu = ctk.CTkOptionMenu(
+            self.dropdowns_frame,
+            values=["All", "≤10 min", "≤30 min", "≤60 min"],
+            variable=self.time_var,
+            command=lambda _: self._refresh_recipes(),
+            width=100
+        )
+        self.time_menu.pack(side="left", padx=(0, 15))
 
         # Filter mode
         self.filter_mode_frame = ctk.CTkFrame(self.filter_frame, fg_color="transparent")
@@ -504,12 +547,23 @@ class DinnerApp(ctk.CTk):
         filter_mode = self.filter_mode_var.get()
         max_missing = self.max_missing_var.get()
 
+        # Convert diet filter
+        diet_raw = self.diet_var.get()
+        diet_filter = "" if diet_raw == "All" else diet_raw.lower()
+
+        # Convert time filter
+        time_raw = self.time_var.get()
+        time_map = {"All": "", "≤10 min": "10-min", "≤30 min": "30-min", "≤60 min": "60-min"}
+        time_filter = time_map.get(time_raw, "")
+
         results = search_recipes_advanced(
             query=query,
             category=category,
             owned_ingredients=self.selected_ingredients,
             filter_mode=filter_mode,
-            max_missing=max_missing
+            max_missing=max_missing,
+            diet_filter=diet_filter,
+            time_filter=time_filter
         )
 
         # Limit display for performance
@@ -584,12 +638,19 @@ class DinnerApp(ctk.CTk):
         category = self.category_var.get()
         max_missing = self.max_missing_var.get()
 
+        # Get diet and time filters
+        diet_raw = self.diet_var.get()
+        diet_filter = "" if diet_raw == "All" else diet_raw.lower()
+        time_raw = self.time_var.get()
+        time_map = {"All": "", "≤10 min": "10-min", "≤30 min": "30-min", "≤60 min": "60-min"}
+        time_filter = time_map.get(time_raw, "")
+
         if mode == "all":
-            results = search_recipes_advanced(query="", category=category, owned_ingredients=None, filter_mode="all")
+            results = search_recipes_advanced(query="", category=category, owned_ingredients=None, filter_mode="all", diet_filter=diet_filter, time_filter=time_filter)
         elif mode == "can_make":
-            results = search_recipes_advanced(query="", category=category, owned_ingredients=self.selected_ingredients, filter_mode="can_make")
+            results = search_recipes_advanced(query="", category=category, owned_ingredients=self.selected_ingredients, filter_mode="can_make", diet_filter=diet_filter, time_filter=time_filter)
         else:
-            results = search_recipes_advanced(query="", category=category, owned_ingredients=self.selected_ingredients, filter_mode="almost", max_missing=max_missing)
+            results = search_recipes_advanced(query="", category=category, owned_ingredients=self.selected_ingredients, filter_mode="almost", max_missing=max_missing, diet_filter=diet_filter, time_filter=time_filter)
 
         if not results:
             messages = {
@@ -615,12 +676,14 @@ class DinnerApp(ctk.CTk):
         ingredients = get_recipe_ingredients(name) or []
         directions = get_recipe_directions(name) or "No directions yet - add your own!"
         categories = get_recipe_categories(name) or []
+        diets = get_recipe_diets(name)
+        cook_time, time_cat = get_recipe_time(name)
         missing = get_missing_ingredients(name, self.selected_ingredients)
 
         # Create popup
         popup = ctk.CTkToplevel(self)
         popup.title(f"{'Random: ' if is_random else ''}{name}")
-        popup.geometry("650x600")
+        popup.geometry("650x650")
         popup.transient(self)
         popup.after(100, lambda: self._safe_grab(popup))
 
@@ -642,42 +705,59 @@ class DinnerApp(ctk.CTk):
             text=name,
             font=ctk.CTkFont(size=24, weight="bold"),
             wraplength=580
-        ).pack(pady=(0, 15))
+        ).pack(pady=(0, 10))
 
-        # Categories
-        if categories:
-            cat_frame = ctk.CTkFrame(content, fg_color="transparent")
-            cat_frame.pack(pady=(0, 15))
-            for cat in categories[:8]:
-                ctk.CTkLabel(
-                    cat_frame,
-                    text=cat,
-                    font=ctk.CTkFont(size=11),
-                    fg_color="#3b82f6",
-                    corner_radius=10,
-                    padx=10,
-                    pady=3
-                ).pack(side="left", padx=2)
-
-        # Directions
+        # Time badge
+        time_text = f"~{cook_time} min" if cook_time < 60 else f"~{cook_time // 60}h {cook_time % 60}m" if cook_time % 60 else f"~{cook_time // 60}h"
         ctk.CTkLabel(
             content,
-            text="How to Make It",
-            font=ctk.CTkFont(size=15, weight="bold")
-        ).pack(anchor="w", pady=(10, 5))
+            text=f"⏱ {time_text}",
+            font=ctk.CTkFont(size=12),
+            text_color="#9ca3af"
+        ).pack(pady=(0, 10))
 
-        dir_box = ctk.CTkTextbox(content, height=100, font=ctk.CTkFont(size=12))
-        dir_box.insert("1.0", directions)
-        dir_box.configure(state="disabled")
-        dir_box.pack(fill="x", pady=(0, 15))
+        # Tags row (categories + diets)
+        tags_frame = ctk.CTkFrame(content, fg_color="transparent")
+        tags_frame.pack(pady=(0, 15))
 
-        # Ingredients
+        # Categories
+        for cat in categories[:4]:
+            ctk.CTkLabel(
+                tags_frame,
+                text=cat,
+                font=ctk.CTkFont(size=11),
+                fg_color="#3b82f6",
+                corner_radius=10,
+                padx=10,
+                pady=3
+            ).pack(side="left", padx=2)
+
+        # Diet badges
+        diet_colors = {
+            "vegan": "#22c55e",
+            "vegetarian": "#84cc16",
+            "paleo": "#f97316",
+            "keto": "#8b5cf6",
+            "carnivore": "#ef4444"
+        }
+        for diet in diets[:3]:
+            ctk.CTkLabel(
+                tags_frame,
+                text=diet.capitalize(),
+                font=ctk.CTkFont(size=11),
+                fg_color=diet_colors.get(diet, "#6b7280"),
+                corner_radius=10,
+                padx=10,
+                pady=3
+            ).pack(side="left", padx=2)
+
+        # Ingredients first
         if ingredients:
             ctk.CTkLabel(
                 content,
                 text="Ingredients",
                 font=ctk.CTkFont(size=15, weight="bold")
-            ).pack(anchor="w", pady=(5, 5))
+            ).pack(anchor="w", pady=(10, 5))
 
             ing_text = " • ".join(ingredients)
             ctk.CTkLabel(
@@ -708,6 +788,18 @@ class DinnerApp(ctk.CTk):
                     font=ctk.CTkFont(size=12, weight="bold"),
                     text_color="#6ee7b7"
                 ).pack(padx=12, pady=8)
+
+        # Directions/How to Make It after ingredients
+        ctk.CTkLabel(
+            content,
+            text="How to Make It",
+            font=ctk.CTkFont(size=15, weight="bold")
+        ).pack(anchor="w", pady=(10, 5))
+
+        dir_box = ctk.CTkTextbox(content, height=150, font=ctk.CTkFont(size=12))
+        dir_box.insert("1.0", directions)
+        dir_box.configure(state="disabled")
+        dir_box.pack(fill="x", pady=(0, 15))
 
         # Buttons
         btn_frame = ctk.CTkFrame(content, fg_color="transparent")

@@ -309,6 +309,8 @@ def search_recipes_advanced(
     owned_ingredients: set[str] | None = None,
     filter_mode: str = "all",  # "all", "can_make", "almost"
     max_missing: int = 4,
+    diet_filter: str = "",  # "vegan", "vegetarian", "paleo", "keto", "carnivore"
+    time_filter: str = "",  # "10-min", "30-min", "60-min", "60-plus"
 ) -> list[tuple[str, int]]:
     """Advanced search returning (recipe_name, missing_count) tuples."""
     results = []
@@ -327,6 +329,23 @@ def search_recipes_advanced(
             cats = recipe.get("categories", [])
             if category not in cats:
                 continue
+
+        # Diet filter
+        if diet_filter:
+            diets = recipe.get("diets", [])
+            if diet_filter not in diets:
+                continue
+
+        # Time filter
+        if time_filter:
+            time_cat = recipe.get("time_category", "")
+            if time_filter == "10-min" and time_cat != "10-min":
+                continue
+            elif time_filter == "30-min" and time_cat not in ("10-min", "30-min"):
+                continue
+            elif time_filter == "60-min" and time_cat not in ("10-min", "30-min", "60-min"):
+                continue
+            # "60-plus" or empty means no time restriction
 
         # Ingredient filter
         recipe_ings = set(recipe.get("ingredients", []))
@@ -352,3 +371,29 @@ def search_recipes_advanced(
         results.sort(key=lambda x: x[0])
 
     return results
+
+
+def get_all_diets() -> list[str]:
+    """Return all available diet types."""
+    return ["vegan", "vegetarian", "paleo", "keto", "carnivore"]
+
+
+def get_all_time_categories() -> list[str]:
+    """Return all available time categories."""
+    return ["10-min", "30-min", "60-min", "60-plus"]
+
+
+def get_recipe_diets(name: str) -> list[str]:
+    """Return diet types for a recipe."""
+    recipe = _recipes.get(name)
+    if recipe:
+        return list(recipe.get("diets", []))
+    return []
+
+
+def get_recipe_time(name: str) -> tuple[int, str]:
+    """Return cook time and category for a recipe."""
+    recipe = _recipes.get(name)
+    if recipe:
+        return (recipe.get("cook_time", 30), recipe.get("time_category", "30-min"))
+    return (30, "30-min")
