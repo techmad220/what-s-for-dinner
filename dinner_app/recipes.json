@@ -26605,5 +26605,3756 @@
     ],
     "cook_time": 20,
     "time_category": "10-min"
+  },
+  "Classic Eggs Benedict": {
+    "ingredients": [
+      "English muffins",
+      "Canadian bacon",
+      "large eggs",
+      "butter",
+      "egg yolks",
+      "lemon juice",
+      "cayenne pepper",
+      "salt",
+      "white vinegar"
+    ],
+    "directions": "Toast English muffins. Cook Canadian bacon until browned. Poach eggs in simmering water with vinegar for 3-4 minutes. Make hollandaise: whisk egg yolks and lemon juice over double boiler, slowly drizzle in melted butter until thick. Season with cayenne and salt. Assemble: muffin, bacon, poached egg, hollandaise.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch"
+    ],
+    "diets": [],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Fluffy Buttermilk Pancakes": {
+    "ingredients": [
+      "all-purpose flour",
+      "buttermilk",
+      "large eggs",
+      "butter",
+      "sugar",
+      "baking powder",
+      "baking soda",
+      "salt",
+      "vanilla extract",
+      "maple syrup"
+    ],
+    "directions": "Mix flour, sugar, baking powder, baking soda, salt. Whisk buttermilk, eggs, melted butter, vanilla. Combine wet and dry until just mixed. Pour 1/4 cup batter onto greased griddle at 375\u00b0F. Cook until bubbles form, flip, cook until golden. Serve with butter and maple syrup.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Country Breakfast Skillet": {
+    "ingredients": [
+      "bacon",
+      "breakfast sausage",
+      "russet potatoes, diced",
+      "onion, diced",
+      "bell peppers, diced",
+      "large eggs",
+      "cheddar cheese, shredded",
+      "salt",
+      "black pepper",
+      "garlic powder"
+    ],
+    "directions": "Cook bacon and sausage in cast iron skillet. Remove, crumble. Cook potatoes in drippings 15 minutes until crispy. Add onions and peppers, cook 5 minutes. Create wells, crack eggs in. Cover and cook until whites set. Top with cheese, meat. Season and serve.",
+    "categories": [
+      "breakfast",
+      "american",
+      "southern"
+    ],
+    "diets": [],
+    "cook_time": 35,
+    "time_category": "60-min"
+  },
+  "Belgian Waffles with Strawberries": {
+    "ingredients": [
+      "all-purpose flour",
+      "large eggs",
+      "milk",
+      "vegetable oil",
+      "sugar",
+      "baking powder",
+      "salt",
+      "vanilla extract",
+      "fresh strawberries",
+      "whipped cream",
+      "powdered sugar"
+    ],
+    "directions": "Separate eggs. Mix flour, sugar, baking powder, salt. Combine milk, oil, vanilla, yolks. Mix into dry ingredients. Beat whites to stiff peaks, fold in. Cook in preheated waffle iron until golden. Top with strawberries, whipped cream, powdered sugar.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Denver Omelet": {
+    "ingredients": [
+      "large eggs",
+      "ham, diced",
+      "bell peppers, diced",
+      "onion, diced",
+      "cheddar cheese, shredded",
+      "butter",
+      "milk",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Saut\u00e9 ham, peppers, onion in butter until tender. Beat eggs with milk, salt, pepper. Pour over vegetables in hot buttered pan. Cook, lifting edges to let uncooked egg flow under. Add cheese to one half, fold over. Serve immediately.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Eggs Florentine": {
+    "ingredients": [
+      "English muffins",
+      "fresh spinach",
+      "large eggs",
+      "butter",
+      "egg yolks",
+      "lemon juice",
+      "cayenne pepper",
+      "salt",
+      "white vinegar",
+      "garlic, minced"
+    ],
+    "directions": "Saut\u00e9 spinach with garlic until wilted. Toast muffins. Poach eggs in simmering vinegar water 3-4 minutes. Make hollandaise: whisk yolks and lemon over double boiler, drizzle in butter. Season. Assemble: muffin, spinach, egg, hollandaise.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Blueberry Pancakes": {
+    "ingredients": [
+      "all-purpose flour",
+      "fresh blueberries",
+      "buttermilk",
+      "large eggs",
+      "butter",
+      "sugar",
+      "baking powder",
+      "baking soda",
+      "salt",
+      "maple syrup"
+    ],
+    "directions": "Mix flour, sugar, baking powder, baking soda, salt. Combine buttermilk, eggs, melted butter. Mix wet into dry until just combined. Fold in blueberries. Pour 1/4 cup portions onto hot griddle. Cook until bubbles form, flip. Serve with syrup.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Corned Beef Hash": {
+    "ingredients": [
+      "corned beef, diced",
+      "russet potatoes, diced",
+      "onion, diced",
+      "butter",
+      "large eggs",
+      "salt",
+      "black pepper",
+      "paprika",
+      "Worcestershire sauce"
+    ],
+    "directions": "Parboil potatoes 5 minutes. Saut\u00e9 onion in butter until soft. Add potatoes, cook until crispy 15 minutes. Add corned beef, Worcestershire, paprika. Press flat, cook until crust forms. Flip sections. Top with fried or poached eggs.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 30,
+    "time_category": "30-min"
+  },
+  "French Toast": {
+    "ingredients": [
+      "thick-sliced bread",
+      "large eggs",
+      "milk",
+      "vanilla extract",
+      "cinnamon",
+      "butter",
+      "maple syrup",
+      "powdered sugar"
+    ],
+    "directions": "Whisk eggs, milk, vanilla, cinnamon. Dip bread slices, coating both sides. Cook in buttered skillet over medium heat 3-4 minutes per side until golden. Dust with powdered sugar, serve with maple syrup.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Cinnamon Roll French Toast": {
+    "ingredients": [
+      "cinnamon rolls",
+      "large eggs",
+      "milk",
+      "vanilla extract",
+      "cream cheese",
+      "powdered sugar",
+      "butter"
+    ],
+    "directions": "Slice cinnamon rolls in half horizontally. Whisk eggs, milk, vanilla. Dip roll halves in mixture. Cook in buttered pan until golden on both sides. Top with cream cheese frosting mixture and powdered sugar.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Biscuits and Sausage Gravy": {
+    "ingredients": [
+      "buttermilk biscuits",
+      "breakfast sausage",
+      "all-purpose flour",
+      "whole milk",
+      "salt",
+      "black pepper",
+      "cayenne pepper"
+    ],
+    "directions": "Brown sausage, breaking into crumbles. Sprinkle flour over sausage, cook 1 minute. Gradually whisk in milk. Simmer until thick, 5-7 minutes. Season with salt, pepper, cayenne. Split warm biscuits, ladle gravy over.",
+    "categories": [
+      "breakfast",
+      "american",
+      "southern"
+    ],
+    "diets": [],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Eggs in a Basket": {
+    "ingredients": [
+      "bread slices",
+      "large eggs",
+      "butter",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Cut hole in center of bread with glass. Butter both sides. Place in hot skillet, crack egg into hole. Cook until bread is golden and egg white sets. Flip carefully, cook to desired doneness. Season and serve with toast cutout.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 10,
+    "time_category": "10-min"
+  },
+  "Western Scramble": {
+    "ingredients": [
+      "large eggs",
+      "ham, diced",
+      "bell peppers, diced",
+      "onion, diced",
+      "cheddar cheese, shredded",
+      "butter",
+      "milk",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Saut\u00e9 ham, peppers, onion until tender. Beat eggs with milk, salt, pepper. Add to pan, gently scramble over medium-low heat until soft curds form. Fold in cheese. Serve immediately with toast.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Breakfast Burrito": {
+    "ingredients": [
+      "flour tortillas",
+      "scrambled eggs",
+      "breakfast sausage",
+      "cheddar cheese, shredded",
+      "salsa",
+      "hash browns",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Cook sausage and hash browns. Scramble eggs. Warm tortillas. Layer eggs, sausage, hash browns, cheese, salsa down center. Fold sides in, roll tight. Serve with extra salsa and sour cream.",
+    "categories": [
+      "breakfast",
+      "american",
+      "mexican"
+    ],
+    "diets": [],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Steak and Eggs": {
+    "ingredients": [
+      "ribeye steak",
+      "large eggs",
+      "butter",
+      "salt",
+      "black pepper",
+      "garlic powder",
+      "hash browns"
+    ],
+    "directions": "Season steak with salt, pepper, garlic powder. Sear in hot cast iron 4 minutes per side for medium-rare. Rest 5 minutes. Fry eggs in butter to desired doneness. Serve steak sliced alongside eggs and crispy hash browns.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch"
+    ],
+    "diets": [],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Banana Nut Pancakes": {
+    "ingredients": [
+      "all-purpose flour",
+      "ripe bananas",
+      "walnuts, chopped",
+      "buttermilk",
+      "large eggs",
+      "butter",
+      "sugar",
+      "baking powder",
+      "baking soda",
+      "salt",
+      "maple syrup"
+    ],
+    "directions": "Mash bananas. Mix flour, sugar, baking powder, baking soda, salt. Combine buttermilk, eggs, melted butter, bananas. Mix wet into dry. Fold in walnuts. Cook 1/4 cup portions on griddle until bubbles form, flip. Serve with syrup.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Huevos Rancheros": {
+    "ingredients": [
+      "corn tortillas",
+      "large eggs",
+      "black beans",
+      "ranchero sauce",
+      "cheddar cheese, shredded",
+      "avocado",
+      "sour cream",
+      "cilantro",
+      "vegetable oil"
+    ],
+    "directions": "Fry tortillas until slightly crispy. Warm beans and ranchero sauce. Fry eggs sunny-side up. Layer: tortilla, beans, egg, sauce, cheese. Top with sliced avocado, sour cream, cilantro.",
+    "categories": [
+      "breakfast",
+      "american",
+      "mexican"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Bagel with Lox and Cream Cheese": {
+    "ingredients": [
+      "plain bagel",
+      "smoked salmon",
+      "cream cheese",
+      "red onion, sliced thin",
+      "capers",
+      "fresh dill",
+      "lemon wedges"
+    ],
+    "directions": "Toast bagel halves. Spread generously with cream cheese. Layer smoked salmon on top. Garnish with thin red onion rings, capers, fresh dill. Serve with lemon wedge.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch"
+    ],
+    "diets": [],
+    "cook_time": 10,
+    "time_category": "10-min"
+  },
+  "Eggs Sardou": {
+    "ingredients": [
+      "artichoke bottoms",
+      "fresh spinach",
+      "large eggs",
+      "hollandaise sauce",
+      "butter",
+      "salt",
+      "white pepper",
+      "ham"
+    ],
+    "directions": "Warm artichoke bottoms in butter. Saut\u00e9 spinach until wilted. Poach eggs. Place artichoke on plate, top with spinach, then ham, then poached egg. Cover with hollandaise sauce.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch",
+      "southern"
+    ],
+    "diets": [],
+    "cook_time": 30,
+    "time_category": "30-min"
+  },
+  "Cheese Omelet": {
+    "ingredients": [
+      "large eggs",
+      "cheddar cheese, shredded",
+      "butter",
+      "milk",
+      "salt",
+      "black pepper",
+      "chives, chopped"
+    ],
+    "directions": "Beat eggs with milk, salt, pepper. Heat butter in nonstick pan over medium heat. Pour in eggs, cook while lifting edges. When almost set, add cheese to half. Fold over, slide onto plate. Garnish with chives.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 10,
+    "time_category": "10-min"
+  },
+  "Chocolate Chip Pancakes": {
+    "ingredients": [
+      "all-purpose flour",
+      "chocolate chips",
+      "buttermilk",
+      "large eggs",
+      "butter",
+      "sugar",
+      "baking powder",
+      "baking soda",
+      "salt",
+      "whipped cream"
+    ],
+    "directions": "Mix flour, sugar, baking powder, baking soda, salt. Combine buttermilk, eggs, melted butter. Mix wet into dry. Fold in chocolate chips. Cook 1/4 cup portions on griddle until bubbles form, flip. Top with whipped cream.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Breakfast Sandwich": {
+    "ingredients": [
+      "English muffin",
+      "large egg",
+      "bacon",
+      "American cheese",
+      "butter",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Cook bacon until crispy. Toast English muffin. Fry egg in butter, break yolk if desired. Assemble: muffin bottom, cheese, egg, bacon, muffin top. Serve hot.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Chicken Fried Steak and Eggs": {
+    "ingredients": [
+      "cube steak",
+      "all-purpose flour",
+      "large eggs",
+      "buttermilk",
+      "salt",
+      "black pepper",
+      "cayenne pepper",
+      "vegetable oil",
+      "milk"
+    ],
+    "directions": "Pound steak thin. Season flour with salt, pepper, cayenne. Dip steak in buttermilk, then flour. Fry in hot oil until golden. Make gravy from drippings, flour, milk. Serve steak with fried eggs and gravy.",
+    "categories": [
+      "breakfast",
+      "american",
+      "southern"
+    ],
+    "diets": [],
+    "cook_time": 30,
+    "time_category": "30-min"
+  },
+  "Pecan Waffles": {
+    "ingredients": [
+      "all-purpose flour",
+      "pecans, chopped",
+      "large eggs",
+      "milk",
+      "vegetable oil",
+      "sugar",
+      "baking powder",
+      "salt",
+      "vanilla extract",
+      "maple syrup",
+      "butter"
+    ],
+    "directions": "Mix flour, sugar, baking powder, salt. Combine milk, oil, yolks, vanilla. Mix into dry ingredients. Beat whites to peaks, fold in with pecans. Cook in waffle iron until golden. Serve with butter and maple syrup.",
+    "categories": [
+      "breakfast",
+      "american",
+      "southern"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Breakfast Quesadilla": {
+    "ingredients": [
+      "flour tortillas",
+      "scrambled eggs",
+      "bacon, cooked and crumbled",
+      "cheddar cheese, shredded",
+      "salsa",
+      "butter"
+    ],
+    "directions": "Scramble eggs. Layer cheese, eggs, bacon on tortilla, top with another tortilla. Cook in buttered pan until golden on both sides. Cut into wedges. Serve with salsa and sour cream.",
+    "categories": [
+      "breakfast",
+      "american",
+      "mexican"
+    ],
+    "diets": [],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Apple Cinnamon Oatmeal": {
+    "ingredients": [
+      "old-fashioned oats",
+      "apple, diced",
+      "brown sugar",
+      "cinnamon",
+      "butter",
+      "milk",
+      "salt",
+      "walnuts, chopped"
+    ],
+    "directions": "Cook oats with milk and water. Add diced apple, cinnamon, salt. Simmer until tender. Top with brown sugar, butter, walnuts. Serve hot.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Sausage Egg and Cheese McGriddle Style": {
+    "ingredients": [
+      "pancake mix",
+      "maple syrup",
+      "breakfast sausage patty",
+      "large egg",
+      "American cheese",
+      "butter"
+    ],
+    "directions": "Add maple syrup to pancake batter. Cook small pancakes. Cook sausage patty. Fry egg. Assemble: pancake, cheese, sausage, egg, pancake. Press and serve.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Avocado Toast with Poached Egg": {
+    "ingredients": [
+      "sourdough bread",
+      "ripe avocado",
+      "large eggs",
+      "lemon juice",
+      "red pepper flakes",
+      "salt",
+      "black pepper",
+      "white vinegar"
+    ],
+    "directions": "Toast bread. Mash avocado with lemon, salt, pepper. Poach eggs in simmering water with vinegar 3-4 minutes. Spread avocado on toast, top with poached egg. Season with red pepper flakes.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Bacon and Cheese Grits": {
+    "ingredients": [
+      "stone-ground grits",
+      "bacon",
+      "sharp cheddar cheese, shredded",
+      "butter",
+      "milk",
+      "salt",
+      "black pepper",
+      "garlic powder"
+    ],
+    "directions": "Cook bacon until crispy, crumble. Cook grits in milk and water until tender, 20 minutes. Stir in butter, cheese, garlic powder. Season. Top with crumbled bacon. Serve hot.",
+    "categories": [
+      "breakfast",
+      "american",
+      "southern"
+    ],
+    "diets": [],
+    "cook_time": 30,
+    "time_category": "30-min"
+  },
+  "Stuffed French Toast": {
+    "ingredients": [
+      "thick-sliced bread",
+      "cream cheese",
+      "strawberry jam",
+      "large eggs",
+      "milk",
+      "vanilla extract",
+      "cinnamon",
+      "butter",
+      "powdered sugar"
+    ],
+    "directions": "Slice bread thick, cut pocket. Mix cream cheese with jam, stuff into pocket. Dip in egg mixture. Cook in butter until golden on both sides. Dust with powdered sugar.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Eggs Over Easy with Toast": {
+    "ingredients": [
+      "large eggs",
+      "butter",
+      "white bread",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Melt butter in skillet. Crack eggs in, cook until whites are set. Flip gently, cook 30 seconds more. Season. Serve with buttered toast.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 10,
+    "time_category": "10-min"
+  },
+  "Potato Pancakes": {
+    "ingredients": [
+      "russet potatoes",
+      "onion, grated",
+      "large eggs",
+      "all-purpose flour",
+      "salt",
+      "black pepper",
+      "vegetable oil",
+      "sour cream",
+      "applesauce"
+    ],
+    "directions": "Grate potatoes and onion, squeeze dry. Mix with eggs, flour, salt, pepper. Fry spoonfuls in hot oil until golden and crispy on both sides. Serve with sour cream and applesauce.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Croque Madame": {
+    "ingredients": [
+      "white bread",
+      "ham",
+      "Gruyere cheese, shredded",
+      "butter",
+      "all-purpose flour",
+      "milk",
+      "Dijon mustard",
+      "large eggs",
+      "nutmeg"
+    ],
+    "directions": "Make b\u00e9chamel with butter, flour, milk, nutmeg. Spread on bread with mustard. Layer ham and cheese, sandwich. Spread more b\u00e9chamel on top, add cheese. Broil until bubbly. Top with fried egg.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch",
+      "french"
+    ],
+    "diets": [],
+    "cook_time": 30,
+    "time_category": "30-min"
+  },
+  "Shakshuka American Style": {
+    "ingredients": [
+      "large eggs",
+      "canned diced tomatoes",
+      "bell pepper, diced",
+      "onion, diced",
+      "garlic, minced",
+      "cumin",
+      "paprika",
+      "cayenne pepper",
+      "feta cheese",
+      "fresh parsley",
+      "olive oil",
+      "crusty bread"
+    ],
+    "directions": "Saut\u00e9 onion and pepper in olive oil. Add garlic, spices. Add tomatoes, simmer 10 minutes. Make wells, crack eggs in. Cover, cook until whites set. Top with feta and parsley. Serve with bread.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Pigs in a Blanket Breakfast": {
+    "ingredients": [
+      "breakfast sausage links",
+      "crescent roll dough",
+      "maple syrup"
+    ],
+    "directions": "Wrap each sausage link in crescent roll dough. Place on baking sheet. Bake at 375\u00b0F for 12-15 minutes until golden. Serve with maple syrup for dipping.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Spinach and Feta Omelet": {
+    "ingredients": [
+      "large eggs",
+      "fresh spinach",
+      "feta cheese, crumbled",
+      "butter",
+      "milk",
+      "salt",
+      "black pepper",
+      "garlic, minced"
+    ],
+    "directions": "Saut\u00e9 spinach and garlic until wilted. Beat eggs with milk, salt, pepper. Cook in buttered pan. Add spinach and feta to one side, fold over. Serve immediately.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Cinnamon Sugar Toast": {
+    "ingredients": [
+      "white bread",
+      "butter",
+      "sugar",
+      "cinnamon"
+    ],
+    "directions": "Toast bread. Spread generously with soft butter. Sprinkle with cinnamon sugar mixture. Serve warm.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 5,
+    "time_category": "10-min"
+  },
+  "Eggs Chesapeake": {
+    "ingredients": [
+      "English muffins",
+      "crab cakes",
+      "large eggs",
+      "hollandaise sauce",
+      "Old Bay seasoning",
+      "butter",
+      "white vinegar"
+    ],
+    "directions": "Toast muffins. Pan-fry crab cakes until golden. Poach eggs. Assemble: muffin, crab cake, poached egg, hollandaise. Sprinkle with Old Bay.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch",
+      "seafood"
+    ],
+    "diets": [],
+    "cook_time": 30,
+    "time_category": "30-min"
+  },
+  "Breakfast Potatoes": {
+    "ingredients": [
+      "russet potatoes, diced",
+      "onion, diced",
+      "bell peppers, diced",
+      "butter",
+      "vegetable oil",
+      "paprika",
+      "garlic powder",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Parboil potatoes 5 minutes. Heat oil and butter in skillet. Cook potatoes until crispy, 15 minutes. Add onions and peppers, cook 5 more minutes. Season with paprika, garlic powder, salt, pepper.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [
+      "vegetarian",
+      "vegan"
+    ],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Monte Cristo Sandwich": {
+    "ingredients": [
+      "white bread",
+      "ham",
+      "turkey",
+      "Swiss cheese",
+      "large eggs",
+      "milk",
+      "butter",
+      "powdered sugar",
+      "raspberry jam"
+    ],
+    "directions": "Layer ham, turkey, cheese between bread slices. Dip in egg-milk mixture. Cook in butter until golden on both sides. Dust with powdered sugar. Serve with raspberry jam.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch"
+    ],
+    "diets": [],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Granola Parfait": {
+    "ingredients": [
+      "Greek yogurt",
+      "granola",
+      "fresh berries",
+      "honey",
+      "vanilla extract"
+    ],
+    "directions": "Layer yogurt, granola, berries in a glass. Repeat layers. Drizzle with honey. Serve immediately.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 5,
+    "time_category": "10-min"
+  },
+  "Ham and Cheese Croissant": {
+    "ingredients": [
+      "croissants",
+      "ham",
+      "Swiss cheese",
+      "Dijon mustard",
+      "butter"
+    ],
+    "directions": "Slice croissant. Spread with mustard. Layer ham and cheese. Butter outside, toast in pan until cheese melts. Serve warm.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch"
+    ],
+    "diets": [],
+    "cook_time": 10,
+    "time_category": "10-min"
+  },
+  "Breakfast Tacos": {
+    "ingredients": [
+      "corn tortillas",
+      "scrambled eggs",
+      "breakfast sausage, crumbled",
+      "cheddar cheese, shredded",
+      "salsa",
+      "avocado",
+      "cilantro"
+    ],
+    "directions": "Cook sausage. Scramble eggs. Warm tortillas. Fill with eggs, sausage, cheese. Top with salsa, avocado, cilantro.",
+    "categories": [
+      "breakfast",
+      "american",
+      "mexican"
+    ],
+    "diets": [],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Crab Cake Benedict": {
+    "ingredients": [
+      "English muffins",
+      "crab cakes",
+      "large eggs",
+      "hollandaise sauce",
+      "chives, chopped",
+      "white vinegar"
+    ],
+    "directions": "Toast muffins. Pan-fry crab cakes. Poach eggs. Stack: muffin, crab cake, egg, hollandaise. Garnish with chives.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch",
+      "seafood"
+    ],
+    "diets": [],
+    "cook_time": 30,
+    "time_category": "30-min"
+  },
+  "Lemon Ricotta Pancakes": {
+    "ingredients": [
+      "all-purpose flour",
+      "ricotta cheese",
+      "large eggs",
+      "milk",
+      "lemon zest",
+      "lemon juice",
+      "sugar",
+      "baking powder",
+      "salt",
+      "butter",
+      "maple syrup"
+    ],
+    "directions": "Mix flour, sugar, baking powder, salt. Combine ricotta, eggs, milk, lemon zest and juice. Mix wet into dry. Cook 1/4 cup portions until bubbles form, flip. Serve with butter and syrup.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Smoked Salmon Benedict": {
+    "ingredients": [
+      "English muffins",
+      "smoked salmon",
+      "large eggs",
+      "hollandaise sauce",
+      "capers",
+      "fresh dill",
+      "white vinegar"
+    ],
+    "directions": "Toast muffins. Poach eggs. Assemble: muffin, smoked salmon, poached egg, hollandaise. Garnish with capers and dill.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch",
+      "seafood"
+    ],
+    "diets": [],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Breakfast Club Sandwich": {
+    "ingredients": [
+      "white bread",
+      "bacon",
+      "fried egg",
+      "lettuce",
+      "tomato",
+      "mayonnaise",
+      "American cheese"
+    ],
+    "directions": "Toast bread. Cook bacon and fry egg. Layer: toast, mayo, lettuce, tomato, bacon, cheese, egg, toast. Cut diagonally. Serve with hash browns.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch"
+    ],
+    "diets": [],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Egg White Omelet": {
+    "ingredients": [
+      "egg whites",
+      "fresh spinach",
+      "mushrooms, sliced",
+      "tomatoes, diced",
+      "feta cheese",
+      "salt",
+      "black pepper",
+      "olive oil"
+    ],
+    "directions": "Saut\u00e9 vegetables in olive oil. Beat egg whites with salt and pepper. Pour over vegetables, cook until set. Add feta, fold. Serve immediately.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Sweet Potato Hash": {
+    "ingredients": [
+      "sweet potatoes, diced",
+      "bacon",
+      "onion, diced",
+      "bell peppers, diced",
+      "large eggs",
+      "paprika",
+      "salt",
+      "black pepper",
+      "olive oil"
+    ],
+    "directions": "Cook bacon, set aside. Cook sweet potatoes in bacon fat until crispy. Add onion and peppers. Season. Make wells, add eggs. Cover until eggs set. Top with bacon.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 30,
+    "time_category": "30-min"
+  },
+  "Baked Oatmeal": {
+    "ingredients": [
+      "old-fashioned oats",
+      "milk",
+      "large eggs",
+      "brown sugar",
+      "butter",
+      "baking powder",
+      "cinnamon",
+      "vanilla extract",
+      "salt",
+      "fresh berries"
+    ],
+    "directions": "Mix oats, baking powder, cinnamon, salt. Combine milk, eggs, sugar, melted butter, vanilla. Mix together with berries. Pour in baking dish. Bake at 350\u00b0F for 35-40 minutes.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 45,
+    "time_category": "60-min"
+  },
+  "Brioche French Toast": {
+    "ingredients": [
+      "brioche bread",
+      "large eggs",
+      "heavy cream",
+      "vanilla extract",
+      "cinnamon",
+      "butter",
+      "maple syrup",
+      "powdered sugar",
+      "fresh berries"
+    ],
+    "directions": "Whisk eggs, cream, vanilla, cinnamon. Soak brioche slices. Cook in butter over medium heat until golden on both sides. Dust with powdered sugar, serve with berries and syrup.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Mushroom and Swiss Omelet": {
+    "ingredients": [
+      "large eggs",
+      "mushrooms, sliced",
+      "Swiss cheese, shredded",
+      "butter",
+      "milk",
+      "salt",
+      "black pepper",
+      "fresh thyme"
+    ],
+    "directions": "Saut\u00e9 mushrooms with thyme until golden. Beat eggs with milk, salt, pepper. Cook in buttered pan. Add mushrooms and cheese to one side, fold. Serve immediately.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Eggs Royale": {
+    "ingredients": [
+      "English muffins",
+      "smoked salmon",
+      "large eggs",
+      "hollandaise sauce",
+      "chives, chopped",
+      "white vinegar",
+      "black pepper"
+    ],
+    "directions": "Toast muffins. Poach eggs. Assemble: muffin, salmon, egg, hollandaise. Season with pepper, garnish with chives.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch"
+    ],
+    "diets": [],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Cheddar Bacon Biscuits": {
+    "ingredients": [
+      "all-purpose flour",
+      "butter",
+      "buttermilk",
+      "sharp cheddar cheese, shredded",
+      "bacon, cooked and crumbled",
+      "baking powder",
+      "salt"
+    ],
+    "directions": "Cut butter into flour, baking powder, salt. Add cheese and bacon. Stir in buttermilk. Pat out, cut rounds. Bake at 425\u00b0F for 15 minutes until golden.",
+    "categories": [
+      "breakfast",
+      "american",
+      "southern"
+    ],
+    "diets": [],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Breakfast Flatbread": {
+    "ingredients": [
+      "flatbread",
+      "scrambled eggs",
+      "bacon, cooked",
+      "cheddar cheese, shredded",
+      "green onions, sliced",
+      "olive oil"
+    ],
+    "directions": "Brush flatbread with oil, bake at 400\u00b0F until crisp. Top with cheese, return to oven until melted. Add scrambled eggs, bacon, green onions. Slice and serve.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Cream Cheese Danish": {
+    "ingredients": [
+      "puff pastry",
+      "cream cheese",
+      "sugar",
+      "large egg",
+      "vanilla extract",
+      "lemon zest",
+      "powdered sugar"
+    ],
+    "directions": "Mix cream cheese, sugar, egg yolk, vanilla, lemon zest. Cut pastry into squares. Add filling, fold corners. Brush with egg wash. Bake at 400\u00b0F for 15 minutes. Drizzle with powdered sugar glaze.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Loaded Breakfast Nachos": {
+    "ingredients": [
+      "tortilla chips",
+      "scrambled eggs",
+      "breakfast sausage, crumbled",
+      "cheddar cheese, shredded",
+      "jalape\u00f1os",
+      "salsa",
+      "sour cream",
+      "green onions"
+    ],
+    "directions": "Layer chips on sheet pan. Top with cheese, bake until melted. Add scrambled eggs, sausage, jalape\u00f1os, green onions. Serve with salsa and sour cream.",
+    "categories": [
+      "breakfast",
+      "american",
+      "mexican"
+    ],
+    "diets": [],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Pumpkin Spice Pancakes": {
+    "ingredients": [
+      "all-purpose flour",
+      "pumpkin puree",
+      "buttermilk",
+      "large eggs",
+      "brown sugar",
+      "pumpkin pie spice",
+      "baking powder",
+      "baking soda",
+      "butter",
+      "maple syrup",
+      "whipped cream"
+    ],
+    "directions": "Mix dry ingredients. Combine buttermilk, pumpkin, eggs, melted butter. Mix together. Cook 1/4 cup portions on griddle. Serve with butter, syrup, whipped cream.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Sausage and Cheese Breakfast Casserole": {
+    "ingredients": [
+      "bread cubes",
+      "breakfast sausage",
+      "cheddar cheese, shredded",
+      "large eggs",
+      "milk",
+      "dry mustard",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Brown sausage. Layer bread, sausage, cheese in baking dish. Whisk eggs, milk, mustard, salt, pepper. Pour over. Refrigerate overnight or bake immediately at 350\u00b0F for 45 minutes.",
+    "categories": [
+      "breakfast",
+      "american",
+      "casserole"
+    ],
+    "diets": [],
+    "cook_time": 60,
+    "time_category": "60-min"
+  },
+  "Bacon Egg and Cheese Bagel": {
+    "ingredients": [
+      "plain bagel",
+      "large eggs",
+      "bacon",
+      "American cheese",
+      "butter",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Toast bagel. Cook bacon. Fry or scramble eggs with salt and pepper. Assemble: bagel, cheese, eggs, bacon. Serve immediately.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Overnight Oats": {
+    "ingredients": [
+      "old-fashioned oats",
+      "milk",
+      "Greek yogurt",
+      "chia seeds",
+      "maple syrup",
+      "vanilla extract",
+      "fresh berries"
+    ],
+    "directions": "Mix oats, milk, yogurt, chia seeds, maple syrup, vanilla. Refrigerate overnight. Top with fresh berries before serving.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 5,
+    "time_category": "10-min"
+  },
+  "Hash Brown Casserole": {
+    "ingredients": [
+      "frozen hash browns",
+      "sour cream",
+      "cream of chicken soup",
+      "cheddar cheese, shredded",
+      "butter",
+      "onion, diced",
+      "salt",
+      "black pepper",
+      "cornflakes"
+    ],
+    "directions": "Mix hash browns, sour cream, soup, cheese, onion, salt, pepper. Spread in baking dish. Top with crushed cornflakes mixed with melted butter. Bake at 350\u00b0F for 60 minutes.",
+    "categories": [
+      "breakfast",
+      "american",
+      "casserole"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 70,
+    "time_category": "60-plus"
+  },
+  "Cinnamon Swirl Pancakes": {
+    "ingredients": [
+      "all-purpose flour",
+      "buttermilk",
+      "large eggs",
+      "butter",
+      "sugar",
+      "baking powder",
+      "baking soda",
+      "vanilla extract",
+      "cinnamon",
+      "brown sugar",
+      "cream cheese frosting"
+    ],
+    "directions": "Make pancake batter. Mix cinnamon with brown sugar and butter for swirl. Pour batter, drizzle cinnamon mixture, swirl with toothpick. Cook until done. Drizzle with cream cheese frosting.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Eggs Blackstone": {
+    "ingredients": [
+      "English muffins",
+      "bacon",
+      "tomato slices",
+      "large eggs",
+      "hollandaise sauce",
+      "white vinegar",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Toast muffins. Cook bacon. Poach eggs. Assemble: muffin, bacon, tomato slice, poached egg, hollandaise. Season and serve.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch"
+    ],
+    "diets": [],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Apple Fritter Pancakes": {
+    "ingredients": [
+      "all-purpose flour",
+      "apple, diced",
+      "buttermilk",
+      "large eggs",
+      "butter",
+      "brown sugar",
+      "cinnamon",
+      "nutmeg",
+      "baking powder",
+      "vanilla glaze"
+    ],
+    "directions": "Cook diced apples with brown sugar and cinnamon. Make pancake batter with nutmeg. Fold in apples. Cook until golden. Drizzle with vanilla glaze.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Smoked Sausage and Egg Breakfast Bowl": {
+    "ingredients": [
+      "smoked sausage, sliced",
+      "large eggs",
+      "hash browns",
+      "cheddar cheese, shredded",
+      "green onions",
+      "hot sauce",
+      "butter"
+    ],
+    "directions": "Cook hash browns until crispy. Saut\u00e9 sausage until browned. Fry eggs. Layer in bowl: hash browns, sausage, eggs, cheese, green onions. Serve with hot sauce.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Challah French Toast": {
+    "ingredients": [
+      "challah bread",
+      "large eggs",
+      "heavy cream",
+      "vanilla extract",
+      "cinnamon",
+      "butter",
+      "maple syrup",
+      "fresh berries"
+    ],
+    "directions": "Slice challah thick. Whisk eggs, cream, vanilla, cinnamon. Soak bread. Cook in butter until golden on both sides. Serve with berries and syrup.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Western Omelet with Hash Browns": {
+    "ingredients": [
+      "large eggs",
+      "ham, diced",
+      "bell peppers, diced",
+      "onion, diced",
+      "cheddar cheese",
+      "hash browns",
+      "butter",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Cook hash browns until crispy. Saut\u00e9 ham, peppers, onion. Beat eggs, pour over mixture. Cook until set, add cheese, fold. Serve with hash browns and toast.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Biscuit Breakfast Pizza": {
+    "ingredients": [
+      "refrigerated biscuit dough",
+      "scrambled eggs",
+      "breakfast sausage",
+      "cheddar cheese, shredded",
+      "bacon",
+      "country gravy"
+    ],
+    "directions": "Press biscuits into pizza pan, bake until golden. Spread gravy on crust. Top with scrambled eggs, sausage, bacon, cheese. Broil until cheese melts.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 30,
+    "time_category": "30-min"
+  },
+  "Steel Cut Oatmeal with Brown Sugar": {
+    "ingredients": [
+      "steel cut oats",
+      "milk",
+      "water",
+      "brown sugar",
+      "butter",
+      "cinnamon",
+      "salt",
+      "walnuts, chopped",
+      "raisins"
+    ],
+    "directions": "Bring water and milk to boil. Add oats, reduce heat. Simmer 25-30 minutes, stirring occasionally. Stir in butter, cinnamon, salt. Top with brown sugar, walnuts, raisins.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 35,
+    "time_category": "60-min"
+  },
+  "Bacon Wrapped Egg Cups": {
+    "ingredients": [
+      "bacon",
+      "large eggs",
+      "cheddar cheese, shredded",
+      "chives, chopped",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Line muffin cups with bacon. Crack egg into each. Top with cheese. Bake at 375\u00b0F for 20-25 minutes. Season, garnish with chives.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 30,
+    "time_category": "30-min"
+  },
+  "Chorizo Breakfast Hash": {
+    "ingredients": [
+      "Mexican chorizo",
+      "russet potatoes, diced",
+      "onion, diced",
+      "bell peppers, diced",
+      "large eggs",
+      "cotija cheese",
+      "cilantro",
+      "salsa"
+    ],
+    "directions": "Cook chorizo, breaking up. Remove. Cook potatoes in drippings until crispy. Add onion, peppers. Return chorizo. Make wells, add eggs. Cover until set. Top with cheese, cilantro, salsa.",
+    "categories": [
+      "breakfast",
+      "american",
+      "mexican"
+    ],
+    "diets": [],
+    "cook_time": 35,
+    "time_category": "60-min"
+  },
+  "Eggs Oscar": {
+    "ingredients": [
+      "English muffins",
+      "crab meat",
+      "asparagus spears",
+      "large eggs",
+      "hollandaise sauce",
+      "butter",
+      "white vinegar"
+    ],
+    "directions": "Blanch asparagus. Saut\u00e9 crab in butter. Toast muffins. Poach eggs. Assemble: muffin, asparagus, crab, egg, hollandaise.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch",
+      "seafood"
+    ],
+    "diets": [],
+    "cook_time": 30,
+    "time_category": "30-min"
+  },
+  "Red Velvet Waffles": {
+    "ingredients": [
+      "all-purpose flour",
+      "cocoa powder",
+      "red food coloring",
+      "buttermilk",
+      "large eggs",
+      "vegetable oil",
+      "sugar",
+      "baking powder",
+      "vanilla extract",
+      "cream cheese frosting"
+    ],
+    "directions": "Mix flour, cocoa, sugar, baking powder. Combine buttermilk, eggs, oil, vanilla, food coloring. Mix together. Cook in waffle iron. Top with cream cheese frosting.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Breakfast Stuffed Peppers": {
+    "ingredients": [
+      "bell peppers, halved",
+      "scrambled eggs",
+      "breakfast sausage",
+      "cheddar cheese, shredded",
+      "hash browns",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Cook sausage and hash browns. Scramble eggs. Mix together with cheese. Stuff pepper halves. Bake at 375\u00b0F for 25 minutes until peppers tender.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 40,
+    "time_category": "60-min"
+  },
+  "Egg Salad on Toast": {
+    "ingredients": [
+      "hard-boiled eggs",
+      "mayonnaise",
+      "Dijon mustard",
+      "celery, diced",
+      "chives, chopped",
+      "salt",
+      "black pepper",
+      "toast"
+    ],
+    "directions": "Chop eggs. Mix with mayo, mustard, celery, chives, salt, pepper. Serve on toast.",
+    "categories": [
+      "breakfast",
+      "american",
+      "lunch"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Sausage Gravy Breakfast Bowl": {
+    "ingredients": [
+      "biscuits",
+      "country sausage gravy",
+      "scrambled eggs",
+      "cheddar cheese, shredded",
+      "bacon, crumbled",
+      "green onions"
+    ],
+    "directions": "Crumble biscuits in bowl. Top with hot gravy, scrambled eggs, cheese, bacon, green onions. Serve immediately.",
+    "categories": [
+      "breakfast",
+      "american",
+      "southern"
+    ],
+    "diets": [],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Croissant Breakfast Sandwich": {
+    "ingredients": [
+      "croissant",
+      "large eggs",
+      "bacon",
+      "Gruyere cheese",
+      "butter",
+      "Dijon mustard"
+    ],
+    "directions": "Cook bacon. Scramble or fry eggs. Slice croissant, spread with mustard. Layer cheese, eggs, bacon. Serve warm.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch"
+    ],
+    "diets": [],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Cottage Cheese Pancakes": {
+    "ingredients": [
+      "cottage cheese",
+      "large eggs",
+      "all-purpose flour",
+      "butter",
+      "vanilla extract",
+      "salt",
+      "maple syrup",
+      "fresh berries"
+    ],
+    "directions": "Blend cottage cheese, eggs, flour, vanilla, salt. Cook small pancakes in butter until golden on both sides. Serve with berries and syrup.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Tex-Mex Migas": {
+    "ingredients": [
+      "large eggs",
+      "corn tortillas, cut into strips",
+      "onion, diced",
+      "jalape\u00f1o, diced",
+      "tomato, diced",
+      "cheddar cheese, shredded",
+      "vegetable oil",
+      "salt",
+      "salsa",
+      "cilantro"
+    ],
+    "directions": "Fry tortilla strips until crispy. Saut\u00e9 onion, jalape\u00f1o, tomato. Add beaten eggs, scramble. Fold in tortilla strips and cheese. Serve with salsa and cilantro.",
+    "categories": [
+      "breakfast",
+      "american",
+      "mexican"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Caramelized Banana French Toast": {
+    "ingredients": [
+      "thick-sliced bread",
+      "ripe bananas",
+      "large eggs",
+      "milk",
+      "brown sugar",
+      "butter",
+      "vanilla extract",
+      "cinnamon",
+      "whipped cream"
+    ],
+    "directions": "Cook bananas in butter and brown sugar until caramelized. Make French toast with egg-milk-cinnamon mixture. Top toast with caramelized bananas and whipped cream.",
+    "categories": [
+      "breakfast",
+      "american",
+      "brunch"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Country Ham and Eggs": {
+    "ingredients": [
+      "country ham steak",
+      "large eggs",
+      "butter",
+      "biscuits",
+      "red-eye gravy",
+      "black coffee"
+    ],
+    "directions": "Fry ham steak in skillet. Remove. Add coffee to drippings for red-eye gravy. Fry eggs. Serve ham with eggs, biscuits, gravy.",
+    "categories": [
+      "breakfast",
+      "american",
+      "southern"
+    ],
+    "diets": [],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Gingerbread Pancakes": {
+    "ingredients": [
+      "all-purpose flour",
+      "buttermilk",
+      "large eggs",
+      "molasses",
+      "butter",
+      "brown sugar",
+      "ginger",
+      "cinnamon",
+      "nutmeg",
+      "baking powder",
+      "cream cheese frosting"
+    ],
+    "directions": "Mix dry ingredients with spices. Combine buttermilk, eggs, molasses, melted butter. Mix together. Cook pancakes until done. Top with cream cheese frosting.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Breakfast Sausage Patties": {
+    "ingredients": [
+      "ground pork",
+      "sage",
+      "thyme",
+      "salt",
+      "black pepper",
+      "red pepper flakes",
+      "brown sugar",
+      "maple syrup"
+    ],
+    "directions": "Mix pork with all seasonings. Form into patties. Cook in skillet over medium heat 4-5 minutes per side until cooked through.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Tomato Cheese Omelet": {
+    "ingredients": [
+      "large eggs",
+      "tomato, diced",
+      "cheddar cheese, shredded",
+      "butter",
+      "milk",
+      "fresh basil",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Beat eggs with milk, salt, pepper. Cook in buttered pan until almost set. Add tomato, cheese, basil to one side. Fold and serve.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 10,
+    "time_category": "10-min"
+  },
+  "French Toast Sticks": {
+    "ingredients": [
+      "thick-sliced bread",
+      "large eggs",
+      "milk",
+      "vanilla extract",
+      "cinnamon",
+      "butter",
+      "maple syrup",
+      "powdered sugar"
+    ],
+    "directions": "Cut bread into strips. Dip in egg-milk-cinnamon mixture. Cook in butter until golden on all sides. Dust with powdered sugar. Serve with syrup for dipping.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "California Omelet": {
+    "ingredients": [
+      "large eggs",
+      "avocado, sliced",
+      "bacon, cooked",
+      "tomato, diced",
+      "Monterey Jack cheese, shredded",
+      "butter",
+      "salt",
+      "black pepper",
+      "sour cream"
+    ],
+    "directions": "Beat eggs with salt and pepper. Cook in buttered pan. Add bacon, tomato, cheese. Fold. Top with avocado slices and sour cream.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "English Muffin Breakfast Pizza": {
+    "ingredients": [
+      "English muffins",
+      "scrambled eggs",
+      "bacon, crumbled",
+      "cheddar cheese, shredded",
+      "green onions, sliced"
+    ],
+    "directions": "Toast muffin halves. Top with cheese, broil until melted. Add scrambled eggs, bacon, green onions. Serve immediately.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Waffle Breakfast Sandwich": {
+    "ingredients": [
+      "frozen waffles",
+      "large eggs",
+      "bacon",
+      "American cheese",
+      "butter",
+      "maple syrup"
+    ],
+    "directions": "Toast waffles. Cook bacon and fry eggs. Assemble: waffle, cheese, egg, bacon, drizzle of syrup, waffle on top.",
+    "categories": [
+      "breakfast",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Classic Reuben Sandwich": {
+    "ingredients": [
+      "rye bread",
+      "corned beef",
+      "sauerkraut",
+      "Swiss cheese",
+      "Thousand Island dressing",
+      "butter"
+    ],
+    "directions": "Butter bread. Layer corned beef, sauerkraut, cheese on bread. Spread dressing on other slice. Grill until cheese melts and bread is golden. Serve with pickles and chips.",
+    "categories": [
+      "lunch",
+      "american",
+      "sandwich"
+    ],
+    "diets": [],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "BLT Sandwich": {
+    "ingredients": [
+      "white bread",
+      "bacon",
+      "lettuce",
+      "tomato",
+      "mayonnaise",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Toast bread. Cook bacon crispy. Spread mayo on toast. Layer lettuce, tomato, bacon. Season. Top with second slice. Cut diagonally and serve.",
+    "categories": [
+      "lunch",
+      "american",
+      "sandwich"
+    ],
+    "diets": [],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Club Sandwich": {
+    "ingredients": [
+      "white bread",
+      "turkey breast",
+      "ham",
+      "bacon",
+      "lettuce",
+      "tomato",
+      "mayonnaise",
+      "American cheese"
+    ],
+    "directions": "Toast 3 slices bread. Layer: toast, mayo, turkey, cheese, toast, mayo, bacon, lettuce, tomato, toast. Secure with toothpicks. Cut into quarters.",
+    "categories": [
+      "lunch",
+      "american",
+      "sandwich"
+    ],
+    "diets": [],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Philly Cheesesteak": {
+    "ingredients": [
+      "ribeye steak, thinly sliced",
+      "hoagie roll",
+      "provolone cheese",
+      "onion, sliced",
+      "bell peppers, sliced",
+      "butter",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Saut\u00e9 onions and peppers until soft. Cook steak slices quickly. Season. Place in roll, top with cheese. Broil to melt. Serve immediately.",
+    "categories": [
+      "lunch",
+      "american",
+      "sandwich"
+    ],
+    "diets": [],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Grilled Cheese Sandwich": {
+    "ingredients": [
+      "white bread",
+      "American cheese",
+      "butter"
+    ],
+    "directions": "Butter outside of bread slices. Place cheese between unbuttered sides. Grill over medium heat until golden on both sides and cheese melts.",
+    "categories": [
+      "lunch",
+      "american",
+      "sandwich"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 10,
+    "time_category": "10-min"
+  },
+  "Tuna Melt": {
+    "ingredients": [
+      "canned tuna",
+      "mayonnaise",
+      "celery, diced",
+      "onion, diced",
+      "American cheese",
+      "bread",
+      "butter",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Mix tuna, mayo, celery, onion, salt, pepper. Toast bread on one side. Pile tuna on untoasted side, top with cheese. Broil until melted.",
+    "categories": [
+      "lunch",
+      "american",
+      "sandwich",
+      "seafood"
+    ],
+    "diets": [],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "French Dip Sandwich": {
+    "ingredients": [
+      "roast beef, thinly sliced",
+      "French bread",
+      "beef broth",
+      "onion, sliced",
+      "provolone cheese",
+      "butter",
+      "garlic"
+    ],
+    "directions": "Saut\u00e9 onion in butter with garlic. Toast bread. Warm roast beef in broth. Pile beef and onions on bread, top with cheese. Broil. Serve with au jus for dipping.",
+    "categories": [
+      "lunch",
+      "american",
+      "sandwich"
+    ],
+    "diets": [],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Patty Melt": {
+    "ingredients": [
+      "ground beef",
+      "rye bread",
+      "Swiss cheese",
+      "onion, sliced",
+      "butter",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Form patty, season, cook to desired doneness. Caramelize onions. Butter bread, layer cheese, patty, onions, cheese, bread. Grill until golden.",
+    "categories": [
+      "lunch",
+      "american",
+      "sandwich"
+    ],
+    "diets": [],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Turkey Club Wrap": {
+    "ingredients": [
+      "flour tortilla",
+      "turkey breast",
+      "bacon",
+      "lettuce",
+      "tomato",
+      "avocado",
+      "ranch dressing"
+    ],
+    "directions": "Spread ranch on tortilla. Layer turkey, bacon, lettuce, tomato, avocado. Roll tightly, tucking ends. Cut in half diagonally.",
+    "categories": [
+      "lunch",
+      "american",
+      "sandwich"
+    ],
+    "diets": [],
+    "cook_time": 10,
+    "time_category": "10-min"
+  },
+  "Chicken Caesar Wrap": {
+    "ingredients": [
+      "flour tortilla",
+      "grilled chicken breast",
+      "romaine lettuce",
+      "Parmesan cheese, shaved",
+      "Caesar dressing",
+      "croutons"
+    ],
+    "directions": "Toss chicken, lettuce, Parmesan, dressing. Place on tortilla, add croutons. Roll tightly. Cut and serve.",
+    "categories": [
+      "lunch",
+      "american",
+      "sandwich"
+    ],
+    "diets": [],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Cobb Salad": {
+    "ingredients": [
+      "romaine lettuce",
+      "grilled chicken",
+      "bacon, crumbled",
+      "hard-boiled eggs",
+      "avocado",
+      "tomatoes",
+      "blue cheese crumbles",
+      "red wine vinaigrette"
+    ],
+    "directions": "Arrange lettuce on platter. Arrange chicken, bacon, eggs, avocado, tomatoes, blue cheese in rows. Drizzle with vinaigrette. Serve.",
+    "categories": [
+      "lunch",
+      "american",
+      "salad"
+    ],
+    "diets": [],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Chef Salad": {
+    "ingredients": [
+      "mixed greens",
+      "ham, julienned",
+      "turkey, julienned",
+      "Swiss cheese",
+      "cheddar cheese",
+      "hard-boiled eggs",
+      "tomatoes",
+      "cucumber",
+      "ranch dressing"
+    ],
+    "directions": "Arrange greens on plates. Top with ham, turkey, cheeses, eggs, tomatoes, cucumber. Serve with ranch dressing.",
+    "categories": [
+      "lunch",
+      "american",
+      "salad"
+    ],
+    "diets": [],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Chicken Salad Sandwich": {
+    "ingredients": [
+      "chicken breast, cooked and diced",
+      "mayonnaise",
+      "celery, diced",
+      "grapes, halved",
+      "pecans, chopped",
+      "salt",
+      "black pepper",
+      "croissant"
+    ],
+    "directions": "Mix chicken, mayo, celery, grapes, pecans, salt, pepper. Serve on split croissant with lettuce.",
+    "categories": [
+      "lunch",
+      "american",
+      "sandwich"
+    ],
+    "diets": [],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Egg Salad Sandwich": {
+    "ingredients": [
+      "hard-boiled eggs",
+      "mayonnaise",
+      "Dijon mustard",
+      "celery, diced",
+      "salt",
+      "black pepper",
+      "white bread",
+      "lettuce"
+    ],
+    "directions": "Chop eggs. Mix with mayo, mustard, celery, salt, pepper. Serve on bread with lettuce.",
+    "categories": [
+      "lunch",
+      "american",
+      "sandwich"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Buffalo Chicken Sandwich": {
+    "ingredients": [
+      "chicken breast",
+      "hot sauce",
+      "butter",
+      "brioche bun",
+      "blue cheese dressing",
+      "lettuce",
+      "tomato",
+      "pickles"
+    ],
+    "directions": "Bread and fry chicken. Toss in hot sauce mixed with butter. Serve on bun with blue cheese, lettuce, tomato, pickles.",
+    "categories": [
+      "lunch",
+      "american",
+      "sandwich"
+    ],
+    "diets": [],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Crispy Chicken Sandwich": {
+    "ingredients": [
+      "chicken breast",
+      "flour",
+      "buttermilk",
+      "pickle juice",
+      "brioche bun",
+      "pickles",
+      "mayonnaise",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Brine chicken in pickle juice. Dredge in flour, dip in buttermilk, dredge again. Fry until golden and cooked through. Serve on bun with pickles and mayo.",
+    "categories": [
+      "lunch",
+      "american",
+      "sandwich"
+    ],
+    "diets": [],
+    "cook_time": 30,
+    "time_category": "30-min"
+  },
+  "Pulled Pork Sandwich": {
+    "ingredients": [
+      "pulled pork",
+      "BBQ sauce",
+      "brioche buns",
+      "coleslaw",
+      "pickles"
+    ],
+    "directions": "Heat pulled pork with BBQ sauce. Pile on bun. Top with coleslaw and pickles. Serve with extra sauce.",
+    "categories": [
+      "lunch",
+      "american",
+      "sandwich",
+      "bbq"
+    ],
+    "diets": [],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Meatball Sub": {
+    "ingredients": [
+      "meatballs",
+      "marinara sauce",
+      "mozzarella cheese, shredded",
+      "hoagie roll",
+      "Parmesan cheese",
+      "Italian seasoning"
+    ],
+    "directions": "Heat meatballs in marinara. Split roll, fill with meatballs and sauce. Top with mozzarella and Parmesan. Broil until cheese melts.",
+    "categories": [
+      "lunch",
+      "american",
+      "italian",
+      "sandwich"
+    ],
+    "diets": [],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Sloppy Joe": {
+    "ingredients": [
+      "ground beef",
+      "onion, diced",
+      "bell pepper, diced",
+      "ketchup",
+      "brown sugar",
+      "Worcestershire sauce",
+      "yellow mustard",
+      "hamburger buns"
+    ],
+    "directions": "Brown beef with onion and pepper. Add ketchup, brown sugar, Worcestershire, mustard. Simmer 10 minutes. Serve on buns.",
+    "categories": [
+      "lunch",
+      "american",
+      "sandwich"
+    ],
+    "diets": [],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Hot Dog with the Works": {
+    "ingredients": [
+      "beef hot dogs",
+      "hot dog buns",
+      "yellow mustard",
+      "ketchup",
+      "relish",
+      "diced onion",
+      "sauerkraut"
+    ],
+    "directions": "Grill or boil hot dogs. Toast buns. Place dog in bun. Top with mustard, ketchup, relish, onion, sauerkraut.",
+    "categories": [
+      "lunch",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 10,
+    "time_category": "10-min"
+  },
+  "Chicago Style Hot Dog": {
+    "ingredients": [
+      "all-beef hot dog",
+      "poppy seed bun",
+      "yellow mustard",
+      "sweet relish",
+      "onion, diced",
+      "tomato wedges",
+      "pickle spear",
+      "sport peppers",
+      "celery salt"
+    ],
+    "directions": "Steam or boil hot dog. Toast bun. Add dog, then mustard, relish, onion, tomato, pickle, peppers. Sprinkle with celery salt. Never ketchup!",
+    "categories": [
+      "lunch",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 10,
+    "time_category": "10-min"
+  },
+  "Classic Cheeseburger": {
+    "ingredients": [
+      "ground beef",
+      "American cheese",
+      "hamburger buns",
+      "lettuce",
+      "tomato",
+      "onion",
+      "pickles",
+      "ketchup",
+      "mustard",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Form patties, season with salt and pepper. Grill to desired doneness, add cheese to melt. Toast buns. Assemble with toppings.",
+    "categories": [
+      "lunch",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Bacon Cheeseburger": {
+    "ingredients": [
+      "ground beef",
+      "bacon",
+      "cheddar cheese",
+      "hamburger buns",
+      "lettuce",
+      "tomato",
+      "onion",
+      "pickles",
+      "ketchup",
+      "mayonnaise"
+    ],
+    "directions": "Cook bacon crispy. Form and grill patties. Add cheese to melt. Toast buns. Stack: bun, lettuce, tomato, patty, bacon, onion, pickles, sauces, bun.",
+    "categories": [
+      "lunch",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Mushroom Swiss Burger": {
+    "ingredients": [
+      "ground beef",
+      "mushrooms, sliced",
+      "Swiss cheese",
+      "hamburger buns",
+      "butter",
+      "garlic",
+      "mayonnaise",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Saut\u00e9 mushrooms in butter with garlic. Grill patties, top with cheese and mushrooms. Toast buns. Spread mayo, assemble burger.",
+    "categories": [
+      "lunch",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "BBQ Bacon Burger": {
+    "ingredients": [
+      "ground beef",
+      "bacon",
+      "cheddar cheese",
+      "BBQ sauce",
+      "onion rings",
+      "hamburger buns",
+      "lettuce"
+    ],
+    "directions": "Grill patties, brush with BBQ sauce. Add cheese to melt. Toast buns. Stack with bacon and crispy onion rings.",
+    "categories": [
+      "lunch",
+      "american",
+      "bbq"
+    ],
+    "diets": [],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Turkey Burger": {
+    "ingredients": [
+      "ground turkey",
+      "Worcestershire sauce",
+      "garlic powder",
+      "onion powder",
+      "salt",
+      "black pepper",
+      "whole wheat buns",
+      "avocado",
+      "lettuce",
+      "tomato"
+    ],
+    "directions": "Mix turkey with seasonings. Form patties. Grill until cooked through. Serve on buns with avocado, lettuce, tomato.",
+    "categories": [
+      "lunch",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Veggie Burger": {
+    "ingredients": [
+      "black beans",
+      "breadcrumbs",
+      "onion, diced",
+      "bell pepper, diced",
+      "cumin",
+      "garlic powder",
+      "egg",
+      "whole wheat buns",
+      "lettuce",
+      "tomato",
+      "avocado"
+    ],
+    "directions": "Mash beans. Mix with breadcrumbs, vegetables, spices, egg. Form patties. Pan-fry until crispy. Serve on buns with toppings.",
+    "categories": [
+      "lunch",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Fish and Chips": {
+    "ingredients": [
+      "cod fillets",
+      "all-purpose flour",
+      "baking powder",
+      "beer",
+      "russet potatoes",
+      "vegetable oil",
+      "salt",
+      "malt vinegar",
+      "tartar sauce"
+    ],
+    "directions": "Cut potatoes into fries, fry until golden. Make beer batter with flour, baking powder, beer. Dip fish, fry until golden. Season with salt. Serve with vinegar and tartar sauce.",
+    "categories": [
+      "lunch",
+      "american",
+      "seafood"
+    ],
+    "diets": [],
+    "cook_time": 40,
+    "time_category": "60-min"
+  },
+  "New England Clam Chowder": {
+    "ingredients": [
+      "chopped clams",
+      "bacon",
+      "onion, diced",
+      "celery, diced",
+      "potatoes, diced",
+      "all-purpose flour",
+      "heavy cream",
+      "clam juice",
+      "butter",
+      "thyme",
+      "bay leaf"
+    ],
+    "directions": "Cook bacon, saut\u00e9 onion and celery. Add flour, cook 1 minute. Add clam juice, potatoes, thyme, bay leaf. Simmer until potatoes tender. Add clams and cream. Heat through.",
+    "categories": [
+      "lunch",
+      "american",
+      "soup",
+      "seafood"
+    ],
+    "diets": [],
+    "cook_time": 45,
+    "time_category": "60-min"
+  },
+  "Tomato Soup with Grilled Cheese": {
+    "ingredients": [
+      "canned tomatoes",
+      "chicken broth",
+      "onion, diced",
+      "garlic, minced",
+      "heavy cream",
+      "butter",
+      "basil",
+      "salt",
+      "black pepper",
+      "bread",
+      "American cheese"
+    ],
+    "directions": "Saut\u00e9 onion and garlic in butter. Add tomatoes, broth, simmer 20 minutes. Blend smooth, add cream. Make grilled cheese. Serve soup with sandwich.",
+    "categories": [
+      "lunch",
+      "american",
+      "soup"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 35,
+    "time_category": "60-min"
+  },
+  "Chicken Noodle Soup": {
+    "ingredients": [
+      "chicken breast",
+      "egg noodles",
+      "chicken broth",
+      "carrots, sliced",
+      "celery, sliced",
+      "onion, diced",
+      "garlic, minced",
+      "butter",
+      "thyme",
+      "parsley",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Poach chicken in broth, shred. Saut\u00e9 vegetables in butter. Add broth, chicken, herbs. Simmer 20 minutes. Add noodles, cook until tender. Season and serve.",
+    "categories": [
+      "lunch",
+      "american",
+      "soup"
+    ],
+    "diets": [],
+    "cook_time": 45,
+    "time_category": "60-min"
+  },
+  "Beef Vegetable Soup": {
+    "ingredients": [
+      "beef stew meat",
+      "beef broth",
+      "diced tomatoes",
+      "potatoes, diced",
+      "carrots, sliced",
+      "celery, sliced",
+      "green beans",
+      "corn",
+      "onion",
+      "garlic",
+      "Worcestershire sauce"
+    ],
+    "directions": "Brown beef. Add broth, tomatoes, onion, garlic, Worcestershire. Simmer 1 hour. Add vegetables, cook 30 minutes more until tender.",
+    "categories": [
+      "lunch",
+      "american",
+      "soup"
+    ],
+    "diets": [],
+    "cook_time": 90,
+    "time_category": "60-plus"
+  },
+  "Minestrone Soup": {
+    "ingredients": [
+      "cannellini beans",
+      "ditalini pasta",
+      "vegetable broth",
+      "diced tomatoes",
+      "zucchini, diced",
+      "carrots, diced",
+      "celery, diced",
+      "spinach",
+      "Parmesan rind",
+      "Italian seasoning"
+    ],
+    "directions": "Saut\u00e9 vegetables in olive oil. Add broth, tomatoes, beans, Parmesan rind, herbs. Simmer 30 minutes. Add pasta, cook until tender. Add spinach. Serve with Parmesan.",
+    "categories": [
+      "lunch",
+      "american",
+      "italian",
+      "soup"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 45,
+    "time_category": "60-min"
+  },
+  "Loaded Baked Potato Soup": {
+    "ingredients": [
+      "russet potatoes",
+      "bacon",
+      "cheddar cheese, shredded",
+      "sour cream",
+      "green onions",
+      "chicken broth",
+      "heavy cream",
+      "butter",
+      "flour",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Bake potatoes, scoop flesh. Cook bacon. Make roux with butter and flour. Add broth, potatoes, cream. Simmer until thick. Serve topped with cheese, bacon, sour cream, onions.",
+    "categories": [
+      "lunch",
+      "american",
+      "soup"
+    ],
+    "diets": [],
+    "cook_time": 60,
+    "time_category": "60-min"
+  },
+  "Caesar Salad": {
+    "ingredients": [
+      "romaine lettuce",
+      "Caesar dressing",
+      "Parmesan cheese, shaved",
+      "croutons",
+      "lemon juice",
+      "black pepper"
+    ],
+    "directions": "Tear lettuce into pieces. Toss with dressing. Top with Parmesan and croutons. Squeeze lemon, crack pepper. Serve immediately.",
+    "categories": [
+      "lunch",
+      "american",
+      "salad"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 10,
+    "time_category": "10-min"
+  },
+  "Wedge Salad": {
+    "ingredients": [
+      "iceberg lettuce",
+      "bacon, crumbled",
+      "blue cheese crumbles",
+      "cherry tomatoes",
+      "red onion, sliced",
+      "blue cheese dressing",
+      "chives"
+    ],
+    "directions": "Cut lettuce into wedges. Top with bacon, blue cheese, tomatoes, onion. Drizzle with dressing. Garnish with chives.",
+    "categories": [
+      "lunch",
+      "american",
+      "salad"
+    ],
+    "diets": [],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Spinach Salad with Hot Bacon Dressing": {
+    "ingredients": [
+      "baby spinach",
+      "bacon",
+      "hard-boiled eggs",
+      "mushrooms, sliced",
+      "red onion, sliced",
+      "bacon drippings",
+      "red wine vinegar",
+      "sugar",
+      "Dijon mustard"
+    ],
+    "directions": "Cook bacon, reserve drippings. Make dressing with drippings, vinegar, sugar, mustard. Arrange spinach with eggs, mushrooms, onion. Drizzle hot dressing. Top with bacon.",
+    "categories": [
+      "lunch",
+      "american",
+      "salad"
+    ],
+    "diets": [],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Waldorf Salad": {
+    "ingredients": [
+      "apples, diced",
+      "celery, diced",
+      "walnuts, chopped",
+      "grapes, halved",
+      "mayonnaise",
+      "lemon juice",
+      "lettuce leaves"
+    ],
+    "directions": "Mix apples, celery, walnuts, grapes. Combine mayo with lemon juice, toss with salad. Serve on lettuce leaves.",
+    "categories": [
+      "lunch",
+      "american",
+      "salad"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Southwestern Chicken Salad": {
+    "ingredients": [
+      "grilled chicken breast",
+      "mixed greens",
+      "black beans",
+      "corn",
+      "tomatoes",
+      "avocado",
+      "cheddar cheese, shredded",
+      "tortilla strips",
+      "chipotle ranch dressing"
+    ],
+    "directions": "Slice chicken. Arrange greens with beans, corn, tomatoes, avocado, cheese. Top with chicken and tortilla strips. Drizzle with dressing.",
+    "categories": [
+      "lunch",
+      "american",
+      "salad"
+    ],
+    "diets": [],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Asian Chicken Salad": {
+    "ingredients": [
+      "grilled chicken breast",
+      "mixed greens",
+      "mandarin oranges",
+      "crispy wonton strips",
+      "sliced almonds",
+      "green onions",
+      "sesame ginger dressing"
+    ],
+    "directions": "Slice chicken. Toss greens with oranges, wonton strips, almonds, onions. Top with chicken. Drizzle with dressing.",
+    "categories": [
+      "lunch",
+      "american",
+      "salad"
+    ],
+    "diets": [],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Greek Salad": {
+    "ingredients": [
+      "cucumber, diced",
+      "tomatoes, diced",
+      "red onion, sliced",
+      "kalamata olives",
+      "feta cheese, crumbled",
+      "green bell pepper",
+      "olive oil",
+      "red wine vinegar",
+      "oregano"
+    ],
+    "directions": "Combine cucumber, tomatoes, onion, olives, pepper, feta. Whisk oil, vinegar, oregano. Toss salad with dressing.",
+    "categories": [
+      "lunch",
+      "american",
+      "salad"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Chicken Tenders with Fries": {
+    "ingredients": [
+      "chicken tenders",
+      "flour",
+      "eggs",
+      "breadcrumbs",
+      "vegetable oil",
+      "frozen french fries",
+      "honey mustard",
+      "BBQ sauce",
+      "ranch dressing"
+    ],
+    "directions": "Dredge tenders in flour, dip in egg, coat with breadcrumbs. Fry until golden and cooked through. Bake fries. Serve with dipping sauces.",
+    "categories": [
+      "lunch",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 30,
+    "time_category": "30-min"
+  },
+  "Nachos Supreme": {
+    "ingredients": [
+      "tortilla chips",
+      "ground beef",
+      "taco seasoning",
+      "cheddar cheese, shredded",
+      "jalape\u00f1os",
+      "black beans",
+      "sour cream",
+      "guacamole",
+      "salsa",
+      "tomatoes",
+      "green onions"
+    ],
+    "directions": "Brown beef with taco seasoning. Layer chips on sheet pan. Top with beef, beans, cheese. Bake until cheese melts. Add toppings. Serve immediately.",
+    "categories": [
+      "lunch",
+      "american",
+      "mexican"
+    ],
+    "diets": [],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Chicken Wings": {
+    "ingredients": [
+      "chicken wings",
+      "vegetable oil",
+      "hot sauce",
+      "butter",
+      "garlic powder",
+      "celery sticks",
+      "carrot sticks",
+      "blue cheese dressing",
+      "ranch dressing"
+    ],
+    "directions": "Season and fry wings until crispy. Toss in hot sauce mixed with melted butter and garlic powder. Serve with celery, carrots, and dressings.",
+    "categories": [
+      "lunch",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 35,
+    "time_category": "60-min"
+  },
+  "Loaded Potato Skins": {
+    "ingredients": [
+      "russet potatoes",
+      "bacon, crumbled",
+      "cheddar cheese, shredded",
+      "sour cream",
+      "green onions",
+      "butter",
+      "salt"
+    ],
+    "directions": "Bake potatoes. Halve, scoop most of flesh. Brush with butter, season. Bake until crispy. Fill with cheese and bacon. Bake until cheese melts. Top with sour cream and onions.",
+    "categories": [
+      "lunch",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 60,
+    "time_category": "60-min"
+  },
+  "Mozzarella Sticks": {
+    "ingredients": [
+      "mozzarella cheese sticks",
+      "flour",
+      "eggs",
+      "Italian breadcrumbs",
+      "vegetable oil",
+      "marinara sauce"
+    ],
+    "directions": "Freeze cheese sticks. Dredge in flour, dip in egg, coat with breadcrumbs. Repeat for extra crispy. Fry until golden. Serve with marinara.",
+    "categories": [
+      "lunch",
+      "american",
+      "italian"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Spinach Artichoke Dip": {
+    "ingredients": [
+      "frozen spinach, thawed and drained",
+      "canned artichoke hearts",
+      "cream cheese",
+      "sour cream",
+      "mayonnaise",
+      "Parmesan cheese",
+      "garlic, minced",
+      "tortilla chips"
+    ],
+    "directions": "Mix all ingredients except chips. Spread in baking dish. Bake at 350\u00b0F for 25 minutes until bubbly. Serve with tortilla chips.",
+    "categories": [
+      "lunch",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 35,
+    "time_category": "60-min"
+  },
+  "Buffalo Chicken Dip": {
+    "ingredients": [
+      "shredded chicken",
+      "cream cheese",
+      "hot sauce",
+      "ranch dressing",
+      "cheddar cheese, shredded",
+      "celery sticks",
+      "tortilla chips"
+    ],
+    "directions": "Mix chicken, cream cheese, hot sauce, ranch. Spread in dish, top with cheddar. Bake at 350\u00b0F until bubbly. Serve with celery and chips.",
+    "categories": [
+      "lunch",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 30,
+    "time_category": "30-min"
+  },
+  "Onion Rings": {
+    "ingredients": [
+      "large sweet onions",
+      "flour",
+      "buttermilk",
+      "baking powder",
+      "cayenne pepper",
+      "salt",
+      "vegetable oil"
+    ],
+    "directions": "Slice onions into rings. Make batter with flour, buttermilk, baking powder, cayenne. Dip rings in batter. Fry until golden. Season with salt.",
+    "categories": [
+      "lunch",
+      "american"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Jalape\u00f1o Poppers": {
+    "ingredients": [
+      "jalape\u00f1o peppers",
+      "cream cheese",
+      "cheddar cheese, shredded",
+      "bacon, cooked and crumbled",
+      "breadcrumbs",
+      "ranch dressing"
+    ],
+    "directions": "Halve peppers, remove seeds. Mix cream cheese, cheddar, bacon. Fill peppers. Top with breadcrumbs. Bake at 400\u00b0F for 20 minutes. Serve with ranch.",
+    "categories": [
+      "lunch",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 30,
+    "time_category": "30-min"
+  },
+  "Corn Dogs": {
+    "ingredients": [
+      "hot dogs",
+      "cornmeal",
+      "flour",
+      "sugar",
+      "baking powder",
+      "egg",
+      "milk",
+      "vegetable oil",
+      "wooden sticks",
+      "mustard",
+      "ketchup"
+    ],
+    "directions": "Make batter with dry ingredients, egg, milk. Insert sticks into hot dogs. Dip in batter. Fry until golden. Serve with mustard and ketchup.",
+    "categories": [
+      "lunch",
+      "american"
+    ],
+    "diets": [],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Tuna Salad Sandwich": {
+    "ingredients": [
+      "canned tuna",
+      "mayonnaise",
+      "celery, diced",
+      "onion, diced",
+      "lemon juice",
+      "salt",
+      "black pepper",
+      "white bread",
+      "lettuce",
+      "tomato"
+    ],
+    "directions": "Mix tuna, mayo, celery, onion, lemon juice, salt, pepper. Spread on bread with lettuce and tomato.",
+    "categories": [
+      "lunch",
+      "american",
+      "sandwich",
+      "seafood"
+    ],
+    "diets": [],
+    "cook_time": 10,
+    "time_category": "10-min"
+  },
+  "Cuban Sandwich": {
+    "ingredients": [
+      "Cuban bread",
+      "roast pork",
+      "ham",
+      "Swiss cheese",
+      "dill pickles",
+      "yellow mustard",
+      "butter"
+    ],
+    "directions": "Layer mustard, ham, pork, cheese, pickles on bread. Butter outside. Press in panini press or skillet with weight until crispy and cheese melts.",
+    "categories": [
+      "lunch",
+      "american",
+      "sandwich"
+    ],
+    "diets": [],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Italian Sub": {
+    "ingredients": [
+      "Italian bread",
+      "Genoa salami",
+      "capicola",
+      "ham",
+      "provolone cheese",
+      "lettuce",
+      "tomato",
+      "onion",
+      "pepperoncini",
+      "olive oil",
+      "red wine vinegar",
+      "Italian seasoning"
+    ],
+    "directions": "Layer meats and cheese on bread. Add lettuce, tomato, onion, pepperoncini. Drizzle with oil and vinegar. Season with Italian seasoning.",
+    "categories": [
+      "lunch",
+      "american",
+      "italian",
+      "sandwich"
+    ],
+    "diets": [],
+    "cook_time": 10,
+    "time_category": "10-min"
+  },
+  "Turkey Avocado Sandwich": {
+    "ingredients": [
+      "sourdough bread",
+      "turkey breast",
+      "avocado, sliced",
+      "bacon",
+      "Swiss cheese",
+      "lettuce",
+      "tomato",
+      "mayonnaise",
+      "Dijon mustard"
+    ],
+    "directions": "Toast bread. Spread with mayo and mustard. Layer turkey, bacon, cheese, avocado, lettuce, tomato. Top with second slice.",
+    "categories": [
+      "lunch",
+      "american",
+      "sandwich"
+    ],
+    "diets": [],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "California Chicken Sandwich": {
+    "ingredients": [
+      "grilled chicken breast",
+      "ciabatta roll",
+      "avocado",
+      "bacon",
+      "Monterey Jack cheese",
+      "sprouts",
+      "tomato",
+      "chipotle mayo"
+    ],
+    "directions": "Toast roll. Spread with chipotle mayo. Layer chicken, cheese, bacon, avocado, tomato, sprouts. Serve warm.",
+    "categories": [
+      "lunch",
+      "american",
+      "sandwich"
+    ],
+    "diets": [],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Lobster Roll": {
+    "ingredients": [
+      "lobster meat",
+      "mayonnaise",
+      "lemon juice",
+      "celery, diced",
+      "chives",
+      "New England hot dog bun",
+      "butter",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Mix lobster, mayo, lemon, celery, chives, salt, pepper. Toast buttered bun. Fill with lobster salad. Serve immediately.",
+    "categories": [
+      "lunch",
+      "american",
+      "sandwich",
+      "seafood"
+    ],
+    "diets": [],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Po' Boy Sandwich": {
+    "ingredients": [
+      "fried shrimp or oysters",
+      "French bread",
+      "lettuce",
+      "tomato",
+      "pickles",
+      "remoulade sauce"
+    ],
+    "directions": "Fry shrimp or oysters until golden. Split bread, spread with remoulade. Layer lettuce, tomato, seafood, pickles. Serve immediately.",
+    "categories": [
+      "lunch",
+      "american",
+      "sandwich",
+      "seafood",
+      "southern"
+    ],
+    "diets": [],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Chicken Parmesan Sandwich": {
+    "ingredients": [
+      "breaded chicken cutlet",
+      "marinara sauce",
+      "mozzarella cheese",
+      "Parmesan cheese",
+      "hoagie roll",
+      "Italian seasoning"
+    ],
+    "directions": "Fry chicken cutlet until golden. Top with marinara and mozzarella. Broil until cheese melts. Place in roll, sprinkle with Parmesan and Italian seasoning.",
+    "categories": [
+      "lunch",
+      "american",
+      "italian",
+      "sandwich"
+    ],
+    "diets": [],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "BBQ Chicken Pizza": {
+    "ingredients": [
+      "pizza dough",
+      "BBQ sauce",
+      "grilled chicken, diced",
+      "red onion, sliced",
+      "mozzarella cheese",
+      "cilantro",
+      "smoked Gouda cheese"
+    ],
+    "directions": "Stretch dough. Spread with BBQ sauce. Top with chicken, onion, cheeses. Bake at 450\u00b0F for 12-15 minutes. Top with fresh cilantro.",
+    "categories": [
+      "lunch",
+      "american",
+      "pizza"
+    ],
+    "diets": [],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Pepperoni Pizza": {
+    "ingredients": [
+      "pizza dough",
+      "pizza sauce",
+      "mozzarella cheese, shredded",
+      "pepperoni slices",
+      "Italian seasoning",
+      "olive oil"
+    ],
+    "directions": "Stretch dough, brush with oil. Spread sauce, top with cheese and pepperoni. Bake at 475\u00b0F for 12-15 minutes until crust is golden.",
+    "categories": [
+      "lunch",
+      "american",
+      "pizza"
+    ],
+    "diets": [],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Margherita Pizza": {
+    "ingredients": [
+      "pizza dough",
+      "San Marzano tomatoes, crushed",
+      "fresh mozzarella",
+      "fresh basil",
+      "olive oil",
+      "garlic",
+      "salt"
+    ],
+    "directions": "Stretch dough. Spread crushed tomatoes seasoned with garlic and salt. Add torn mozzarella. Bake at 500\u00b0F for 10-12 minutes. Top with fresh basil and olive oil drizzle.",
+    "categories": [
+      "lunch",
+      "american",
+      "italian",
+      "pizza"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Meat Lovers Pizza": {
+    "ingredients": [
+      "pizza dough",
+      "pizza sauce",
+      "mozzarella cheese",
+      "pepperoni",
+      "Italian sausage, crumbled",
+      "bacon, crumbled",
+      "ham, diced"
+    ],
+    "directions": "Stretch dough. Spread sauce, add cheese and all meats. Bake at 450\u00b0F for 15-18 minutes until crust is golden and toppings are cooked.",
+    "categories": [
+      "lunch",
+      "american",
+      "pizza"
+    ],
+    "diets": [],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Vegetable Pizza": {
+    "ingredients": [
+      "pizza dough",
+      "pizza sauce",
+      "mozzarella cheese",
+      "bell peppers, sliced",
+      "mushrooms, sliced",
+      "onion, sliced",
+      "black olives",
+      "tomatoes"
+    ],
+    "directions": "Stretch dough. Spread sauce, top with cheese and vegetables. Bake at 450\u00b0F for 15 minutes until crust is golden.",
+    "categories": [
+      "lunch",
+      "american",
+      "pizza"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Macaroni and Cheese": {
+    "ingredients": [
+      "elbow macaroni",
+      "sharp cheddar cheese",
+      "milk",
+      "butter",
+      "flour",
+      "dry mustard",
+      "salt",
+      "black pepper",
+      "breadcrumbs"
+    ],
+    "directions": "Cook pasta. Make roux with butter and flour. Add milk, whisk until thick. Add cheese, mustard, salt, pepper. Combine with pasta. Top with breadcrumbs. Bake at 350\u00b0F for 25 minutes.",
+    "categories": [
+      "lunch",
+      "american",
+      "comfort"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 45,
+    "time_category": "60-min"
+  },
+  "Baked Mac and Cheese with Bacon": {
+    "ingredients": [
+      "elbow macaroni",
+      "sharp cheddar cheese",
+      "Gruyere cheese",
+      "bacon, crumbled",
+      "milk",
+      "butter",
+      "flour",
+      "panko breadcrumbs",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Cook pasta and bacon. Make cheese sauce. Mix with pasta and bacon. Top with panko mixed with butter. Bake at 375\u00b0F for 30 minutes.",
+    "categories": [
+      "lunch",
+      "american",
+      "comfort"
+    ],
+    "diets": [],
+    "cook_time": 50,
+    "time_category": "60-min"
+  },
+  "Potato Salad": {
+    "ingredients": [
+      "russet potatoes",
+      "mayonnaise",
+      "yellow mustard",
+      "celery, diced",
+      "onion, diced",
+      "hard-boiled eggs",
+      "dill pickle relish",
+      "salt",
+      "black pepper",
+      "paprika"
+    ],
+    "directions": "Boil potatoes until tender, cube. Mix mayo, mustard, relish, salt, pepper. Fold in potatoes, celery, onion, chopped eggs. Sprinkle with paprika. Chill before serving.",
+    "categories": [
+      "lunch",
+      "american",
+      "side"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 40,
+    "time_category": "60-min"
+  },
+  "Coleslaw": {
+    "ingredients": [
+      "green cabbage, shredded",
+      "carrots, shredded",
+      "mayonnaise",
+      "apple cider vinegar",
+      "sugar",
+      "celery seed",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Mix mayo, vinegar, sugar, celery seed, salt, pepper. Toss with cabbage and carrots. Refrigerate at least 1 hour before serving.",
+    "categories": [
+      "lunch",
+      "american",
+      "side"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Pasta Salad": {
+    "ingredients": [
+      "rotini pasta",
+      "Italian dressing",
+      "cherry tomatoes",
+      "cucumber, diced",
+      "black olives",
+      "red onion, diced",
+      "Parmesan cheese",
+      "Italian seasoning"
+    ],
+    "directions": "Cook pasta, cool. Toss with dressing and vegetables. Add cheese and seasoning. Chill before serving.",
+    "categories": [
+      "lunch",
+      "american",
+      "salad"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Three Bean Salad": {
+    "ingredients": [
+      "green beans",
+      "wax beans",
+      "kidney beans",
+      "red onion, sliced",
+      "olive oil",
+      "red wine vinegar",
+      "sugar",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Drain and rinse beans. Mix with onion. Whisk oil, vinegar, sugar, salt, pepper. Pour over beans. Refrigerate several hours before serving.",
+    "categories": [
+      "lunch",
+      "american",
+      "salad"
+    ],
+    "diets": [
+      "vegetarian",
+      "vegan"
+    ],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Deviled Eggs": {
+    "ingredients": [
+      "hard-boiled eggs",
+      "mayonnaise",
+      "yellow mustard",
+      "white vinegar",
+      "salt",
+      "black pepper",
+      "paprika"
+    ],
+    "directions": "Halve eggs, remove yolks. Mash yolks with mayo, mustard, vinegar, salt, pepper. Pipe or spoon into whites. Dust with paprika.",
+    "categories": [
+      "lunch",
+      "american",
+      "side"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Chicken Pot Pie": {
+    "ingredients": [
+      "chicken breast, cooked and diced",
+      "frozen mixed vegetables",
+      "chicken broth",
+      "heavy cream",
+      "butter",
+      "flour",
+      "pie crust",
+      "salt",
+      "black pepper",
+      "thyme"
+    ],
+    "directions": "Make roux with butter and flour. Add broth and cream, cook until thick. Add chicken, vegetables, seasonings. Pour into pie dish, top with crust. Bake at 400\u00b0F for 35 minutes.",
+    "categories": [
+      "lunch",
+      "american",
+      "comfort"
+    ],
+    "diets": [],
+    "cook_time": 60,
+    "time_category": "60-min"
+  },
+  "Beef Stew": {
+    "ingredients": [
+      "beef chuck, cubed",
+      "russet potatoes, cubed",
+      "carrots, sliced",
+      "celery, sliced",
+      "onion, diced",
+      "beef broth",
+      "tomato paste",
+      "Worcestershire sauce",
+      "flour",
+      "thyme",
+      "bay leaves"
+    ],
+    "directions": "Brown beef. Add vegetables, broth, tomato paste, Worcestershire, herbs. Simmer 2 hours until tender. Thicken with flour slurry if needed.",
+    "categories": [
+      "lunch",
+      "american",
+      "soup",
+      "comfort"
+    ],
+    "diets": [],
+    "cook_time": 150,
+    "time_category": "60-plus"
+  },
+  "Salisbury Steak": {
+    "ingredients": [
+      "ground beef",
+      "onion, diced",
+      "breadcrumbs",
+      "egg",
+      "Worcestershire sauce",
+      "beef broth",
+      "mushrooms, sliced",
+      "flour",
+      "butter",
+      "salt",
+      "black pepper"
+    ],
+    "directions": "Mix beef, half onion, breadcrumbs, egg, Worcestershire, salt, pepper. Form patties. Brown in skillet. Remove. Saut\u00e9 mushrooms and remaining onion. Add flour, broth. Simmer sauce. Return patties, cook 10 minutes.",
+    "categories": [
+      "lunch",
+      "american",
+      "comfort"
+    ],
+    "diets": [],
+    "cook_time": 35,
+    "time_category": "60-min"
+  },
+  "Meatloaf Sandwich": {
+    "ingredients": [
+      "meatloaf, sliced",
+      "white bread",
+      "ketchup",
+      "butter",
+      "lettuce",
+      "tomato"
+    ],
+    "directions": "Toast bread in butter. Warm meatloaf slices. Layer meatloaf on bread with ketchup, lettuce, tomato. Serve warm.",
+    "categories": [
+      "lunch",
+      "american",
+      "sandwich"
+    ],
+    "diets": [],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Hot Turkey Sandwich": {
+    "ingredients": [
+      "roast turkey, sliced",
+      "white bread",
+      "turkey gravy",
+      "mashed potatoes",
+      "cranberry sauce"
+    ],
+    "directions": "Place bread on plate. Layer turkey over bread. Cover with hot gravy. Serve with mashed potatoes and cranberry sauce.",
+    "categories": [
+      "lunch",
+      "american",
+      "sandwich"
+    ],
+    "diets": [],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Hot Roast Beef Sandwich": {
+    "ingredients": [
+      "roast beef, sliced",
+      "white bread",
+      "beef gravy",
+      "mashed potatoes"
+    ],
+    "directions": "Place bread on plate. Layer roast beef over bread. Ladle hot gravy over everything. Serve with mashed potatoes.",
+    "categories": [
+      "lunch",
+      "american",
+      "sandwich"
+    ],
+    "diets": [],
+    "cook_time": 15,
+    "time_category": "30-min"
+  },
+  "Fried Green Tomatoes": {
+    "ingredients": [
+      "green tomatoes",
+      "cornmeal",
+      "flour",
+      "buttermilk",
+      "egg",
+      "salt",
+      "black pepper",
+      "cayenne pepper",
+      "vegetable oil",
+      "remoulade sauce"
+    ],
+    "directions": "Slice tomatoes thick. Season cornmeal and flour mixture. Dip tomatoes in buttermilk-egg, then coating. Fry until golden on both sides. Serve with remoulade.",
+    "categories": [
+      "lunch",
+      "american",
+      "southern",
+      "side"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Hush Puppies": {
+    "ingredients": [
+      "cornmeal",
+      "flour",
+      "baking powder",
+      "onion, minced",
+      "egg",
+      "buttermilk",
+      "salt",
+      "sugar",
+      "cayenne pepper",
+      "vegetable oil"
+    ],
+    "directions": "Mix dry ingredients. Add onion, egg, buttermilk. Drop spoonfuls into hot oil. Fry until golden brown, 3-4 minutes. Drain and serve hot.",
+    "categories": [
+      "lunch",
+      "american",
+      "southern",
+      "side"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Fried Catfish": {
+    "ingredients": [
+      "catfish fillets",
+      "cornmeal",
+      "flour",
+      "Cajun seasoning",
+      "buttermilk",
+      "egg",
+      "vegetable oil",
+      "lemon wedges",
+      "tartar sauce"
+    ],
+    "directions": "Soak catfish in buttermilk. Mix cornmeal, flour, Cajun seasoning. Dredge fish. Fry until golden and cooked through. Serve with lemon and tartar sauce.",
+    "categories": [
+      "lunch",
+      "american",
+      "southern",
+      "seafood"
+    ],
+    "diets": [],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Fried Pickles": {
+    "ingredients": [
+      "dill pickle slices",
+      "flour",
+      "buttermilk",
+      "breadcrumbs",
+      "Cajun seasoning",
+      "vegetable oil",
+      "ranch dressing"
+    ],
+    "directions": "Pat pickles dry. Dredge in flour, dip in buttermilk, coat with seasoned breadcrumbs. Fry until golden. Serve with ranch.",
+    "categories": [
+      "lunch",
+      "american",
+      "southern"
+    ],
+    "diets": [
+      "vegetarian"
+    ],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Shrimp Basket": {
+    "ingredients": [
+      "large shrimp, peeled",
+      "flour",
+      "cornmeal",
+      "Cajun seasoning",
+      "buttermilk",
+      "vegetable oil",
+      "cocktail sauce",
+      "french fries",
+      "coleslaw"
+    ],
+    "directions": "Season flour-cornmeal mix. Dip shrimp in buttermilk, dredge in coating. Fry until golden. Serve with fries, coleslaw, cocktail sauce.",
+    "categories": [
+      "lunch",
+      "american",
+      "seafood"
+    ],
+    "diets": [],
+    "cook_time": 25,
+    "time_category": "30-min"
+  },
+  "Clam Strips": {
+    "ingredients": [
+      "clam strips",
+      "flour",
+      "buttermilk",
+      "breadcrumbs",
+      "salt",
+      "vegetable oil",
+      "tartar sauce",
+      "lemon wedges",
+      "french fries"
+    ],
+    "directions": "Dredge clams in flour, dip in buttermilk, coat with breadcrumbs. Fry until golden. Season with salt. Serve with tartar sauce, lemon, fries.",
+    "categories": [
+      "lunch",
+      "american",
+      "seafood"
+    ],
+    "diets": [],
+    "cook_time": 20,
+    "time_category": "30-min"
+  },
+  "Oyster Po' Boy": {
+    "ingredients": [
+      "shucked oysters",
+      "cornmeal",
+      "flour",
+      "Cajun seasoning",
+      "French bread",
+      "lettuce",
+      "tomato",
+      "remoulade sauce",
+      "hot sauce"
+    ],
+    "directions": "Dredge oysters in seasoned cornmeal-flour mix. Fry until crispy. Split bread, spread with remoulade. Add lettuce, tomato, oysters. Drizzle with hot sauce.",
+    "categories": [
+      "lunch",
+      "american",
+      "southern",
+      "seafood",
+      "sandwich"
+    ],
+    "diets": [],
+    "cook_time": 25,
+    "time_category": "30-min"
   }
 }
