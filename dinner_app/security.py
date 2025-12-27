@@ -229,8 +229,15 @@ def is_safe_filename(filename: str) -> bool:
     # Must have valid extension for plugins
     if not filename.endswith(".py"):
         return False
-    # Check for null bytes
-    if "\x00" in filename:
+    # Check for null bytes (literal and URL-encoded)
+    if "\x00" in filename or "%00" in filename.lower():
+        return False
+    # Check for other URL-encoded dangerous characters
+    if any(enc in filename.lower() for enc in ["%2f", "%5c", "%2e%2e"]):
+        return False
+    # Must only contain safe characters (alphanumeric, underscore, hyphen, dot)
+    import re
+    if not re.match(r'^[a-zA-Z0-9_\-\.]+$', filename):
         return False
     return True
 
