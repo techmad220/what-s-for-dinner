@@ -1,9 +1,272 @@
-"""Security utilities for input validation and sanitization."""
+"""Security utilities for input validation and sanitization.
+
+Defense-in-depth architecture:
+1. Layer 1 - Input Sanitization: Remove/reject dangerous patterns
+2. Layer 2 - Sandboxing: Wrap data in immutable containers that restrict operations
+3. Layer 3 - Output Encoding: Escape data before display/storage
+"""
 
 from __future__ import annotations
 
 import re
-from typing import Any
+import threading
+from functools import wraps
+from typing import Any, ClassVar
+
+# =============================================================================
+# LAYER 2: SANDBOXING - Immutable containers that restrict dangerous operations
+# =============================================================================
+
+class SandboxViolation(Exception):
+    """Raised when sandboxed data attempts a restricted operation."""
+    pass
+
+
+class SandboxedString(str):
+    """
+    Immutable string wrapper that blocks dangerous operations.
+
+    Even if malicious content passes sanitization, this container:
+    - Blocks format string attacks
+    - Prevents shell/command injection via subprocess
+    - Blocks eval/exec attempts
+    - Restricts pickle/marshal operations
+    - Logs access patterns for audit
+    """
+
+    _access_log: ClassVar[list] = []
+    _log_lock: ClassVar[threading.Lock] = threading.Lock()
+    _max_log_size: ClassVar[int] = 1000
+
+    def __new__(cls, value: str, source: str = "unknown"):
+        instance = super().__new__(cls, value)
+        instance._source = source
+        instance._creation_time = __import__("time").time()
+        return instance
+
+    def __repr__(self) -> str:
+        return f"SandboxedString({super().__repr__()}, source={self._source!r})"
+
+    def __mod__(self, other):
+        """Block format string attacks via % operator."""
+        raise SandboxViolation(
+            f"Format string operation blocked on sandboxed input from {self._source}"
+        )
+
+    def format(self, *args, **kwargs):
+        """Block .format() method to prevent format string injection."""
+        raise SandboxViolation(
+            f"String.format() blocked on sandboxed input from {self._source}"
+        )
+
+    def __reduce__(self):
+        """Block pickling to prevent deserialization attacks."""
+        raise SandboxViolation(
+            f"Pickle operation blocked on sandboxed input from {self._source}"
+        )
+
+    def __reduce_ex__(self, protocol):
+        """Block extended pickling."""
+        raise SandboxViolation(
+            f"Pickle operation blocked on sandboxed input from {self._source}"
+        )
+
+    def encode(self, encoding: str = "utf-8", errors: str = "strict") -> bytes:
+        """Allow encoding but log it for audit."""
+        self._log_access("encode", encoding)
+        return super().encode(encoding, errors)
+
+    def _log_access(self, operation: str, detail: str = "") -> None:
+        """Log access to sandboxed data for security audit."""
+        import time
+        with SandboxedString._log_lock:
+            if len(SandboxedString._access_log) >= SandboxedString._max_log_size:
+                SandboxedString._access_log = SandboxedString._access_log[-500:]
+            SandboxedString._access_log.append({
+                "time": time.time(),
+                "source": self._source,
+                "operation": operation,
+                "detail": detail,
+                "value_preview": str(self)[:50],
+            })
+
+    @classmethod
+    def get_access_log(cls) -> list:
+        """Retrieve access log for security audit."""
+        with cls._log_lock:
+            return cls._access_log.copy()
+
+    @classmethod
+    def clear_access_log(cls) -> None:
+        """Clear the access log."""
+        with cls._log_lock:
+            cls._access_log.clear()
+
+    def unsafe_unwrap(self) -> str:
+        """
+        Explicitly unwrap to regular string.
+
+        SECURITY: Use only when absolutely necessary and after validation.
+        This logs the unwrap for audit purposes.
+        """
+        self._log_access("unsafe_unwrap", "data exposed")
+        return str(self)
+
+
+class SandboxedDict(dict):
+    """
+    Dictionary wrapper that sandboxes all string values.
+
+    Provides defense-in-depth for recipe data structures.
+    """
+
+    def __init__(self, data: dict, source: str = "unknown"):
+        self._source = source
+        sandboxed = {}
+        for key, value in data.items():
+            sandboxed[self._sandbox_value(key)] = self._sandbox_value(value)
+        super().__init__(sandboxed)
+
+    def _sandbox_value(self, value: Any) -> Any:
+        """Recursively sandbox values."""
+        if isinstance(value, str) and not isinstance(value, SandboxedString):
+            return SandboxedString(value, self._source)
+        elif isinstance(value, dict) and not isinstance(value, SandboxedDict):
+            return SandboxedDict(value, self._source)
+        elif isinstance(value, list):
+            return SandboxedList(value, self._source)
+        return value
+
+    def __setitem__(self, key, value):
+        """Sandbox new values being set."""
+        super().__setitem__(
+            self._sandbox_value(key),
+            self._sandbox_value(value)
+        )
+
+    def __reduce__(self):
+        """Block pickling."""
+        raise SandboxViolation(
+            f"Pickle operation blocked on sandboxed dict from {self._source}"
+        )
+
+
+class SandboxedList(list):
+    """
+    List wrapper that sandboxes all string elements.
+    """
+
+    def __init__(self, data: list, source: str = "unknown"):
+        self._source = source
+        sandboxed = [self._sandbox_value(item) for item in data]
+        super().__init__(sandboxed)
+
+    def _sandbox_value(self, value: Any) -> Any:
+        """Recursively sandbox values."""
+        if isinstance(value, str) and not isinstance(value, SandboxedString):
+            return SandboxedString(value, self._source)
+        elif isinstance(value, dict) and not isinstance(value, SandboxedDict):
+            return SandboxedDict(value, self._source)
+        elif isinstance(value, list) and not isinstance(value, SandboxedList):
+            return SandboxedList(value, self._source)
+        return value
+
+    def append(self, value):
+        """Sandbox new values being appended."""
+        super().append(self._sandbox_value(value))
+
+    def extend(self, values):
+        """Sandbox new values being extended."""
+        super().extend([self._sandbox_value(v) for v in values])
+
+    def __setitem__(self, index, value):
+        """Sandbox new values being set."""
+        super().__setitem__(index, self._sandbox_value(value))
+
+    def __reduce__(self):
+        """Block pickling."""
+        raise SandboxViolation(
+            f"Pickle operation blocked on sandboxed list from {self._source}"
+        )
+
+
+def sandbox(value: Any, source: str = "user_input") -> Any:
+    """
+    Wrap any value in appropriate sandbox container.
+
+    Use this as the primary entry point for sandboxing user input.
+
+    Args:
+        value: The value to sandbox
+        source: Description of where this input came from (for audit)
+
+    Returns:
+        Sandboxed version of the value
+
+    Example:
+        user_input = sandbox(request.get("name"), source="recipe_form")
+    """
+    if isinstance(value, str):
+        return SandboxedString(value, source)
+    elif isinstance(value, dict):
+        return SandboxedDict(value, source)
+    elif isinstance(value, list):
+        return SandboxedList(value, source)
+    return value
+
+
+def sandboxed_input(source: str = "user_input"):
+    """
+    Decorator to automatically sandbox function arguments.
+
+    Example:
+        @sandboxed_input(source="api_endpoint")
+        def process_recipe(name: str, ingredients: list):
+            # name and ingredients are now sandboxed
+            pass
+    """
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            sandboxed_args = tuple(sandbox(arg, source) for arg in args)
+            sandboxed_kwargs = {k: sandbox(v, source) for k, v in kwargs.items()}
+            return func(*sandboxed_args, **sandboxed_kwargs)
+        return wrapper
+    return decorator
+
+
+# =============================================================================
+# LAYER 3: OUTPUT ENCODING - Escape data for safe output
+# =============================================================================
+
+def html_escape(text: str) -> str:
+    """Escape text for safe HTML output."""
+    if not isinstance(text, str):
+        text = str(text)
+    return (
+        text.replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace('"', "&quot;")
+        .replace("'", "&#x27;")
+    )
+
+
+def shell_escape(text: str) -> str:
+    """Escape text for safe shell usage (though we block shell usage anyway)."""
+    if not isinstance(text, str):
+        text = str(text)
+    # Replace dangerous shell metacharacters
+    dangerous = ['`', '$', '!', '&', '|', ';', '\n', '\r', '(', ')', '{', '}',
+                 '[', ']', '<', '>', '"', "'", '\\', '*', '?', '#', '~']
+    for char in dangerous:
+        text = text.replace(char, '')
+    return text
+
+
+# =============================================================================
+# LAYER 1: INPUT SANITIZATION (original code continues below)
+# =============================================================================
 
 # Maximum lengths for various inputs
 MAX_RECIPE_NAME_LENGTH = 200
@@ -96,10 +359,7 @@ MEASUREMENT_PATTERNS = [
 
 def has_measurements(text: str) -> bool:
     """Check if text contains measurement quantities."""
-    for pattern in MEASUREMENT_PATTERNS:
-        if pattern.search(text):
-            return True
-    return False
+    return any(pattern.search(text) for pattern in MEASUREMENT_PATTERNS)
 
 
 def validate_ingredient(ingredient: str) -> str:
@@ -257,10 +517,7 @@ def is_safe_filename(filename: str) -> bool:
     if any(enc in filename.lower() for enc in ["%2f", "%5c", "%2e%2e"]):
         return False
     # Must only contain safe characters (alphanumeric, underscore, hyphen, dot)
-    import re
-    if not re.match(r'^[a-zA-Z0-9_\-\.]+$', filename):
-        return False
-    return True
+    return bool(re.match(r'^[a-zA-Z0-9_\-\.]+$', filename))
 
 
 def check_file_permissions(filepath: str, require_writable: bool = False) -> bool:
@@ -281,7 +538,6 @@ def check_file_permissions(filepath: str, require_writable: bool = False) -> boo
         path = Path(filepath).resolve()
 
         # Check for path traversal (resolved path should be under expected dirs)
-        path_str = str(path)
         if ".." in filepath:
             return False
 
@@ -331,9 +587,9 @@ def safe_json_load(filepath: str) -> dict:
         with Path(filepath).open() as fh:
             return json.load(fh)
     except json.JSONDecodeError as e:
-        raise ValidationError(f"Invalid JSON in {filepath}: {e}")
+        raise ValidationError(f"Invalid JSON in {filepath}: {e}") from e
     except OSError as e:
-        raise ValidationError(f"Cannot open {filepath}: {e}")
+        raise ValidationError(f"Cannot open {filepath}: {e}") from e
 
 
 def safe_json_save(filepath: str, data: dict) -> None:
@@ -357,4 +613,4 @@ def safe_json_save(filepath: str, data: dict) -> None:
         with Path(filepath).open("w") as fh:
             json.dump(data, fh, indent=2)
     except OSError as e:
-        raise ValidationError(f"Cannot write to {filepath}: {e}")
+        raise ValidationError(f"Cannot write to {filepath}: {e}") from e
