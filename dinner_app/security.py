@@ -83,11 +83,32 @@ def validate_recipe_name(name: str) -> str:
     return name
 
 
+# Patterns indicating measurements/quantities (ingredients should be raw names)
+MEASUREMENT_PATTERNS = [
+    re.compile(r"\d+\s*(lb|lbs|pound|pounds|oz|ounce|ounces)", re.IGNORECASE),
+    re.compile(r"\d+\s*(cup|cups|tbsp|tablespoon|tablespoons)", re.IGNORECASE),
+    re.compile(r"\d+\s*(tsp|teaspoon|teaspoons|ml|g|kg)", re.IGNORECASE),
+    re.compile(r"\d+/\d+", re.IGNORECASE),  # fractions like 1/2, 1/3
+    re.compile(r"^\d+\s+[a-zA-Z]"),  # starts with number + space + word
+    re.compile(r"\(\d+"),  # parentheses with number like (80/20)
+]
+
+
+def has_measurements(text: str) -> bool:
+    """Check if text contains measurement quantities."""
+    for pattern in MEASUREMENT_PATTERNS:
+        if pattern.search(text):
+            return True
+    return False
+
+
 def validate_ingredient(ingredient: str) -> str:
-    """Validate and sanitize an ingredient name."""
+    """Validate and sanitize an ingredient name (no measurements allowed)."""
     ingredient = sanitize_text(ingredient, MAX_INGREDIENT_LENGTH)
     if not ingredient:
         raise ValidationError("Ingredient cannot be empty")
+    if has_measurements(ingredient):
+        raise ValidationError(f"Ingredient '{ingredient}' contains measurements - use raw ingredient name only")
     return ingredient
 
 

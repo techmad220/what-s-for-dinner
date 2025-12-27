@@ -7473,7 +7473,7 @@
       "garlic",
       "ginger",
       "vegetable oil",
-      "cornstarch mixed with 2 tablespoons water",
+      "cornstarch",
       "onion",
       "rice"
     ],
@@ -14517,7 +14517,7 @@
       "anchovy paste",
       "paprika",
       "curry powder",
-      "juice of 1/2 lemon",
+      "lemon",
       "russet potatoes"
     ],
     "directions": "Ingredients needed: 2 ribeye steaks (12 oz each), 2 tbsp oil, 4 large russet potatoes for fries, oil for frying. 1. Make compound butter: Mix all butter ingredients until well combined. Form into log, wrap in plastic wrap, refrigerate. 2. For fries: Cut potatoes into sticks, soak 30 min. Double-fry at 325\u00b0F then 375\u00b0F until golden and crispy. Season with salt. 3. For steaks: Season with salt and pepper. Heat oil in cast iron over high heat. Sear 3-4 min per side for medium-rare. 4. Let steaks rest 5 min. 5. Slice steaks, top with generous pats of caf\u00e9 de Paris butter. Serve with hot fries.",
@@ -30793,30 +30793,5 @@
     "diets": [],
     "cook_time": 30,
     "time_category": "30-min"
-  },
-  "Salisbury Steak": {
-    "ingredients": [
-      "1 1/2 lbs ground beef (80/20)",
-      "1/3 cup breadcrumbs",
-      "1 large egg",
-      "3 tbsp Worcestershire sauce",
-      "1/8 tsp garlic powder",
-      "1/4 tsp onion powder",
-      "1 tsp salt",
-      "1/2 tsp black pepper",
-      "2 tbsp butter",
-      "2 tbsp flour",
-      "2 cups beef broth",
-      "1 tsp Dijon mustard"
-    ],
-    "directions": "1. In a large bowl, whisk together the egg, 1 tbsp Worcestershire sauce, salt, pepper, garlic powder, and onion powder.\n\n2. Add breadcrumbs and mix until a thick paste forms.\n\n3. Add ground beef and mix gently just until combined. Do not overmix.\n\n4. Divide into 4 equal portions and shape into oval patties about 1/2-inch thick. Press a shallow dimple into the center of each patty.\n\n5. Heat a large skillet over medium-high heat. Add patties and sear 3-4 minutes without moving them until deeply browned. Flip and cook 2-3 minutes more. Transfer patties to a plate.\n\n6. Reduce heat to medium. Add butter to the skillet. When melted, whisk in flour and cook 60-90 seconds, whisking constantly.\n\n7. Gradually whisk in beef broth until smooth. Stir in 2 tbsp Worcestershire sauce and Dijon mustard.\n\n8. Bring to a simmer and cook 3-5 minutes, stirring occasionally, until the gravy thickens.\n\n9. Return patties and any collected juices to the skillet. Reduce heat to low and simmer 8-10 minutes, spooning gravy over the patties, until patties reach 160\u00b0F.\n\n10. Taste gravy and season with salt and pepper as needed. Serve hot over mashed potatoes or egg noodles.",
-    "categories": [
-      "Beef",
-      "Dinner",
-      "Comfort Food",
-      "American"
-    ],
-    "cook_time": 45,
-    "time_category": "medium"
   }
 }
