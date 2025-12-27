@@ -90,8 +90,9 @@ fn is_safe_plugin_name(name: &str) -> bool {
     if BLOCKED_MODULES.contains(&name) {
         return false;
     }
-    // Must only contain alphanumeric, underscore, hyphen
-    name.chars().all(|c| c.is_alphanumeric() || c == '_' || c == '-')
+    // Must only contain ASCII alphanumeric, underscore, hyphen
+    // SECURITY: Use is_ascii_alphanumeric() to prevent Unicode bypass attacks
+    name.chars().all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '-')
 }
 
 /// Load and execute plugins from the plugins directory
@@ -188,5 +189,145 @@ fn main() {
     if let Err(e) = run_app() {
         eprintln!("Error: {:#}", e);
         std::process::exit(1);
+    }
+}
+
+// =============================================================================
+// SECURITY TESTS
+// =============================================================================
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // -------------------------------------------------------------------------
+    // Plugin Filename Security Tests
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn test_safe_plugin_names() {
+        assert!(is_safe_plugin_name("plugin_recipes"));
+        assert!(is_safe_plugin_name("my_plugin"));
+        assert!(is_safe_plugin_name("test123"));
+        assert!(is_safe_plugin_name("Plugin_Test"));
+    }
+
+    #[test]
+    fn test_empty_name_rejected() {
+        assert!(!is_safe_plugin_name(""));
+    }
+
+    #[test]
+    fn test_path_traversal_rejected() {
+        assert!(!is_safe_plugin_name("../etc/passwd"));
+        assert!(!is_safe_plugin_name("..\\windows\\system32"));
+        assert!(!is_safe_plugin_name("foo/../bar"));
+        assert!(!is_safe_plugin_name(".."));
+        assert!(!is_safe_plugin_name("..."));
+    }
+
+    #[test]
+    fn test_absolute_paths_rejected() {
+        assert!(!is_safe_plugin_name("/etc/passwd"));
+        assert!(!is_safe_plugin_name("C:\\Windows\\System32"));
+        assert!(!is_safe_plugin_name("/usr/bin/python"));
+    }
+
+    #[test]
+    fn test_hidden_files_rejected() {
+        assert!(!is_safe_plugin_name(".hidden"));
+        assert!(!is_safe_plugin_name(".bashrc"));
+        assert!(!is_safe_plugin_name(".."));
+    }
+
+    #[test]
+    fn test_blocked_modules_rejected() {
+        for module in BLOCKED_MODULES {
+            assert!(!is_safe_plugin_name(module), "Should block: {}", module);
+        }
+    }
+
+    #[test]
+    fn test_special_chars_rejected() {
+        assert!(!is_safe_plugin_name("plugin;rm -rf /"));
+        assert!(!is_safe_plugin_name("plugin|cat /etc/passwd"));
+        assert!(!is_safe_plugin_name("plugin$(whoami)"));
+        assert!(!is_safe_plugin_name("plugin`id`"));
+        assert!(!is_safe_plugin_name("plugin\x00evil"));
+        assert!(!is_safe_plugin_name("plugin\necho pwned"));
+    }
+
+    #[test]
+    fn test_unicode_bypass_attempts() {
+        // These should be rejected due to non-alphanumeric chars
+        assert!(!is_safe_plugin_name("plügin"));
+        assert!(!is_safe_plugin_name("plugin™"));
+        assert!(!is_safe_plugin_name("プラグイン"));
+        assert!(!is_safe_plugin_name("plugin\u{200B}evil")); // zero-width space
+        assert!(!is_safe_plugin_name("plugin\u{00AD}evil")); // soft hyphen
+    }
+
+    #[test]
+    fn test_long_names_handled() {
+        // Very long name should still be validated correctly
+        let long_name: String = "a".repeat(10000);
+        // Should not crash, result depends on char validation
+        let _ = is_safe_plugin_name(&long_name);
+    }
+
+    // -------------------------------------------------------------------------
+    // Blocked Modules Completeness Tests
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn test_critical_modules_blocked() {
+        let critical = vec![
+            "os", "subprocess", "shutil", "socket", "ctypes",
+            "pickle", "marshal", "exec", "eval", "compile",
+        ];
+        for module in critical {
+            assert!(
+                BLOCKED_MODULES.contains(&module),
+                "Critical module not blocked: {}",
+                module
+            );
+        }
+    }
+
+    #[test]
+    fn test_network_modules_blocked() {
+        let network = vec!["socket", "http", "urllib", "ftplib", "smtplib", "ssl"];
+        for module in network {
+            assert!(
+                BLOCKED_MODULES.contains(&module),
+                "Network module not blocked: {}",
+                module
+            );
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Path Safety Tests
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn test_null_bytes_in_path() {
+        assert!(!is_safe_plugin_name("plugin\x00.py"));
+        assert!(!is_safe_plugin_name("\x00plugin"));
+        assert!(!is_safe_plugin_name("plu\x00gin"));
+    }
+
+    #[test]
+    fn test_windows_path_separators() {
+        assert!(!is_safe_plugin_name("foo\\bar"));
+        assert!(!is_safe_plugin_name("C:\\plugin"));
+        assert!(!is_safe_plugin_name("..\\..\\etc"));
+    }
+
+    #[test]
+    fn test_unix_path_separators() {
+        assert!(!is_safe_plugin_name("foo/bar"));
+        assert!(!is_safe_plugin_name("/plugin"));
+        assert!(!is_safe_plugin_name("../../etc"));
     }
 }

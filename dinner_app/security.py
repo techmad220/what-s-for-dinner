@@ -170,7 +170,12 @@ def validate_recipe_data(data: dict) -> dict:
             if key == "diets" and isinstance(val, list):
                 validated[key] = [str(d) for d in val[:10] if isinstance(d, str)]
             elif key == "cook_time" and isinstance(val, (int, float)):
-                validated[key] = max(0, min(int(val), 1440))  # Max 24 hours
+                # Handle special floats (inf, nan) that can't be converted to int
+                import math
+                if math.isfinite(val):
+                    validated[key] = max(0, min(int(val), 1440))  # Max 24 hours
+                else:
+                    validated[key] = 30  # Default to 30 mins for invalid values
             elif key == "time_category" and isinstance(val, str):
                 validated[key] = val[:20]
 

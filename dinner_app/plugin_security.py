@@ -70,10 +70,16 @@ def check_plugin_source(source: str, filename: str = "<plugin>") -> PluginSecuri
     warnings = []
     errors = []
 
+    # Check for null bytes (crash ast.parse)
+    if '\x00' in source:
+        return PluginSecurityCheck(False, [], ["Source contains null bytes"])
+
     try:
         tree = ast.parse(source, filename)
     except SyntaxError as e:
         return PluginSecurityCheck(False, [], [f"Syntax error: {e}"])
+    except ValueError as e:
+        return PluginSecurityCheck(False, [], [f"Invalid source: {e}"])
 
     for node in ast.walk(tree):
         # Check imports
