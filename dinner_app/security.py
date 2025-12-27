@@ -14,21 +14,22 @@ MAX_INGREDIENTS_PER_RECIPE = 100
 MAX_CATEGORIES_PER_RECIPE = 20
 
 # Allowed characters pattern (alphanumeric, spaces, common punctuation)
-SAFE_TEXT_PATTERN = re.compile(r'^[\w\s\-\',\.!?()&/]+$', re.UNICODE)
+SAFE_TEXT_PATTERN = re.compile(r"^[\w\s\-\',\.!?()&/]+$", re.UNICODE)
 
 # Disallowed patterns that could be suspicious
 SUSPICIOUS_PATTERNS = [
-    re.compile(r'<script', re.IGNORECASE),
-    re.compile(r'javascript:', re.IGNORECASE),
-    re.compile(r'on\w+\s*=', re.IGNORECASE),  # onclick, onerror, etc.
-    re.compile(r'\.\./', re.IGNORECASE),  # Unix path traversal
-    re.compile(r'\.\.\\', re.IGNORECASE),  # Windows path traversal
-    re.compile(r'[\x00-\x08\x0b\x0c\x0e-\x1f]'),  # Control characters
+    re.compile(r"<script", re.IGNORECASE),
+    re.compile(r"javascript:", re.IGNORECASE),
+    re.compile(r"on\w+\s*=", re.IGNORECASE),  # onclick, onerror, etc.
+    re.compile(r"\.\./", re.IGNORECASE),  # Unix path traversal
+    re.compile(r"\.\.\\", re.IGNORECASE),  # Windows path traversal
+    re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]"),  # Control characters
 ]
 
 
 class ValidationError(Exception):
     """Raised when input validation fails."""
+
     pass
 
 
@@ -57,17 +58,17 @@ def sanitize_text(text: str, max_length: int = 1000, allow_newlines: bool = Fals
     # Check for suspicious patterns
     for pattern in SUSPICIOUS_PATTERNS:
         if pattern.search(text):
-            raise ValidationError(f"Input contains disallowed pattern")
+            raise ValidationError("Input contains disallowed pattern")
 
     # Remove or escape problematic characters
     if not allow_newlines:
-        text = text.replace('\n', ' ').replace('\r', ' ')
+        text = text.replace("\n", " ").replace("\r", " ")
 
     # Strip leading/trailing whitespace
     text = text.strip()
 
     # Collapse multiple spaces
-    text = re.sub(r' +', ' ', text)
+    text = re.sub(r" +", " ", text)
 
     return text
 
@@ -200,9 +201,11 @@ def validate_json_recipes(recipes: Any) -> dict[str, dict]:
         elif isinstance(data, list):
             # Legacy format - just ingredients list
             validated[safe_name] = {
-                "ingredients": [str(i)[:MAX_INGREDIENT_LENGTH] for i in data[:MAX_INGREDIENTS_PER_RECIPE]],
+                "ingredients": [
+                    str(i)[:MAX_INGREDIENT_LENGTH] for i in data[:MAX_INGREDIENTS_PER_RECIPE]
+                ],
                 "directions": "",
-                "categories": []
+                "categories": [],
             }
 
     return validated
@@ -213,16 +216,16 @@ def is_safe_filename(filename: str) -> bool:
     if not filename:
         return False
     # Must not contain path separators or traversal
-    if '/' in filename or '\\' in filename or '..' in filename:
+    if "/" in filename or "\\" in filename or ".." in filename:
         return False
     # Must not start with a dot (hidden files)
-    if filename.startswith('.'):
+    if filename.startswith("."):
         return False
     # Must have valid extension for plugins
-    if not filename.endswith('.py'):
+    if not filename.endswith(".py"):
         return False
     # Check for null bytes
-    if '\x00' in filename:
+    if "\x00" in filename:
         return False
     return True
 
@@ -246,11 +249,11 @@ def check_file_permissions(filepath: str, require_writable: bool = False) -> boo
 
         # Check for path traversal (resolved path should be under expected dirs)
         path_str = str(path)
-        if '..' in filepath:
+        if ".." in filepath:
             return False
 
         # Check for null bytes
-        if '\x00' in filepath:
+        if "\x00" in filepath:
             return False
 
         # If file exists, check permissions

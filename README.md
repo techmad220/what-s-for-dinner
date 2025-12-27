@@ -141,14 +141,53 @@ cd launcher && cargo build --release
 python -m pytest
 ```
 
+## Security
+
+We take security seriously. This application implements:
+
+- **Input Validation**: All user inputs sanitized (XSS, injection prevention)
+- **Path Traversal Protection**: Safe file handling with validation
+- **Plugin Security**: Static analysis before loading plugins
+- **Secure Logging**: Rotating logs without sensitive data
+
+### Reporting Vulnerabilities
+
+**DO NOT** open public issues for security vulnerabilities.
+
+Please report via [GitHub Security Advisories](https://github.com/techmad220/what-s-for-dinner/security/advisories)
+or see [SECURITY.md](SECURITY.md) for our full Vulnerability Disclosure Policy.
+
 ## Contributing
 
-Contributions welcome! You can:
+Contributions welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) first.
+
+### Quick Start for Contributors
+
+```bash
+# Install dev dependencies
+pip install -e ".[dev]"
+
+# Set up pre-commit hooks (required)
+pre-commit install
+
+# Run quality checks
+ruff check dinner_app/ tests/
+bandit -r dinner_app/ -ll
+pytest tests/ -v
+```
+
+### What You Can Contribute
 
 1. **Add recipes**: Edit `dinner_app/recipes.json`
 2. **Create plugins**: Add `plugin_*.py` to extend functionality
 3. **Improve the app**: Submit PRs for `dinner_app/` (Python) or `launcher/` (Rust)
 
+All PRs must pass:
+- Linting (ruff)
+- Security scan (bandit)
+- Secrets detection
+- All tests
+
 ## License
 
-MIT
+MIT Non-Commercial - See [LICENSE](LICENSE) for details.

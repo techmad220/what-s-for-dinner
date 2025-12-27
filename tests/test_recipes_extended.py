@@ -1,17 +1,14 @@
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from dinner_app import recipes  # noqa: E402
+from dinner_app import recipes
 
 
 def test_add_recipe_without_persist():
     recipes.reset_recipes()
-    recipes.add_recipe(
-        "Test Dish", ["test ingredient"], "Test directions", ["cat"], persist=False
-
-    )
+    recipes.add_recipe("Test Dish", ["test ingredient"], "Test directions", ["cat"], persist=False)
     assert "Test Dish" in recipes.get_recipes()
     dinners = recipes.possible_dinners({"test ingredient"})
     assert dinners == ["Test Dish"]
@@ -54,7 +51,6 @@ def test_extra_ingredients():
     assert "thing" not in recipes.get_extra_ingredients()
 
 
-
 def test_update_and_remove_recipe():
     recipes.reset_recipes()
     recipes.add_recipe("Temp", ["a"], "dir", ["c"], persist=False)
@@ -72,4 +68,3 @@ def test_selected_ingredient_persistence(tmp_path, monkeypatch):
     recipes.save_selected_ingredients({"a", "b"})
     loaded = recipes.load_selected_ingredients()
     assert loaded == {"a", "b"}
-

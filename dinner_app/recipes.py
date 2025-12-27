@@ -3,24 +3,23 @@
 from __future__ import annotations
 
 import json
+import random
 from pathlib import Path
-from typing import Dict, List, Optional
 
 from .security import (
-    validate_json_recipes,
-    validate_recipe_name,
+    ValidationError,
+    validate_categories_list,
+    validate_directions,
     validate_ingredient,
     validate_ingredients_list,
-    validate_directions,
-    validate_categories_list,
-    ValidationError,
+    validate_json_recipes,
+    validate_recipe_name,
 )
 
 RECIPES_FILE = Path(__file__).with_name("recipes.json")
 EXTRA_ING_FILE = Path(__file__).with_name("extra_ingredients.json")
 SELECTED_FILE = Path(__file__).with_name("selected_ingredients.json")
 CRAFTABLE_FILE = Path(__file__).with_name("craftable.json")
-
 
 
 def load_recipes() -> Dict[str, Dict[str, object]]:
@@ -62,7 +61,6 @@ def save_selected_ingredients(selected: set[str]) -> None:
         json.dump(sorted(selected), fh, indent=2)
 
 
-
 def load_extra_ingredients() -> set[str]:
     if EXTRA_ING_FILE.exists():
         with EXTRA_ING_FILE.open() as fh:
@@ -100,7 +98,6 @@ def get_recipe_directions(name: str) -> Optional[str]:
     if recipe:
         return str(recipe.get("directions", ""))
     return None
-
 
 
 def get_recipe_categories(name: str) -> Optional[List[str]]:
@@ -182,7 +179,6 @@ def update_recipe(
         save_recipes(_recipes)
 
 
-
 def reset_extra_ingredients() -> None:
     """Reload extra ingredients from disk, discarding in-memory changes."""
 
@@ -213,7 +209,6 @@ def get_extra_ingredients() -> set[str]:
     return set(_extra_ingredients)
 
 
-
 def get_all_categories() -> list[str]:
     """Return a sorted list of all categories in the recipes."""
 
@@ -221,7 +216,6 @@ def get_all_categories() -> list[str]:
     for rec in _recipes.values():
         cats.update(rec.get("categories", []))
     return sorted(cats)
-
 
 
 def get_available_ingredients() -> set:
@@ -282,8 +276,6 @@ def search_recipes(
 
     return sorted(results)
 
-
-import random
 
 def choose_random_recipe(
     category: str = "",
@@ -353,7 +345,12 @@ _search_cache: dict[tuple, list] = {}
 
 def _build_owned_cache(owned_ingredients: set[str]) -> None:
     """Build optimized cache for owned ingredients."""
-    global _owned_ingredients_hash, _ingredient_match_cache, _owned_lower_cache, _recipe_missing_cache, _search_cache
+    global \
+        _owned_ingredients_hash, \
+        _ingredient_match_cache, \
+        _owned_lower_cache, \
+        _recipe_missing_cache, \
+        _search_cache
 
     new_hash = hash(frozenset(owned_ingredients))
     if new_hash != _owned_ingredients_hash:
@@ -420,7 +417,15 @@ def search_recipes_advanced(
 ) -> list[tuple[str, int]]:
     """Advanced search returning (recipe_name, missing_count) tuples."""
     # Check full result cache first
-    cache_key = (query, category, filter_mode, max_missing, diet_filter, time_filter, _owned_ingredients_hash)
+    cache_key = (
+        query,
+        category,
+        filter_mode,
+        max_missing,
+        diet_filter,
+        time_filter,
+        _owned_ingredients_hash,
+    )
     if cache_key in _search_cache:
         return _search_cache[cache_key]
 
@@ -454,11 +459,7 @@ def search_recipes_advanced(
         # Time filter
         if time_filter:
             time_cat = recipe.get("time_category", "")
-            if time_filter == "10-min" and time_cat != "10-min":
-                continue
-            elif time_filter == "30-min" and time_cat not in ("10-min", "30-min"):
-                continue
-            elif time_filter == "60-min" and time_cat not in ("10-min", "30-min", "60-min"):
+            if (time_filter == "10-min" and time_cat != "10-min") or (time_filter == "30-min" and time_cat not in ("10-min", "30-min")) or (time_filter == "60-min" and time_cat not in ("10-min", "30-min", "60-min")):
                 continue
             # "60-plus" or empty means no time restriction
 
@@ -515,6 +516,7 @@ def get_recipe_time(name: str) -> tuple[int, str]:
 
 
 # ============== CRAFTABLE INGREDIENTS ==============
+
 
 def load_craftable() -> list[dict]:
     """Load craftable ingredient definitions."""
@@ -582,16 +584,18 @@ def get_craftable_status(owned: set[str] | None = None) -> list[dict]:
     results = []
     for craft in _craftables:
         can_make, have, missing = can_craft(craft, owned)
-        results.append({
-            "name": craft["name"],
-            "aliases": craft.get("aliases", []),
-            "can_make": can_make,
-            "have": have,
-            "missing": missing,
-            "directions": craft.get("directions", ""),
-            "min_required": craft.get("min_required", len(craft.get("base_ingredients", []))),
-            "total_ingredients": len(craft.get("base_ingredients", []))
-        })
+        results.append(
+            {
+                "name": craft["name"],
+                "aliases": craft.get("aliases", []),
+                "can_make": can_make,
+                "have": have,
+                "missing": missing,
+                "directions": craft.get("directions", ""),
+                "min_required": craft.get("min_required", len(craft.get("base_ingredients", []))),
+                "total_ingredients": len(craft.get("base_ingredients", [])),
+            }
+        )
     return results
 
 

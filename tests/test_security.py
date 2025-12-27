@@ -1,19 +1,17 @@
 """Security tests for the dinner app."""
 
 import pytest
+
 from dinner_app.security import (
     ValidationError,
+    check_file_permissions,
+    is_safe_filename,
     sanitize_text,
-    validate_recipe_name,
     validate_ingredient,
     validate_ingredients_list,
-    validate_directions,
-    validate_category,
-    validate_categories_list,
-    validate_recipe_data,
     validate_json_recipes,
-    is_safe_filename,
-    check_file_permissions,
+    validate_recipe_data,
+    validate_recipe_name,
 )
 
 
@@ -225,17 +223,13 @@ class TestValidateJsonRecipes:
             validate_json_recipes("not a dict")
 
     def test_legacy_format_converted(self):
-        recipes = {
-            "Simple Dish": ["Ingredient 1", "Ingredient 2"]
-        }
+        recipes = {"Simple Dish": ["Ingredient 1", "Ingredient 2"]}
         result = validate_json_recipes(recipes)
         assert result["Simple Dish"]["ingredients"] == ["Ingredient 1", "Ingredient 2"]
         assert result["Simple Dish"]["directions"] == ""
 
     def test_long_names_truncated(self):
-        recipes = {
-            "A" * 300: {"ingredients": ["Test"]}
-        }
+        recipes = {"A" * 300: {"ingredients": ["Test"]}}
         result = validate_json_recipes(recipes)
         keys = list(result.keys())
         assert len(keys[0]) == 200

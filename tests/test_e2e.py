@@ -5,20 +5,18 @@ testing the integration between GUI logic and backend functions without
 requiring an actual display (headless testing).
 """
 
-import pytest
 import json
-import tempfile
-import shutil
-from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
+
+import pytest
 
 # Import application modules
 from dinner_app import recipes
 from dinner_app.security import (
     ValidationError,
-    validate_recipe_name,
     validate_ingredients_list,
     validate_recipe_data,
+    validate_recipe_name,
 )
 
 
@@ -36,7 +34,7 @@ class TestRecipeWorkflow:
                 "categories": ["Italian", "Quick"],
                 "diets": ["vegetarian"],
                 "cook_time": 20,
-                "time_category": "30-min"
+                "time_category": "30-min",
             },
             "Test Salad": {
                 "ingredients": ["lettuce", "tomato", "olive oil"],
@@ -44,7 +42,7 @@ class TestRecipeWorkflow:
                 "categories": ["Healthy", "Quick"],
                 "diets": ["vegan"],
                 "cook_time": 10,
-                "time_category": "10-min"
+                "time_category": "10-min",
             },
             "Test Steak": {
                 "ingredients": ["beef steak", "butter", "garlic", "rosemary"],
@@ -52,8 +50,8 @@ class TestRecipeWorkflow:
                 "categories": ["Dinner"],
                 "diets": ["keto", "paleo"],
                 "cook_time": 25,
-                "time_category": "30-min"
-            }
+                "time_category": "30-min",
+            },
         }
 
         recipes_file = tmp_path / "recipes.json"
@@ -68,9 +66,11 @@ class TestRecipeWorkflow:
     @pytest.fixture
     def mock_recipes_module(self, temp_data_dir):
         """Patch recipes module to use temp directory."""
-        with patch.object(recipes, 'RECIPES_FILE', temp_data_dir / "recipes.json"), \
-             patch.object(recipes, 'EXTRA_ING_FILE', temp_data_dir / "extra_ingredients.json"), \
-             patch.object(recipes, 'SELECTED_FILE', temp_data_dir / "selected_ingredients.json"):
+        with (
+            patch.object(recipes, "RECIPES_FILE", temp_data_dir / "recipes.json"),
+            patch.object(recipes, "EXTRA_ING_FILE", temp_data_dir / "extra_ingredients.json"),
+            patch.object(recipes, "SELECTED_FILE", temp_data_dir / "selected_ingredients.json"),
+        ):
             # Clear caches by reloading recipes
             recipes._recipes.clear()
             recipes._recipes.update(recipes.load_recipes())
@@ -91,7 +91,7 @@ class TestRecipeWorkflow:
             name="Homemade Pizza",
             ingredients=ingredients,
             directions="Make dough, add toppings, bake at 450F",
-            categories=["Italian", "Homemade"]
+            categories=["Italian", "Homemade"],
         )
 
         # Step 4: Verify recipe exists
@@ -120,7 +120,7 @@ class TestRecipeWorkflow:
             name="Test Pasta",
             ingredients=["spaghetti", "marinara sauce", "garlic", "parmesan"],
             directions="Boil spaghetti, add marinara and cheese",
-            categories=["Italian", "Quick", "Family"]
+            categories=["Italian", "Quick", "Family"],
         )
 
         # Step 3: Verify changes
@@ -161,7 +161,7 @@ class TestIngredientSelectionWorkflow:
                 "categories": ["Breakfast"],
                 "diets": ["vegetarian"],
                 "cook_time": 5,
-                "time_category": "10-min"
+                "time_category": "10-min",
             },
             "Omelette": {
                 "ingredients": ["eggs", "cheese", "onion", "butter"],
@@ -169,8 +169,8 @@ class TestIngredientSelectionWorkflow:
                 "categories": ["Breakfast"],
                 "diets": ["vegetarian"],
                 "cook_time": 10,
-                "time_category": "10-min"
-            }
+                "time_category": "10-min",
+            },
         }
 
         recipes_file = tmp_path / "recipes.json"
@@ -183,9 +183,11 @@ class TestIngredientSelectionWorkflow:
     @pytest.fixture
     def mock_recipes_module(self, temp_data_dir):
         """Patch recipes module to use temp directory."""
-        with patch.object(recipes, 'RECIPES_FILE', temp_data_dir / "recipes.json"), \
-             patch.object(recipes, 'EXTRA_ING_FILE', temp_data_dir / "extra_ingredients.json"), \
-             patch.object(recipes, 'SELECTED_FILE', temp_data_dir / "selected_ingredients.json"):
+        with (
+            patch.object(recipes, "RECIPES_FILE", temp_data_dir / "recipes.json"),
+            patch.object(recipes, "EXTRA_ING_FILE", temp_data_dir / "extra_ingredients.json"),
+            patch.object(recipes, "SELECTED_FILE", temp_data_dir / "selected_ingredients.json"),
+        ):
             recipes._recipes.clear()
             recipes._recipes.update(recipes.load_recipes())
             yield
@@ -244,7 +246,7 @@ class TestSearchAndFilterWorkflow:
                 "categories": ["Mexican", "Quick"],
                 "diets": ["vegan"],
                 "cook_time": 15,
-                "time_category": "30-min"
+                "time_category": "30-min",
             },
             "Chicken Stir Fry": {
                 "ingredients": ["chicken breast", "soy sauce", "vegetables", "oil"],
@@ -252,7 +254,7 @@ class TestSearchAndFilterWorkflow:
                 "categories": ["Asian", "Quick"],
                 "diets": [],
                 "cook_time": 20,
-                "time_category": "30-min"
+                "time_category": "30-min",
             },
             "Beef Stew": {
                 "ingredients": ["beef", "potatoes", "carrots", "onion", "broth"],
@@ -260,7 +262,7 @@ class TestSearchAndFilterWorkflow:
                 "categories": ["Comfort Food"],
                 "diets": ["paleo"],
                 "cook_time": 120,
-                "time_category": "60-min"
+                "time_category": "60-min",
             },
             "Quick Salad": {
                 "ingredients": ["lettuce", "tomato"],
@@ -268,8 +270,8 @@ class TestSearchAndFilterWorkflow:
                 "categories": ["Quick", "Healthy"],
                 "diets": ["vegan", "paleo"],
                 "cook_time": 5,
-                "time_category": "10-min"
-            }
+                "time_category": "10-min",
+            },
         }
 
         recipes_file = tmp_path / "recipes.json"
@@ -282,9 +284,11 @@ class TestSearchAndFilterWorkflow:
     @pytest.fixture
     def mock_recipes_module(self, temp_data_dir):
         """Patch recipes module to use temp directory."""
-        with patch.object(recipes, 'RECIPES_FILE', temp_data_dir / "recipes.json"), \
-             patch.object(recipes, 'EXTRA_ING_FILE', temp_data_dir / "extra_ingredients.json"), \
-             patch.object(recipes, 'SELECTED_FILE', temp_data_dir / "selected_ingredients.json"):
+        with (
+            patch.object(recipes, "RECIPES_FILE", temp_data_dir / "recipes.json"),
+            patch.object(recipes, "EXTRA_ING_FILE", temp_data_dir / "extra_ingredients.json"),
+            patch.object(recipes, "SELECTED_FILE", temp_data_dir / "selected_ingredients.json"),
+        ):
             recipes._recipes.clear()
             recipes._recipes.update(recipes.load_recipes())
             yield
@@ -293,20 +297,14 @@ class TestSearchAndFilterWorkflow:
         """Test searching recipes by name."""
         # Search for 'tacos'
         results = recipes.search_recipes_advanced(
-            query="tacos",
-            category="All",
-            owned_ingredients=None,
-            filter_mode="all"
+            query="tacos", category="All", owned_ingredients=None, filter_mode="all"
         )
         assert len(results) == 1
         assert results[0][0] == "Vegan Tacos"
 
         # Search for 'quick'
         results = recipes.search_recipes_advanced(
-            query="quick",
-            category="All",
-            owned_ingredients=None,
-            filter_mode="all"
+            query="quick", category="All", owned_ingredients=None, filter_mode="all"
         )
         assert len(results) == 1
         assert results[0][0] == "Quick Salad"
@@ -315,10 +313,7 @@ class TestSearchAndFilterWorkflow:
         """Test filtering recipes by category."""
         # Filter by 'Quick' category
         results = recipes.search_recipes_advanced(
-            query="",
-            category="Quick",
-            owned_ingredients=None,
-            filter_mode="all"
+            query="", category="Quick", owned_ingredients=None, filter_mode="all"
         )
         recipe_names = [r[0] for r in results]
         assert "Vegan Tacos" in recipe_names
@@ -330,11 +325,7 @@ class TestSearchAndFilterWorkflow:
         """Test filtering recipes by diet."""
         # Filter by vegan
         results = recipes.search_recipes_advanced(
-            query="",
-            category="All",
-            owned_ingredients=None,
-            filter_mode="all",
-            diet_filter="vegan"
+            query="", category="All", owned_ingredients=None, filter_mode="all", diet_filter="vegan"
         )
         recipe_names = [r[0] for r in results]
         assert "Vegan Tacos" in recipe_names
@@ -346,10 +337,7 @@ class TestSearchAndFilterWorkflow:
         owned = {"lettuce", "tomato"}
 
         results = recipes.search_recipes_advanced(
-            query="",
-            category="All",
-            owned_ingredients=owned,
-            filter_mode="can_make"
+            query="", category="All", owned_ingredients=owned, filter_mode="can_make"
         )
 
         # Should include Quick Salad since we have lettuce and tomato
@@ -362,11 +350,7 @@ class TestSearchAndFilterWorkflow:
         owned = {"tortillas", "black beans", "avocado"}
 
         results = recipes.search_recipes_advanced(
-            query="",
-            category="All",
-            owned_ingredients=owned,
-            filter_mode="almost",
-            max_missing=2
+            query="", category="All", owned_ingredients=owned, filter_mode="almost", max_missing=2
         )
 
         # Should return results (recipes missing 1-2 ingredients)
@@ -383,7 +367,7 @@ class TestSearchAndFilterWorkflow:
             category="All",
             owned_ingredients=owned,
             filter_mode="can_make",
-            diet_filter="vegan"
+            diet_filter="vegan",
         )
 
         # Should include Quick Salad (vegan, and we have lettuce + tomato)
@@ -404,7 +388,7 @@ class TestMissingIngredientsWorkflow:
                 "categories": ["Test"],
                 "diets": [],
                 "cook_time": 10,
-                "time_category": "10-min"
+                "time_category": "10-min",
             }
         }
 
@@ -418,9 +402,11 @@ class TestMissingIngredientsWorkflow:
     @pytest.fixture
     def mock_recipes_module(self, temp_data_dir):
         """Patch recipes module to use temp directory."""
-        with patch.object(recipes, 'RECIPES_FILE', temp_data_dir / "recipes.json"), \
-             patch.object(recipes, 'EXTRA_ING_FILE', temp_data_dir / "extra_ingredients.json"), \
-             patch.object(recipes, 'SELECTED_FILE', temp_data_dir / "selected_ingredients.json"):
+        with (
+            patch.object(recipes, "RECIPES_FILE", temp_data_dir / "recipes.json"),
+            patch.object(recipes, "EXTRA_ING_FILE", temp_data_dir / "extra_ingredients.json"),
+            patch.object(recipes, "SELECTED_FILE", temp_data_dir / "selected_ingredients.json"),
+        ):
             recipes._recipes.clear()
             recipes._recipes.update(recipes.load_recipes())
             yield
@@ -463,7 +449,7 @@ class TestSecurityValidationWorkflow:
         data = {
             "ingredients": ["flour", "sugar", "eggs"],
             "directions": "Mix and bake",
-            "categories": ["Baking"]
+            "categories": ["Baking"],
         }
 
         validated = validate_recipe_data(data)
@@ -517,7 +503,7 @@ class TestRandomSelectionWorkflow:
                 "categories": ["Cat1"],
                 "diets": [],
                 "cook_time": 10,
-                "time_category": "10-min"
+                "time_category": "10-min",
             },
             "Recipe B": {
                 "ingredients": ["ing2"],
@@ -525,7 +511,7 @@ class TestRandomSelectionWorkflow:
                 "categories": ["Cat1"],
                 "diets": [],
                 "cook_time": 20,
-                "time_category": "30-min"
+                "time_category": "30-min",
             },
             "Recipe C": {
                 "ingredients": ["ing3"],
@@ -533,8 +519,8 @@ class TestRandomSelectionWorkflow:
                 "categories": ["Cat2"],
                 "diets": [],
                 "cook_time": 30,
-                "time_category": "30-min"
-            }
+                "time_category": "30-min",
+            },
         }
 
         recipes_file = tmp_path / "recipes.json"
@@ -547,9 +533,11 @@ class TestRandomSelectionWorkflow:
     @pytest.fixture
     def mock_recipes_module(self, temp_data_dir):
         """Patch recipes module to use temp directory."""
-        with patch.object(recipes, 'RECIPES_FILE', temp_data_dir / "recipes.json"), \
-             patch.object(recipes, 'EXTRA_ING_FILE', temp_data_dir / "extra_ingredients.json"), \
-             patch.object(recipes, 'SELECTED_FILE', temp_data_dir / "selected_ingredients.json"):
+        with (
+            patch.object(recipes, "RECIPES_FILE", temp_data_dir / "recipes.json"),
+            patch.object(recipes, "EXTRA_ING_FILE", temp_data_dir / "extra_ingredients.json"),
+            patch.object(recipes, "SELECTED_FILE", temp_data_dir / "selected_ingredients.json"),
+        ):
             recipes._recipes.clear()
             recipes._recipes.update(recipes.load_recipes())
             yield
@@ -557,13 +545,11 @@ class TestRandomSelectionWorkflow:
     def test_random_from_all(self, mock_recipes_module):
         """Test random selection from all recipes."""
         import random
+
         random.seed(42)  # For reproducibility
 
         results = recipes.search_recipes_advanced(
-            query="",
-            category="All",
-            owned_ingredients=None,
-            filter_mode="all"
+            query="", category="All", owned_ingredients=None, filter_mode="all"
         )
 
         # Should have all 3 recipes
@@ -576,10 +562,7 @@ class TestRandomSelectionWorkflow:
     def test_random_from_category(self, mock_recipes_module):
         """Test random selection filtered by category."""
         results = recipes.search_recipes_advanced(
-            query="",
-            category="Cat1",
-            owned_ingredients=None,
-            filter_mode="all"
+            query="", category="Cat1", owned_ingredients=None, filter_mode="all"
         )
 
         # Should have 2 recipes in Cat1

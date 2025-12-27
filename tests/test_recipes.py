@@ -3,9 +3,9 @@
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from dinner_app.recipes import possible_dinners, get_recipes  # noqa: E402
+from dinner_app.recipes import get_recipes, possible_dinners
 
 
 def test_possible_dinners():
@@ -17,7 +17,7 @@ def test_possible_dinners():
 
     # Pick first recipe and get its ingredients
     recipe_name, recipe_data = next(iter(recipes.items()))
-    ingredients = set(recipe_data.get('ingredients', []))
+    ingredients = set(recipe_data.get("ingredients", []))
 
     # Should be able to make this recipe with all its ingredients
     result = possible_dinners(ingredients)
