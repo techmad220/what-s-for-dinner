@@ -1,0 +1,4 @@
+# file: /home/tech/what-s-for-dinner/dinner_app/plugin_security.py
+# hypothesis_version: 6.148.8
+
+[8192, '\x00', '.', '.py', '<plugin>', 'Can send emails', '__import__', 'code', 'compile', 'ctypes', 'eval', 'exec', 'ftplib', 'http', 'input', 'marshal', 'multiprocessing', 'open', 'os', 'pickle', 'plugin_', 'rb', 'shutil', 'smtplib', 'socket', 'ssl', 'subprocess', 'urllib', 'utf-8']
