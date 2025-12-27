@@ -1,5 +1,12 @@
 # What's for Dinner
 
+[![Security Gate](https://github.com/techmad220/what-s-for-dinner/actions/workflows/security.yml/badge.svg)](https://github.com/techmad220/what-s-for-dinner/actions/workflows/security.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
+[![Security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
+[![Fuzz Tested](https://img.shields.io/badge/fuzz%20tested-3.7M%2B%20payloads-green.svg)](tests/test_kitchen_sink_fuzz.py)
+
 A recipe manager that helps you discover what you can cook with the ingredients you have. Features 1300+ recipes, smart ingredient matching, and a plugin system for extensibility.
 
 ## Quick Start
@@ -191,3 +198,51 @@ All PRs must pass:
 ## License
 
 MIT Non-Commercial - See [LICENSE](LICENSE) for details.
+
+---
+
+## Disclaimer of Warranty and Limitation of Liability
+
+**IMPORTANT: BY DOWNLOADING, INSTALLING, USING, OR OTHERWISE ACCESSING THIS SOFTWARE, YOU ACKNOWLEDGE THAT YOU HAVE READ, UNDERSTOOD, AND AGREE TO BE BOUND BY THE FOLLOWING TERMS:**
+
+### NO WARRANTY
+
+THIS SOFTWARE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE SOFTWARE IS WITH YOU.
+
+THE AUTHOR(S) AND COPYRIGHT HOLDER(S) MAKE NO REPRESENTATIONS OR WARRANTIES THAT:
+- The software will meet your requirements
+- The software will be uninterrupted, timely, secure, or error-free
+- The results obtained from the software will be accurate or reliable
+- Any errors in the software will be corrected
+- The software is free of viruses or other harmful components
+
+### LIMITATION OF LIABILITY
+
+IN NO EVENT SHALL THE AUTHOR(S), COPYRIGHT HOLDER(S), OR ANY CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, CONSEQUENTIAL, OR PUNITIVE DAMAGES (INCLUDING BUT NOT LIMITED TO PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; BUSINESS INTERRUPTION; PERSONAL INJURY; PROPERTY DAMAGE; OR ANY OTHER PECUNIARY LOSS) ARISING OUT OF OR IN CONNECTION WITH THE USE OR INABILITY TO USE THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+THIS LIMITATION APPLIES TO:
+- Claims based on contract, tort (including negligence), strict liability, or any other legal theory
+- Claims arising from recipe accuracy, ingredient information, dietary restrictions, or food safety
+- Claims arising from data loss, corruption, or unauthorized access
+- Claims arising from plugin behavior or third-party code
+
+### ASSUMPTION OF RISK
+
+You expressly acknowledge and agree that:
+1. Use of this software is entirely at your own risk
+2. You are solely responsible for any damage to your computer system or loss of data
+3. Recipe information is provided for convenience only and should not be relied upon for dietary, medical, or safety decisions
+4. You should always verify ingredient safety, allergens, and cooking instructions from authoritative sources
+5. This software is not intended as a substitute for professional culinary, nutritional, or medical advice
+
+### BINDING AGREEMENT
+
+By using this software, you acknowledge that you have read this disclaimer, understand it, and agree to be bound by its terms. If you do not agree to these terms, you must not use, download, or install this software.
+
+### SEVERABILITY
+
+If any provision of this disclaimer is held to be unenforceable or invalid, such provision shall be modified to the minimum extent necessary to make it enforceable, and the remaining provisions shall continue in full force and effect.
+
+### GOVERNING LAW
+
+This disclaimer shall be governed by and construed in accordance with applicable law, without regard to conflicts of law principles.
