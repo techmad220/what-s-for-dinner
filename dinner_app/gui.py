@@ -4,6 +4,7 @@ import customtkinter as ctk
 from tkinter import messagebox, filedialog
 import random
 
+from .logging_config import setup_logging, get_logger
 from .recipes import (
     add_extra_ingredient,
     add_recipe,
@@ -29,6 +30,9 @@ from .recipes import (
     update_recipe,
 )
 from .security import ValidationError
+
+# Initialize logging
+logger = setup_logging()
 
 # Set appearance and theme
 ctk.set_appearance_mode("dark")
@@ -981,7 +985,9 @@ class DinnerApp(ctk.CTk):
                 self._all_ingredients = sorted(get_available_ingredients())
                 self._populate_ingredients()
                 self._refresh_recipes()
+                logger.info(f"Added custom ingredient: {name.strip()}")
             except ValidationError as e:
+                logger.warning(f"Invalid ingredient rejected: {name.strip()} - {e}")
                 messagebox.showerror("Invalid Input", str(e))
 
     def _remove_ingredient(self) -> None:
@@ -1028,8 +1034,10 @@ class DinnerApp(ctk.CTk):
             self._populate_ingredients()
             self._refresh_recipes()
             self.category_menu.configure(values=self._categories_cache)
+            logger.info(f"Added recipe: {name}")
             messagebox.showinfo("Success!", f"Recipe '{name}' added!")
         except ValidationError as e:
+            logger.warning(f"Invalid recipe rejected: {name} - {e}")
             messagebox.showerror("Invalid Input", str(e))
 
     def _edit_recipe_dialog(self) -> None:
@@ -1064,8 +1072,10 @@ class DinnerApp(ctk.CTk):
             self._populate_ingredients()
             self._refresh_recipes()
             self.category_menu.configure(values=self._categories_cache)
+            logger.info(f"Updated recipe: {name}")
             messagebox.showinfo("Success!", f"Recipe '{name}' updated!")
         except ValidationError as e:
+            logger.warning(f"Invalid recipe update rejected: {name} - {e}")
             messagebox.showerror("Invalid Input", str(e))
 
     def _delete_recipe(self) -> None:
@@ -1074,15 +1084,24 @@ class DinnerApp(ctk.CTk):
             return
 
         if messagebox.askyesno("Delete Recipe", f"Delete '{self.selected_recipe}'?"):
+            recipe_name = self.selected_recipe
             remove_recipe(self.selected_recipe)
             self.selected_recipe = None
             self._refresh_recipes()
+            logger.info(f"Deleted recipe: {recipe_name}")
             messagebox.showinfo("Deleted", "Recipe deleted.")
 
 
 def run_app() -> None:
-    app = DinnerApp()
-    app.mainloop()
+    logger.info("Starting What's for Dinner application")
+    try:
+        app = DinnerApp()
+        app.mainloop()
+    except Exception as e:
+        logger.error(f"Application crashed: {e}", exc_info=True)
+        raise
+    finally:
+        logger.info("Application shutdown")
 
 
 if __name__ == "__main__":
