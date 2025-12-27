@@ -28,6 +28,7 @@ from .recipes import (
     search_recipes_advanced,
     update_recipe,
 )
+from .security import ValidationError
 
 # Set appearance and theme
 ctk.set_appearance_mode("dark")
@@ -973,12 +974,15 @@ class DinnerApp(ctk.CTk):
         dialog = ctk.CTkInputDialog(text="Enter ingredient name:", title="Add Ingredient")
         name = dialog.get_input()
         if name and name.strip():
-            add_extra_ingredient(name.strip())
-            self.selected_ingredients.add(name.strip())
-            save_selected_ingredients(self.selected_ingredients)
-            self._all_ingredients = sorted(get_available_ingredients())
-            self._populate_ingredients()
-            self._refresh_recipes()
+            try:
+                add_extra_ingredient(name.strip())
+                self.selected_ingredients.add(name.strip())
+                save_selected_ingredients(self.selected_ingredients)
+                self._all_ingredients = sorted(get_available_ingredients())
+                self._populate_ingredients()
+                self._refresh_recipes()
+            except ValidationError as e:
+                messagebox.showerror("Invalid Input", str(e))
 
     def _remove_ingredient(self) -> None:
         extras = get_extra_ingredients()
@@ -1017,13 +1021,16 @@ class DinnerApp(ctk.CTk):
         categories = dialog.get_input()
         cat_list = [c.strip() for c in (categories or "").split(",") if c.strip()]
 
-        add_recipe(name, ing_list, directions or "", cat_list)
-        self._all_ingredients = sorted(get_available_ingredients())
-        self._categories_cache = self._get_category_options()
-        self._populate_ingredients()
-        self._refresh_recipes()
-        self.category_menu.configure(values=self._categories_cache)
-        messagebox.showinfo("Success!", f"Recipe '{name}' added!")
+        try:
+            add_recipe(name, ing_list, directions or "", cat_list)
+            self._all_ingredients = sorted(get_available_ingredients())
+            self._categories_cache = self._get_category_options()
+            self._populate_ingredients()
+            self._refresh_recipes()
+            self.category_menu.configure(values=self._categories_cache)
+            messagebox.showinfo("Success!", f"Recipe '{name}' added!")
+        except ValidationError as e:
+            messagebox.showerror("Invalid Input", str(e))
 
     def _edit_recipe_dialog(self) -> None:
         if not self.selected_recipe:
@@ -1050,13 +1057,16 @@ class DinnerApp(ctk.CTk):
         new_cats = dialog.get_input()
         cat_list = [c.strip() for c in (new_cats or "").split(",") if c.strip()] if new_cats else current_cats
 
-        update_recipe(name, ing_list, new_dirs or current_dirs, cat_list)
-        self._all_ingredients = sorted(get_available_ingredients())
-        self._categories_cache = self._get_category_options()
-        self._populate_ingredients()
-        self._refresh_recipes()
-        self.category_menu.configure(values=self._categories_cache)
-        messagebox.showinfo("Success!", f"Recipe '{name}' updated!")
+        try:
+            update_recipe(name, ing_list, new_dirs or current_dirs, cat_list)
+            self._all_ingredients = sorted(get_available_ingredients())
+            self._categories_cache = self._get_category_options()
+            self._populate_ingredients()
+            self._refresh_recipes()
+            self.category_menu.configure(values=self._categories_cache)
+            messagebox.showinfo("Success!", f"Recipe '{name}' updated!")
+        except ValidationError as e:
+            messagebox.showerror("Invalid Input", str(e))
 
     def _delete_recipe(self) -> None:
         if not self.selected_recipe:

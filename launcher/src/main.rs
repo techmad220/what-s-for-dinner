@@ -13,6 +13,16 @@ use std::path::PathBuf;
 // Embed the dinner_app directory at compile time
 static DINNER_APP: Dir = include_dir!("$CARGO_MANIFEST_DIR/../dinner_app");
 
+// Blocklist of module names that should never be loaded as plugins
+// Prevents sys.path hijacking attacks
+const BLOCKED_MODULES: &[&str] = &[
+    "sys", "os", "subprocess", "importlib", "builtins", "__builtins__",
+    "io", "socket", "http", "urllib", "ftplib", "smtplib", "ssl",
+    "ctypes", "multiprocessing", "threading", "pickle", "marshal",
+    "code", "codeop", "compile", "exec", "eval", "shutil", "tempfile",
+    "pathlib", "glob", "fnmatch", "linecache", "tokenize", "ast",
+];
+
 /// Get the app data directory for storing extracted files and user data
 fn get_app_dir() -> Result<PathBuf> {
     let proj_dirs = ProjectDirs::from("com", "techmad", "WhatsForDinner")
@@ -40,11 +50,17 @@ fn extract_app_files(app_dir: &PathBuf) -> Result<PathBuf> {
 
     fn extract_dir(dir: &Dir, target: &PathBuf) -> Result<()> {
         for file in dir.files() {
-            let file_path = target.join(file.path().file_name().unwrap());
+            // Safe: use ok_or to handle missing file_name gracefully
+            let file_name = file.path().file_name()
+                .ok_or_else(|| anyhow!("Invalid file path in embedded data"))?;
+            let file_path = target.join(file_name);
             fs::write(&file_path, file.contents())?;
         }
         for subdir in dir.dirs() {
-            let subdir_path = target.join(subdir.path().file_name().unwrap());
+            // Safe: use ok_or to handle missing directory name gracefully
+            let subdir_name = subdir.path().file_name()
+                .ok_or_else(|| anyhow!("Invalid directory path in embedded data"))?;
+            let subdir_path = target.join(subdir_name);
             fs::create_dir_all(&subdir_path)?;
             extract_dir(subdir, &subdir_path)?;
         }
@@ -70,6 +86,10 @@ fn is_safe_plugin_name(name: &str) -> bool {
     if name.starts_with('.') {
         return false;
     }
+    // Check against blocklist of dangerous module names
+    if BLOCKED_MODULES.contains(&name) {
+        return false;
+    }
     // Must only contain alphanumeric, underscore, hyphen
     name.chars().all(|c| c.is_alphanumeric() || c == '_' || c == '-')
 }
@@ -80,20 +100,37 @@ fn load_plugins(py: Python<'_>, plugins_dir: &PathBuf) -> PyResult<()> {
         return Ok(());
     }
 
-    // Add plugins dir to Python path
+    // Convert path to string safely, skip if non-UTF8
+    let plugins_path_str = match plugins_dir.to_str() {
+        Some(s) => s,
+        None => {
+            eprintln!("Warning: Plugins directory path contains non-UTF8 characters, skipping plugins");
+            return Ok(());
+        }
+    };
+
+    // Add plugins dir to Python path at position 1 (after app dir)
+    // This prevents plugins from shadowing the main application modules
     let sys = py.import_bound("sys")?;
     let path = sys.getattr("path")?;
     let path: &Bound<'_, PyList> = path.downcast().map_err(|e| {
         pyo3::exceptions::PyTypeError::new_err(format!("Failed to get sys.path: {}", e))
     })?;
-    path.insert(0, plugins_dir.to_str().unwrap())?;
+
+    // Insert at position 1 to prevent shadowing standard library
+    let path_len = path.len();
+    if path_len > 0 {
+        path.insert(1, plugins_path_str)?;
+    } else {
+        path.insert(0, plugins_path_str)?;
+    }
 
     // Look for plugin files with security validation
     if let Ok(entries) = fs::read_dir(plugins_dir) {
         for entry in entries.flatten() {
-            let path = entry.path();
-            if path.extension().map_or(false, |e| e == "py") {
-                if let Some(stem) = path.file_stem().and_then(|s| s.to_str()) {
+            let entry_path = entry.path();
+            if entry_path.extension().map_or(false, |e| e == "py") {
+                if let Some(stem) = entry_path.file_stem().and_then(|s| s.to_str()) {
                     // Security: validate plugin name before loading
                     if !is_safe_plugin_name(stem) {
                         eprintln!("Skipping plugin with unsafe name: {}", stem);
@@ -121,13 +158,17 @@ fn run_app() -> Result<()> {
     extract_app_files(&app_dir)?;
 
     Python::with_gil(|py| -> Result<()> {
+        // Convert app_dir to string safely
+        let app_dir_str = app_dir.to_str()
+            .ok_or_else(|| anyhow!("App directory path contains non-UTF8 characters"))?;
+
         // Add app dir to Python path
         let sys = py.import_bound("sys").map_err(|e| anyhow!("Failed to import sys: {}", e))?;
         let path = sys.getattr("path").map_err(|e| anyhow!("Failed to get path: {}", e))?;
         let path: &Bound<'_, PyList> = path.downcast().map_err(|e| anyhow!("Failed to downcast path: {}", e))?;
-        path.insert(0, app_dir.to_str().unwrap()).map_err(|e| anyhow!("Failed to insert path: {}", e))?;
+        path.insert(0, app_dir_str).map_err(|e| anyhow!("Failed to insert path: {}", e))?;
 
-        // Load plugins first
+        // Load plugins (after app dir is in path)
         load_plugins(py, &plugins_dir).map_err(|e| anyhow!("Failed to load plugins: {}", e))?;
 
         // Change working directory to where data files are
