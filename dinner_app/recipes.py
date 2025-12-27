@@ -6,6 +6,16 @@ import json
 from pathlib import Path
 from typing import Dict, List, Optional
 
+from .security import (
+    validate_json_recipes,
+    validate_recipe_name,
+    validate_ingredient,
+    validate_ingredients_list,
+    validate_directions,
+    validate_categories_list,
+    ValidationError,
+)
+
 RECIPES_FILE = Path(__file__).with_name("recipes.json")
 EXTRA_ING_FILE = Path(__file__).with_name("extra_ingredients.json")
 SELECTED_FILE = Path(__file__).with_name("selected_ingredients.json")
@@ -14,16 +24,15 @@ CRAFTABLE_FILE = Path(__file__).with_name("craftable.json")
 
 
 def load_recipes() -> Dict[str, Dict[str, object]]:
-    """Load recipes from :data:`RECIPES_FILE`."""
+    """Load recipes from :data:`RECIPES_FILE` with security validation."""
+    try:
+        with RECIPES_FILE.open() as fh:
+            data = json.load(fh)
+    except json.JSONDecodeError as e:
+        raise ValidationError(f"Invalid JSON in recipes file: {e}")
 
-    with RECIPES_FILE.open() as fh:
-        data = json.load(fh)
-
-    # Support legacy format where values are just a list of ingredients
-    for name, value in list(data.items()):
-        if isinstance(value, list):
-            data[name] = {"ingredients": value, "directions": ""}
-    return data
+    # Validate and sanitize all recipe data
+    return validate_json_recipes(data)
 
 
 def save_recipes(recipes: Dict[str, Dict[str, object]]) -> None:
@@ -111,12 +120,20 @@ def add_recipe(
     *,
     persist: bool = True,
 ) -> None:
-    """Add a recipe and optionally persist it to disk."""
-    _recipes[name] = {
-        "ingredients": ingredients,
-        "directions": directions,
-        "categories": categories or [],
+    """Add a recipe and optionally persist it to disk with validation."""
+    # Validate all inputs
+    safe_name = validate_recipe_name(name)
+    safe_ingredients = validate_ingredients_list(ingredients)
+    safe_directions = validate_directions(directions) if directions else ""
+    safe_categories = validate_categories_list(categories) if categories else []
+
+    _recipes[safe_name] = {
+        "ingredients": safe_ingredients,
+        "directions": safe_directions,
+        "categories": safe_categories,
     }
+    # Update precomputed lowercase cache
+    _recipe_ings_lower[safe_name] = {ing.lower() for ing in safe_ingredients}
     if persist:
         save_recipes(_recipes)
 
@@ -149,17 +166,18 @@ def update_recipe(
     *,
     persist: bool = True,
 ) -> None:
-    """Modify an existing recipe."""
-
+    """Modify an existing recipe with validation."""
     rec = _recipes.get(name)
     if rec is None:
         raise KeyError(name)
     if ingredients is not None:
-        rec["ingredients"] = list(ingredients)
+        safe_ingredients = validate_ingredients_list(ingredients)
+        rec["ingredients"] = safe_ingredients
+        _recipe_ings_lower[name] = {ing.lower() for ing in safe_ingredients}
     if directions is not None:
-        rec["directions"] = directions
+        rec["directions"] = validate_directions(directions)
     if categories is not None:
-        rec["categories"] = list(categories)
+        rec["categories"] = validate_categories_list(categories)
     if persist:
         save_recipes(_recipes)
 
@@ -173,9 +191,9 @@ def reset_extra_ingredients() -> None:
 
 
 def add_extra_ingredient(name: str, *, persist: bool = True) -> None:
-    """Add an extra ingredient to the list."""
-
-    _extra_ingredients.add(name)
+    """Add an extra ingredient to the list with validation."""
+    safe_name = validate_ingredient(name)
+    _extra_ingredients.add(safe_name)
     if persist:
         save_extra_ingredients(_extra_ingredients)
 

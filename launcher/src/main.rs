@@ -56,6 +56,24 @@ fn extract_app_files(app_dir: &PathBuf) -> Result<PathBuf> {
     Ok(dinner_app_dir)
 }
 
+/// Check if a plugin filename is safe (no path traversal, valid chars)
+fn is_safe_plugin_name(name: &str) -> bool {
+    // Must not be empty
+    if name.is_empty() {
+        return false;
+    }
+    // Must not contain path separators
+    if name.contains('/') || name.contains('\\') || name.contains("..") {
+        return false;
+    }
+    // Must not start with a dot (hidden files)
+    if name.starts_with('.') {
+        return false;
+    }
+    // Must only contain alphanumeric, underscore, hyphen
+    name.chars().all(|c| c.is_alphanumeric() || c == '_' || c == '-')
+}
+
 /// Load and execute plugins from the plugins directory
 fn load_plugins(py: Python<'_>, plugins_dir: &PathBuf) -> PyResult<()> {
     if !plugins_dir.exists() {
@@ -70,16 +88,22 @@ fn load_plugins(py: Python<'_>, plugins_dir: &PathBuf) -> PyResult<()> {
     })?;
     path.insert(0, plugins_dir.to_str().unwrap())?;
 
-    // Look for plugin files
+    // Look for plugin files with security validation
     if let Ok(entries) = fs::read_dir(plugins_dir) {
         for entry in entries.flatten() {
             let path = entry.path();
             if path.extension().map_or(false, |e| e == "py") {
-                let stem = path.file_stem().unwrap().to_str().unwrap();
-                if stem.starts_with("plugin_") {
-                    println!("Loading plugin: {}", stem);
-                    if let Err(e) = py.import_bound(stem) {
-                        eprintln!("Failed to load plugin {}: {}", stem, e);
+                if let Some(stem) = path.file_stem().and_then(|s| s.to_str()) {
+                    // Security: validate plugin name before loading
+                    if !is_safe_plugin_name(stem) {
+                        eprintln!("Skipping plugin with unsafe name: {}", stem);
+                        continue;
+                    }
+                    if stem.starts_with("plugin_") {
+                        println!("Loading plugin: {}", stem);
+                        if let Err(e) = py.import_bound(stem) {
+                            eprintln!("Failed to load plugin {}: {}", stem, e);
+                        }
                     }
                 }
             }
