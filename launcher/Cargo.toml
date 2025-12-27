@@ -1,0 +1,22 @@
+[package]
+name = "whats_for_dinner"
+version = "1.0.0"
+edition = "2021"
+description = "What's for Dinner - Recipe Manager"
+authors = ["TechMad"]
+
+[dependencies]
+pyo3 = { version = "0.22", features = ["auto-initialize"] }
+include_dir = "0.7"
+directories = "5"
+anyhow = "1.0"
+
+[[bin]]
+name = "WhatsForDinner"
+path = "src/main.rs"
+
+[profile.release]
+opt-level = "z"
+lto = true
+strip = true
+panic = "abort"

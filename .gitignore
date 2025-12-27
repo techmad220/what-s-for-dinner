@@ -1,2 +1,38 @@
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+.venv/
+venv/
+env/
+*.egg-info/
+
+# Rust
+launcher/target/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Temp scripts
+*.py.bak
+add_*.py
+analyze_*.py
+check_*.py
+comprehensive_*.py
+find_*.py
+fix_*.py
+preview_*.py
+run_*.py
+show_*.py
+update_*.py
+verify_*.py
+*_SUMMARY.md
+*_SUMMARY.txt
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,80 @@
+name: Build Binaries
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            artifact: WhatsForDinner-linux-x64
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            artifact: WhatsForDinner-windows-x64.exe
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            artifact: WhatsForDinner-macos-x64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install customtkinter pillow
+
+      - name: Set up Rust
+        uses: dtolnay/rust-action@stable
+
+      - name: Build release
+        working-directory: launcher
+        run: cargo build --release
+
+      - name: Rename artifact (Linux/Mac)
+        if: runner.os != 'Windows'
+        run: |
+          mv launcher/target/release/WhatsForDinner releases/${{ matrix.artifact }}
+          chmod +x releases/${{ matrix.artifact }}
+
+      - name: Rename artifact (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          mkdir -p releases
+          move launcher\target\release\WhatsForDinner.exe releases\${{ matrix.artifact }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: releases/${{ matrix.artifact }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: releases
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: releases/**/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
