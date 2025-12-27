@@ -50,6 +50,40 @@ DANGEROUS_CALLS = {
     "__import__",
     "open",  # Can read/write files
     "input",  # Can hang waiting for input
+    "getattr",  # Can access any attribute
+    "setattr",  # Can set any attribute
+    "delattr",  # Can delete attributes
+    "globals",  # Can access global namespace
+    "locals",  # Can access local namespace
+    "vars",  # Can access __dict__
+}
+
+# Dangerous attribute access patterns (for obfuscation detection)
+DANGEROUS_ATTRIBUTES = {
+    "__builtins__",
+    "__class__",
+    "__bases__",
+    "__subclasses__",
+    "__mro__",
+    "__globals__",
+    "__code__",
+    "__dict__",
+    "__import__",
+    "__loader__",
+    "__spec__",
+}
+
+# Dangerous subscript patterns (string keys that indicate malicious intent)
+DANGEROUS_SUBSCRIPTS = {
+    "eval",
+    "exec",
+    "compile",
+    "__import__",
+    "__builtins__",
+    "os",
+    "subprocess",
+    "system",
+    "popen",
 }
 
 
@@ -109,6 +143,22 @@ def check_plugin_source(source: str, filename: str = "<plugin>") -> PluginSecuri
 
             if func_name in DANGEROUS_CALLS:
                 warnings.append(f"Line {node.lineno}: Calls '{func_name}' which may be dangerous")
+
+        # Check dangerous attribute access (e.g., obj.__class__.__bases__)
+        elif isinstance(node, ast.Attribute):
+            if node.attr in DANGEROUS_ATTRIBUTES:
+                errors.append(
+                    f"Line {node.lineno}: Accesses '{node.attr}' - potential code execution bypass"
+                )
+
+        # Check dangerous subscript access (e.g., __builtins__['eval'])
+        elif isinstance(node, ast.Subscript):
+            if isinstance(node.slice, ast.Constant):
+                key = str(node.slice.value).lower()
+                if key in DANGEROUS_SUBSCRIPTS:
+                    errors.append(
+                        f"Line {node.lineno}: Subscript access to '{node.slice.value}' - potential bypass"
+                    )
 
     is_safe = len(errors) == 0
     return PluginSecurityCheck(is_safe, warnings, errors)
