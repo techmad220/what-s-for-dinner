@@ -102,10 +102,34 @@ detect-secrets scan --all-files
 pytest tests/ -v
 ```
 
+### Recipe Encryption (Optional)
+
+For those special recipes that need extra protection (looking at you, grandma's secret
+cookie recipe), we offer quantum-resistant encryption:
+
+- **Argon2id**: Memory-hard key derivation (winner of the Password Hashing Competition)
+- **AES-256-GCM**: Authenticated encryption with 256-bit keys
+- **Post-Quantum Ready**: AES-256 remains secure against Grover's algorithm
+
+```python
+from dinner_app.crypto import encrypt_recipe, decrypt_recipe
+
+# Protect grandma's secret recipe from quantum computers
+encrypted = encrypt_recipe(
+    "2 cups love, 1 cup patience, grandma's secret ingredient",
+    "ShhItsASecret123!"
+)
+
+# Later, when you need to make cookies
+plaintext = decrypt_recipe(encrypted, "ShhItsASecret123!")
+```
+
+Because some recipes are worth protecting until the heat death of the universe.
+
 ## Known Limitations
 
 - **Local Application**: This is a local desktop app with no network features.
   Authentication and session management are not applicable.
 - **Plugin System**: Plugins have full Python access. Only install plugins you trust.
-- **Data Storage**: Data is stored in plaintext JSON files. Do not store sensitive
-  information in recipes.
+- **Recipe Encryption**: Optional feature for sensitive recipes. Unencrypted recipes
+  are stored in plaintext JSON.
