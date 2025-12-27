@@ -4,7 +4,6 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
-[![Fuzz Tested](https://img.shields.io/badge/fuzz%20tested-3.7M%2B%20payloads-green.svg)](tests/test_kitchen_sink_fuzz.py)
 [![Security Gate](https://github.com/techmad220/what-s-for-dinner/actions/workflows/security.yml/badge.svg)](https://github.com/techmad220/what-s-for-dinner/actions/workflows/security.yml)
 
 A recipe manager that helps you discover what you can cook with the ingredients you have. Features 1300+ recipes, smart ingredient matching, and a plugin system for extensibility.

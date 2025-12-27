@@ -33,6 +33,12 @@ verify_*.py
 *_SUMMARY.md
 *_SUMMARY.txt
 
+# Testing
+.hypothesis/
+.pytest_cache/
+.ruff_cache/
+*.log
+
 # OS
 .DS_Store
 Thumbs.db

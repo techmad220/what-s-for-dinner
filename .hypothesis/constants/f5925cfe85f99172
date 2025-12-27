@@ -1,4 +1,0 @@
-# file: /home/tech/what-s-for-dinner/dinner_app/security.py
-# hypothesis_version: 6.148.8
-
-[100, 200, 1000, 1440, 10000, '\x00', ' +', '%00', '%2e%2e', '%2f', '%5c', '.', '..', '.py', '/', '<script', '\\', '\\.\\./', '\\.\\.\\\\', '^[a-zA-Z0-9_\\-\\.]+$', 'categories', 'cook_time', 'diets', 'directions', 'ingredients', 'javascript:', 'on\\w+\\s*=', 'time_category', 'w']
