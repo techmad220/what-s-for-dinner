@@ -26,6 +26,7 @@ from dinner_app.security import (
 # SandboxedString Tests
 # =============================================================================
 
+
 class TestSandboxedStringBasics:
     """Test basic sandboxed string operations."""
 
@@ -105,6 +106,7 @@ class TestSandboxedStringAudit:
 # SandboxedDict Tests
 # =============================================================================
 
+
 class TestSandboxedDictBasics:
     """Test sandboxed dictionary operations."""
 
@@ -134,6 +136,7 @@ class TestSandboxedDictBasics:
 # =============================================================================
 # SandboxedList Tests
 # =============================================================================
+
 
 class TestSandboxedListBasics:
     """Test sandboxed list operations."""
@@ -169,6 +172,7 @@ class TestSandboxedListBasics:
 # Sandbox Function Tests
 # =============================================================================
 
+
 class TestSandboxFunction:
     """Test the main sandbox() function."""
 
@@ -195,6 +199,7 @@ class TestSandboxFunction:
 # Decorator Tests
 # =============================================================================
 
+
 class TestSandboxedInputDecorator:
     """Test the @sandboxed_input decorator."""
 
@@ -218,6 +223,7 @@ class TestSandboxedInputDecorator:
 # =============================================================================
 # Output Encoding Tests
 # =============================================================================
+
 
 class TestHtmlEscape:
     """Test HTML escaping."""
@@ -256,6 +262,7 @@ class TestShellEscape:
 # =============================================================================
 # Fuzz Testing with Hypothesis
 # =============================================================================
+
 
 class TestSandboxFuzzing:
     """Fuzz test the sandbox with arbitrary inputs."""
@@ -416,6 +423,7 @@ class TestSandboxBypassAttempts:
 # =============================================================================
 # Integration Tests
 # =============================================================================
+
 
 class TestSandboxIntegration:
     """Integration tests simulating real usage patterns."""

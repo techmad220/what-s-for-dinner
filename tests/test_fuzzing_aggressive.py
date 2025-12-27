@@ -12,40 +12,28 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from hypothesis import given, strategies as st, settings, assume, Phase, Verbosity
-from hypothesis import HealthCheck
-import pytest
-import time
+import contextlib
 import threading
-import json
-import struct
+import time
 
-from dinner_app.security import (
-    sanitize_text,
-    validate_recipe_name,
-    validate_ingredient,
-    validate_ingredients_list,
-    validate_directions,
-    validate_category,
-    validate_categories_list,
-    validate_recipe_data,
-    validate_json_recipes,
-    is_safe_filename,
-    check_file_permissions,
-    ValidationError,
-    MAX_RECIPE_NAME_LENGTH,
-    MAX_INGREDIENT_LENGTH,
-    MAX_DIRECTION_LENGTH,
-    MAX_INGREDIENTS_PER_RECIPE,
-    MAX_CATEGORIES_PER_RECIPE,
-)
+from hypothesis import HealthCheck, Phase, given, settings
+from hypothesis import strategies as st
+
 from dinner_app.plugin_security import (
     check_plugin_source,
-    validate_plugin_file,
-    DANGEROUS_IMPORTS,
-    DANGEROUS_CALLS,
 )
-
+from dinner_app.security import (
+    MAX_CATEGORIES_PER_RECIPE,
+    MAX_DIRECTION_LENGTH,
+    MAX_INGREDIENTS_PER_RECIPE,
+    ValidationError,
+    is_safe_filename,
+    sanitize_text,
+    validate_ingredient,
+    validate_json_recipes,
+    validate_recipe_data,
+    validate_recipe_name,
+)
 
 # Aggressive settings for thorough fuzzing
 AGGRESSIVE_SETTINGS = settings(
@@ -66,6 +54,7 @@ MEDIUM_SETTINGS = settings(
 # AGGRESSIVE TEXT FUZZING
 # =============================================================================
 
+
 class TestAggressiveTextFuzzing:
     """Aggressive fuzzing of text sanitization."""
 
@@ -85,15 +74,20 @@ class TestAggressiveTextFuzzing:
     def test_sanitize_binary_as_text(self, data):
         """Try to pass binary data decoded as text."""
         try:
-            text = data.decode('utf-8', errors='replace')
+            text = data.decode("utf-8", errors="replace")
             result = sanitize_text(text, max_length=1000)
             assert isinstance(result, str)
         except (ValidationError, UnicodeDecodeError):
             pass
 
-    @given(st.text(alphabet=st.characters(
-        whitelist_categories=('Cc', 'Cf', 'Co', 'Cs', 'Cn'),
-    ), max_size=1000))
+    @given(
+        st.text(
+            alphabet=st.characters(
+                whitelist_categories=("Cc", "Cf", "Co", "Cs", "Cn"),
+            ),
+            max_size=1000,
+        )
+    )
     @MEDIUM_SETTINGS
     def test_control_and_special_chars_only(self, text):
         """Fuzz with only control/special Unicode characters."""
@@ -119,19 +113,20 @@ class TestAggressiveTextFuzzing:
 # UNICODE ATTACK VECTORS
 # =============================================================================
 
+
 class TestUnicodeAttacks:
     """Test Unicode-based attack vectors."""
 
     # RTL override and other bidi attacks
     BIDI_ATTACKS = [
-        "\u202E<script>alert(1)</script>",  # RTL override
-        "\u202Dmalicious\u202C",  # LTR override
+        "\u202e<script>alert(1)</script>",  # RTL override
+        "\u202dmalicious\u202c",  # LTR override
         "\u2066hidden\u2069",  # Isolate
         "\u2067payload\u2069",  # RTL isolate
-        "safe\u200Btext",  # Zero-width space
-        "nor\u200Cmal",  # Zero-width non-joiner
-        "te\u200Dst",  # Zero-width joiner
-        "\uFEFF<script>",  # BOM
+        "safe\u200btext",  # Zero-width space
+        "nor\u200cmal",  # Zero-width non-joiner
+        "te\u200dst",  # Zero-width joiner
+        "\ufeff<script>",  # BOM
     ]
 
     HOMOGLYPH_ATTACKS = [
@@ -182,10 +177,15 @@ class TestUnicodeAttacks:
             except ValidationError:
                 pass
 
-    @given(st.text(alphabet=st.characters(
-        whitelist_categories=('Lo', 'Lm', 'Lt'),  # Other letters, modifiers
-        max_codepoint=0x1FFFF
-    ), max_size=500))
+    @given(
+        st.text(
+            alphabet=st.characters(
+                whitelist_categories=("Lo", "Lm", "Lt"),  # Other letters, modifiers
+                max_codepoint=0x1FFFF,
+            ),
+            max_size=500,
+        )
+    )
     @MEDIUM_SETTINGS
     def test_exotic_unicode_letters(self, text):
         """Fuzz with exotic Unicode letter categories."""
@@ -195,9 +195,14 @@ class TestUnicodeAttacks:
         except ValidationError:
             pass
 
-    @given(st.text(alphabet=st.characters(
-        whitelist_categories=('So', 'Sm', 'Sc', 'Sk'),  # Symbols
-    ), max_size=500))
+    @given(
+        st.text(
+            alphabet=st.characters(
+                whitelist_categories=("So", "Sm", "Sc", "Sk"),  # Symbols
+            ),
+            max_size=500,
+        )
+    )
     @MEDIUM_SETTINGS
     def test_unicode_symbols(self, text):
         """Fuzz with Unicode symbols."""
@@ -211,6 +216,7 @@ class TestUnicodeAttacks:
 # =============================================================================
 # XSS PAYLOAD FUZZING
 # =============================================================================
+
 
 class TestXSSPayloads:
     """Test various XSS payloads are blocked."""
@@ -229,19 +235,19 @@ class TestXSSPayloads:
         "<details open ontoggle=alert(1)>",
         "<math><mtext><option><FAKEFAKE><option></option><mglyph><svg><mtext><textarea><a title=\"</textarea><img src='#' onerror='alert(1)'>\">",
         "'-alert(1)-'",
-        "\"-alert(1)-\"",
+        '"-alert(1)-"',
         "<ScRiPt>alert(1)</ScRiPt>",
         "<scr<script>ipt>alert(1)</scr</script>ipt>",
         "<<script>script>alert(1)</<script>/script>",
         "<script\x00>alert(1)</script>",
         "<script\x09>alert(1)</script>",
-        "<script\x0A>alert(1)</script>",
-        "<script\x0D>alert(1)</script>",
+        "<script\x0a>alert(1)</script>",
+        "<script\x0d>alert(1)</script>",
         "<script/src=data:,alert(1)>",
         "javascript:/*--></title></style></textarea></script></xmp><svg/onload='+/\"/+/onmouseover=1/+/[*/[]/+alert(1)//'>",
         "<IMG SRC=\"javascript:alert('XSS');\">",
         "<IMG SRC=javascript:alert(&quot;XSS&quot;)>",
-        "<IMG SRC=`javascript:alert(\"XSS\")`>",
+        '<IMG SRC=`javascript:alert("XSS")`>',
         "\\x3cscript\\x3ealert(1)\\x3c/script\\x3e",
         "&#x3C;script&#x3E;alert(1)&#x3C;/script&#x3E;",
         "&#60;script&#62;alert(1)&#60;/script&#62;",
@@ -281,6 +287,7 @@ class TestXSSPayloads:
 # SQL INJECTION PATTERNS (for completeness - app doesn't use SQL but test anyway)
 # =============================================================================
 
+
 class TestSQLInjectionPatterns:
     """Test SQL injection patterns are handled (even though app doesn't use SQL)."""
 
@@ -311,6 +318,7 @@ class TestSQLInjectionPatterns:
 # PLUGIN SOURCE AGGRESSIVE FUZZING
 # =============================================================================
 
+
 class TestAggressivePluginFuzzing:
     """Aggressive fuzzing of plugin source code analysis."""
 
@@ -319,18 +327,18 @@ class TestAggressivePluginFuzzing:
     def test_huge_plugin_source(self, source):
         """Fuzz with very large plugin source."""
         result = check_plugin_source(source)
-        assert hasattr(result, 'is_safe')
-        assert hasattr(result, 'warnings')
-        assert hasattr(result, 'errors')
+        assert hasattr(result, "is_safe")
+        assert hasattr(result, "warnings")
+        assert hasattr(result, "errors")
 
     @given(st.binary(max_size=10000))
     @MEDIUM_SETTINGS
     def test_binary_as_source(self, data):
         """Try binary data as plugin source."""
         try:
-            source = data.decode('utf-8', errors='replace')
+            source = data.decode("utf-8", errors="replace")
             result = check_plugin_source(source)
-            assert hasattr(result, 'is_safe')
+            assert hasattr(result, "is_safe")
         except Exception:
             pass
 
@@ -349,9 +357,8 @@ class TestAggressivePluginFuzzing:
         """Test obfuscated import patterns."""
         for payload in self.OBFUSCATED_IMPORTS:
             source = f"x = {payload}"
-            result = check_plugin_source(source)
+            check_plugin_source(source)
             # Should detect dangerous patterns or not be safe
-            has_issues = not result.is_safe or result.warnings or result.errors
             # Note: static analysis can't catch all obfuscation
 
     MALICIOUS_CODE_PATTERNS = [
@@ -376,6 +383,7 @@ class TestAggressivePluginFuzzing:
 # =============================================================================
 # FILENAME AGGRESSIVE FUZZING
 # =============================================================================
+
 
 class TestAggressiveFilenameFuzzing:
     """Aggressive fuzzing of filename validation."""
@@ -429,7 +437,7 @@ class TestAggressiveFilenameFuzzing:
     def test_binary_filenames(self, data):
         """Try binary data as filename."""
         try:
-            filename = data.decode('utf-8', errors='replace')
+            filename = data.decode("utf-8", errors="replace")
             result = is_safe_filename(filename)
             assert isinstance(result, bool)
         except Exception:
@@ -440,16 +448,18 @@ class TestAggressiveFilenameFuzzing:
 # JSON/DATA STRUCTURE FUZZING
 # =============================================================================
 
+
 class TestAggressiveDataFuzzing:
     """Aggressive fuzzing of data structures."""
 
-    @given(st.recursive(
-        st.none() | st.booleans() | st.floats(allow_nan=True) | st.text(max_size=100),
-        lambda children: st.lists(children, max_size=50) | st.dictionaries(
-            st.text(max_size=20), children, max_size=20
-        ),
-        max_leaves=1000
-    ))
+    @given(
+        st.recursive(
+            st.none() | st.booleans() | st.floats(allow_nan=True) | st.text(max_size=100),
+            lambda children: st.lists(children, max_size=50)
+            | st.dictionaries(st.text(max_size=20), children, max_size=20),
+            max_leaves=1000,
+        )
+    )
     @MEDIUM_SETTINGS
     def test_arbitrary_nested_structures(self, data):
         """Fuzz with arbitrary nested data structures."""
@@ -460,11 +470,11 @@ class TestAggressiveDataFuzzing:
             except (ValidationError, RecursionError, TypeError):
                 pass
 
-    @given(st.dictionaries(
-        st.text(max_size=100),
-        st.lists(st.text(max_size=100), max_size=500),
-        max_size=100
-    ))
+    @given(
+        st.dictionaries(
+            st.text(max_size=100), st.lists(st.text(max_size=100), max_size=500), max_size=100
+        )
+    )
     @MEDIUM_SETTINGS
     def test_many_recipes(self, recipes):
         """Fuzz with many recipes."""
@@ -502,6 +512,7 @@ class TestAggressiveDataFuzzing:
 # =============================================================================
 # STRESS TESTING
 # =============================================================================
+
 
 class TestStressTesting:
     """Stress tests for concurrency and performance."""
@@ -551,7 +562,7 @@ class TestStressTesting:
     def test_memory_pressure(self):
         """Test under memory pressure with large objects."""
         large_strings = []
-        for i in range(100):
+        for _i in range(100):
             large_str = "A" * 100000
             try:
                 result = sanitize_text(large_str, max_length=1000)
@@ -567,13 +578,14 @@ class TestStressTesting:
 # EDGE CASE NUMBERS
 # =============================================================================
 
+
 class TestNumericEdgeCases:
     """Test numeric edge cases."""
 
     SPECIAL_NUMBERS = [
-        float('inf'),
-        float('-inf'),
-        float('nan'),
+        float("inf"),
+        float("-inf"),
+        float("nan"),
         0,
         -0.0,
         1e308,
@@ -583,8 +595,8 @@ class TestNumericEdgeCases:
         2**31,
         2**63 - 1,
         2**63,
-        -2**31,
-        -2**63,
+        -(2**31),
+        -(2**63),
     ]
 
     def test_special_cook_times(self):
@@ -626,6 +638,7 @@ class TestNumericEdgeCases:
 # TIMING ATTACK RESISTANCE
 # =============================================================================
 
+
 class TestTimingAttacks:
     """Test for timing-based vulnerabilities."""
 
@@ -640,24 +653,18 @@ class TestTimingAttacks:
 
         for _ in range(iterations):
             start = time.time()
-            try:
+            with contextlib.suppress(ValidationError):
                 sanitize_text(short_input)
-            except ValidationError:
-                pass
             times["short"].append(time.time() - start)
 
             start = time.time()
-            try:
+            with contextlib.suppress(ValidationError):
                 sanitize_text(long_input, max_length=50000)
-            except ValidationError:
-                pass
             times["long"].append(time.time() - start)
 
             start = time.time()
-            try:
+            with contextlib.suppress(ValidationError):
                 sanitize_text(malicious_input)
-            except ValidationError:
-                pass
             times["malicious"].append(time.time() - start)
 
         avg_short = sum(times["short"]) / len(times["short"])
@@ -665,7 +672,9 @@ class TestTimingAttacks:
         avg_malicious = sum(times["malicious"]) / len(times["malicious"])
 
         # Log timing info (no hard assertion as timing can vary)
-        print(f"Avg times: short={avg_short:.6f}s, long={avg_long:.6f}s, malicious={avg_malicious:.6f}s")
+        print(
+            f"Avg times: short={avg_short:.6f}s, long={avg_long:.6f}s, malicious={avg_malicious:.6f}s"
+        )
 
     def test_no_exponential_blowup(self):
         """Ensure no exponential time complexity."""
@@ -675,10 +684,8 @@ class TestTimingAttacks:
         for size in sizes:
             input_str = "a" * size
             start = time.time()
-            try:
+            with contextlib.suppress(ValidationError):
                 sanitize_text(input_str, max_length=size + 1)
-            except ValidationError:
-                pass
             elapsed = time.time() - start
             times.append(elapsed)
 

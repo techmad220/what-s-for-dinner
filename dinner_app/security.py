@@ -17,8 +17,10 @@ from typing import Any, ClassVar
 # LAYER 2: SANDBOXING - Immutable containers that restrict dangerous operations
 # =============================================================================
 
+
 class SandboxViolation(Exception):
     """Raised when sandboxed data attempts a restricted operation."""
+
     pass
 
 
@@ -55,21 +57,15 @@ class SandboxedString(str):
 
     def format(self, *args, **kwargs):
         """Block .format() method to prevent format string injection."""
-        raise SandboxViolation(
-            f"String.format() blocked on sandboxed input from {self._source}"
-        )
+        raise SandboxViolation(f"String.format() blocked on sandboxed input from {self._source}")
 
     def __reduce__(self):
         """Block pickling to prevent deserialization attacks."""
-        raise SandboxViolation(
-            f"Pickle operation blocked on sandboxed input from {self._source}"
-        )
+        raise SandboxViolation(f"Pickle operation blocked on sandboxed input from {self._source}")
 
     def __reduce_ex__(self, protocol):
         """Block extended pickling."""
-        raise SandboxViolation(
-            f"Pickle operation blocked on sandboxed input from {self._source}"
-        )
+        raise SandboxViolation(f"Pickle operation blocked on sandboxed input from {self._source}")
 
     def encode(self, encoding: str = "utf-8", errors: str = "strict") -> bytes:
         """Allow encoding but log it for audit."""
@@ -79,16 +75,19 @@ class SandboxedString(str):
     def _log_access(self, operation: str, detail: str = "") -> None:
         """Log access to sandboxed data for security audit."""
         import time
+
         with SandboxedString._log_lock:
             if len(SandboxedString._access_log) >= SandboxedString._max_log_size:
                 SandboxedString._access_log = SandboxedString._access_log[-500:]
-            SandboxedString._access_log.append({
-                "time": time.time(),
-                "source": self._source,
-                "operation": operation,
-                "detail": detail,
-                "value_preview": str(self)[:50],
-            })
+            SandboxedString._access_log.append(
+                {
+                    "time": time.time(),
+                    "source": self._source,
+                    "operation": operation,
+                    "detail": detail,
+                    "value_preview": str(self)[:50],
+                }
+            )
 
     @classmethod
     def get_access_log(cls) -> list:
@@ -139,16 +138,11 @@ class SandboxedDict(dict):
 
     def __setitem__(self, key, value):
         """Sandbox new values being set."""
-        super().__setitem__(
-            self._sandbox_value(key),
-            self._sandbox_value(value)
-        )
+        super().__setitem__(self._sandbox_value(key), self._sandbox_value(value))
 
     def __reduce__(self):
         """Block pickling."""
-        raise SandboxViolation(
-            f"Pickle operation blocked on sandboxed dict from {self._source}"
-        )
+        raise SandboxViolation(f"Pickle operation blocked on sandboxed dict from {self._source}")
 
 
 class SandboxedList(list):
@@ -185,9 +179,7 @@ class SandboxedList(list):
 
     def __reduce__(self):
         """Block pickling."""
-        raise SandboxViolation(
-            f"Pickle operation blocked on sandboxed list from {self._source}"
-        )
+        raise SandboxViolation(f"Pickle operation blocked on sandboxed list from {self._source}")
 
 
 def sandbox(value: Any, source: str = "user_input") -> Any:
@@ -225,19 +217,23 @@ def sandboxed_input(source: str = "user_input"):
             # name and ingredients are now sandboxed
             pass
     """
+
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
             sandboxed_args = tuple(sandbox(arg, source) for arg in args)
             sandboxed_kwargs = {k: sandbox(v, source) for k, v in kwargs.items()}
             return func(*sandboxed_args, **sandboxed_kwargs)
+
         return wrapper
+
     return decorator
 
 
 # =============================================================================
 # LAYER 3: OUTPUT ENCODING - Escape data for safe output
 # =============================================================================
+
 
 def html_escape(text: str) -> str:
     """Escape text for safe HTML output."""
@@ -257,10 +253,33 @@ def shell_escape(text: str) -> str:
     if not isinstance(text, str):
         text = str(text)
     # Replace dangerous shell metacharacters
-    dangerous = ['`', '$', '!', '&', '|', ';', '\n', '\r', '(', ')', '{', '}',
-                 '[', ']', '<', '>', '"', "'", '\\', '*', '?', '#', '~']
+    dangerous = [
+        "`",
+        "$",
+        "!",
+        "&",
+        "|",
+        ";",
+        "\n",
+        "\r",
+        "(",
+        ")",
+        "{",
+        "}",
+        "[",
+        "]",
+        "<",
+        ">",
+        '"',
+        "'",
+        "\\",
+        "*",
+        "?",
+        "#",
+        "~",
+    ]
     for char in dangerous:
-        text = text.replace(char, '')
+        text = text.replace(char, "")
     return text
 
 
@@ -368,7 +387,9 @@ def validate_ingredient(ingredient: str) -> str:
     if not ingredient:
         raise ValidationError("Ingredient cannot be empty")
     if has_measurements(ingredient):
-        raise ValidationError(f"Ingredient '{ingredient}' contains measurements - use raw ingredient name only")
+        raise ValidationError(
+            f"Ingredient '{ingredient}' contains measurements - use raw ingredient name only"
+        )
     return ingredient
 
 
@@ -453,6 +474,7 @@ def validate_recipe_data(data: dict) -> dict:
             elif key == "cook_time" and isinstance(val, (int, float)):
                 # Handle special floats (inf, nan) that can't be converted to int
                 import math
+
                 if math.isfinite(val):
                     validated[key] = max(0, min(int(val), 1440))  # Max 24 hours
                 else:
@@ -517,7 +539,7 @@ def is_safe_filename(filename: str) -> bool:
     if any(enc in filename.lower() for enc in ["%2f", "%5c", "%2e%2e"]):
         return False
     # Must only contain safe characters (alphanumeric, underscore, hyphen, dot)
-    return bool(re.match(r'^[a-zA-Z0-9_\-\.]+$', filename))
+    return bool(re.match(r"^[a-zA-Z0-9_\-\.]+$", filename))
 
 
 def check_file_permissions(filepath: str, require_writable: bool = False) -> bool:

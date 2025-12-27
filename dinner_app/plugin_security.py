@@ -105,7 +105,7 @@ def check_plugin_source(source: str, filename: str = "<plugin>") -> PluginSecuri
     errors = []
 
     # Check for null bytes (crash ast.parse)
-    if '\x00' in source:
+    if "\x00" in source:
         return PluginSecurityCheck(False, [], ["Source contains null bytes"])
 
     try:
@@ -152,13 +152,12 @@ def check_plugin_source(source: str, filename: str = "<plugin>") -> PluginSecuri
                 )
 
         # Check dangerous subscript access (e.g., __builtins__['eval'])
-        elif isinstance(node, ast.Subscript):
-            if isinstance(node.slice, ast.Constant):
-                key = str(node.slice.value).lower()
-                if key in DANGEROUS_SUBSCRIPTS:
-                    errors.append(
-                        f"Line {node.lineno}: Subscript access to '{node.slice.value}' - potential bypass"
-                    )
+        elif isinstance(node, ast.Subscript) and isinstance(node.slice, ast.Constant):
+            key = str(node.slice.value).lower()
+            if key in DANGEROUS_SUBSCRIPTS:
+                errors.append(
+                    f"Line {node.lineno}: Subscript access to '{node.slice.value}' - potential bypass"
+                )
 
     is_safe = len(errors) == 0
     return PluginSecurityCheck(is_safe, warnings, errors)
@@ -196,7 +195,7 @@ def validate_plugin_file(filepath: Path) -> PluginSecurityCheck:
     if not filepath.exists():
         return PluginSecurityCheck(False, [], [f"File not found: {filepath}"])
 
-    if not filepath.suffix == ".py":
+    if filepath.suffix != ".py":
         return PluginSecurityCheck(False, [], ["Plugin must be a .py file"])
 
     if not filepath.name.startswith("plugin_"):

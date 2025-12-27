@@ -47,10 +47,13 @@ ignore = [
     "E501",   # line too long (handled by formatter)
     "S311",   # random not for crypto (we use it for recipes, not security)
     "S110",   # try-except-pass (used intentionally for window focus)
+    "RUF001", # ambiguous unicode (recipe names have accents - intentional)
+    "RUF003", # ambiguous unicode in comments
+    "RUF012", # mutable class attributes (ClassVar - too verbose for test data)
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["S101", "S105", "S106"]  # allow asserts and test passwords
+"tests/*" = ["S101", "S105", "S106", "S108"]  # allow asserts, test passwords, temp files
 
 [tool.bandit]
 exclude_dirs = ["tests", "launcher"]

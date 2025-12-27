@@ -419,7 +419,7 @@ class DinnerApp(ctk.CTk):
 
     def _get_category_options(self) -> list[str]:
         cats = get_all_categories()
-        return ["All"] + sorted(cats) if cats else ["All"]
+        return ["All", *sorted(cats)] if cats else ["All"]
 
     def _on_slider_change(self, value: float) -> None:
         """Update slider label and refresh if in almost mode."""
@@ -785,7 +785,7 @@ class DinnerApp(ctk.CTk):
         directions = get_recipe_directions(name) or "No directions yet - add your own!"
         categories = get_recipe_categories(name) or []
         diets = get_recipe_diets(name)
-        cook_time, time_cat = get_recipe_time(name)
+        cook_time, _time_cat = get_recipe_time(name)
         effective_ings = self._get_effective_ingredients()
         missing = get_missing_ingredients(name, effective_ings)
 

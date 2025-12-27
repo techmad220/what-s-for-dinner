@@ -8,38 +8,34 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from hypothesis import given, strategies as st, settings, assume
-import pytest
+import contextlib
 
+import pytest
+from hypothesis import assume, given, settings
+from hypothesis import strategies as st
+
+from dinner_app.plugin_security import (
+    DANGEROUS_CALLS,
+    DANGEROUS_IMPORTS,
+    check_plugin_source,
+)
 from dinner_app.security import (
+    MAX_INGREDIENT_LENGTH,
+    MAX_INGREDIENTS_PER_RECIPE,
+    MAX_RECIPE_NAME_LENGTH,
+    ValidationError,
+    is_safe_filename,
     sanitize_text,
-    validate_recipe_name,
     validate_ingredient,
     validate_ingredients_list,
-    validate_directions,
-    validate_category,
-    validate_categories_list,
     validate_recipe_data,
-    validate_json_recipes,
-    is_safe_filename,
-    check_file_permissions,
-    ValidationError,
-    MAX_RECIPE_NAME_LENGTH,
-    MAX_INGREDIENT_LENGTH,
-    MAX_DIRECTION_LENGTH,
-    MAX_INGREDIENTS_PER_RECIPE,
+    validate_recipe_name,
 )
-from dinner_app.plugin_security import (
-    check_plugin_source,
-    validate_plugin_file,
-    DANGEROUS_IMPORTS,
-    DANGEROUS_CALLS,
-)
-
 
 # =============================================================================
 # FUZZING: Text Sanitization
 # =============================================================================
+
 
 class TestFuzzSanitizeText:
     """Fuzz test sanitize_text with random inputs."""
@@ -66,16 +62,16 @@ class TestFuzzSanitizeText:
         except ValidationError:
             pass
 
-    @given(st.text(alphabet=st.characters(blacklist_categories=('Cs',)), max_size=100))
+    @given(st.text(alphabet=st.characters(blacklist_categories=("Cs",)), max_size=100))
     @settings(max_examples=200)
     def test_no_control_chars_in_output(self, text):
         """Output should not contain control characters."""
         try:
             result = sanitize_text(text, max_length=1000)
             for char in result:
-                if char not in ('\n', '\r', '\t', ' '):
+                if char not in ("\n", "\r", "\t", " "):
                     # Control chars are 0x00-0x1F except tab/newline/CR
-                    assert ord(char) >= 0x20 or char in '\n\r\t'
+                    assert ord(char) >= 0x20 or char in "\n\r\t"
         except ValidationError:
             pass
 
@@ -95,17 +91,22 @@ class TestFuzzRecipeName:
         except ValidationError:
             pass  # Expected for invalid input
 
-    @given(st.text(min_size=2, max_size=50, alphabet=st.characters(
-        whitelist_categories=('L', 'N', 'P', 'Z'),
-        blacklist_characters='<>{}[]\\|`~'
-    )))
+    @given(
+        st.text(
+            min_size=2,
+            max_size=50,
+            alphabet=st.characters(
+                whitelist_categories=("L", "N", "P", "Z"), blacklist_characters="<>{}[]\\|`~"
+            ),
+        )
+    )
     @settings(max_examples=100)
     def test_valid_names_pass(self, name):
         """Valid-looking names should pass."""
-        assume('\x00' not in name)
-        assume('script' not in name.lower())
-        assume('javascript' not in name.lower())
-        assume('..' not in name)
+        assume("\x00" not in name)
+        assume("script" not in name.lower())
+        assume("javascript" not in name.lower())
+        assume(".." not in name)
         try:
             result = validate_recipe_name(name)
             assert result  # Should not be empty
@@ -154,6 +155,7 @@ class TestFuzzIngredientsList:
 # FUZZING: Plugin Security
 # =============================================================================
 
+
 class TestFuzzPluginSecurity:
     """Fuzz test plugin security checks."""
 
@@ -162,9 +164,9 @@ class TestFuzzPluginSecurity:
     def test_check_plugin_source_never_crashes(self, source):
         """check_plugin_source should never crash on any input."""
         result = check_plugin_source(source)
-        assert hasattr(result, 'is_safe')
-        assert hasattr(result, 'warnings')
-        assert hasattr(result, 'errors')
+        assert hasattr(result, "is_safe")
+        assert hasattr(result, "warnings")
+        assert hasattr(result, "errors")
 
     @given(st.sampled_from(list(DANGEROUS_IMPORTS.keys())))
     def test_dangerous_imports_detected(self, module):
@@ -219,6 +221,7 @@ class TestFuzzFilename:
 # EDGE CASES: Rust-Python Bridge Attack Vectors
 # =============================================================================
 
+
 class TestRustPythonBridgeEdgeCases:
     """Test edge cases that could affect Rust-Python bridge security."""
 
@@ -226,11 +229,14 @@ class TestRustPythonBridgeEdgeCases:
         """Test Unicode normalization - note fullwidth chars are allowed as they're not 'script'."""
         # Various Unicode tricks - these pass through but don't spell ASCII "script"
         payloads = [
-            ("ｓｃｒｉｐｔ", True),   # Fullwidth chars - different from ASCII
-            ("scr\u200bipt", True),   # Zero-width space - stripped, becomes "script" which is blocked
-            ("scr\u00ADipt", True),   # Soft hyphen - stripped, becomes "script" which is blocked
+            ("ｓｃｒｉｐｔ", True),  # Fullwidth chars - different from ASCII
+            (
+                "scr\u200bipt",
+                True,
+            ),  # Zero-width space - stripped, becomes "script" which is blocked
+            ("scr\u00adipt", True),  # Soft hyphen - stripped, becomes "script" which is blocked
         ]
-        for payload, should_pass in payloads:
+        for payload, _should_pass in payloads:
             try:
                 result = sanitize_text(payload)
                 # Fullwidth chars are NOT "script" - they're different Unicode codepoints
@@ -263,7 +269,7 @@ class TestRustPythonBridgeEdgeCases:
     def test_mixed_encoding_attack(self):
         """Test mixed encoding doesn't bypass filters."""
         payloads = [
-            b"<script>".decode('utf-8'),
+            b"<script>".decode("utf-8"),
             "<script>",
             "%3Cscript%3E",  # URL encoded
             "&#60;script&#62;",  # HTML entities
@@ -289,10 +295,8 @@ class TestRustPythonBridgeEdgeCases:
 
         for evil in evil_inputs:
             start = time.time()
-            try:
+            with contextlib.suppress(ValidationError):
                 sanitize_text(evil)
-            except ValidationError:
-                pass
             elapsed = time.time() - start
             # Should complete in under 1 second
             assert elapsed < 1.0, f"Potential ReDoS: took {elapsed}s"
@@ -357,6 +361,7 @@ class TestRustPythonBridgeEdgeCases:
 # EDGE CASES: Data Integrity
 # =============================================================================
 
+
 class TestDataIntegrityEdgeCases:
     """Test data integrity edge cases."""
 
@@ -381,17 +386,16 @@ class TestDataIntegrityEdgeCases:
 
     def test_special_float_values(self):
         """Test special float values don't cause issues."""
-        import math
         bad_data = {
             "ingredients": [],
             "directions": "",
             "categories": [],
-            "cook_time": float('inf'),
+            "cook_time": float("inf"),
         }
         result = validate_recipe_data(bad_data)
         assert result.get("cook_time", 0) <= 1440  # Max 24 hours
 
-        bad_data["cook_time"] = float('nan')
+        bad_data["cook_time"] = float("nan")
         result = validate_recipe_data(bad_data)
         # NaN should be handled somehow
 
@@ -407,12 +411,14 @@ class TestDataIntegrityEdgeCases:
 # EDGE CASES: Concurrency (simulate race conditions)
 # =============================================================================
 
+
 class TestConcurrencyEdgeCases:
     """Test edge cases related to concurrent access."""
 
     def test_rapid_validation_calls(self):
         """Test rapid repeated calls don't cause issues."""
         import threading
+
         errors = []
 
         def validate_many():

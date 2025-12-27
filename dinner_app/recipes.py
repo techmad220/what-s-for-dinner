@@ -22,19 +22,19 @@ SELECTED_FILE = Path(__file__).with_name("selected_ingredients.json")
 CRAFTABLE_FILE = Path(__file__).with_name("craftable.json")
 
 
-def load_recipes() -> Dict[str, Dict[str, object]]:
+def load_recipes() -> dict[str, dict[str, object]]:
     """Load recipes from :data:`RECIPES_FILE` with security validation."""
     try:
         with RECIPES_FILE.open() as fh:
             data = json.load(fh)
     except json.JSONDecodeError as e:
-        raise ValidationError(f"Invalid JSON in recipes file: {e}")
+        raise ValidationError(f"Invalid JSON in recipes file: {e}") from e
 
     # Validate and sanitize all recipe data
     return validate_json_recipes(data)
 
 
-def save_recipes(recipes: Dict[str, Dict[str, object]]) -> None:
+def save_recipes(recipes: dict[str, dict[str, object]]) -> None:
     """Save recipes to :data:`RECIPES_FILE`."""
 
     with RECIPES_FILE.open("w") as fh:
@@ -76,13 +76,13 @@ def save_extra_ingredients(ingredients: set[str]) -> None:
 _extra_ingredients = load_extra_ingredients()
 
 
-def get_recipes() -> Dict[str, Dict[str, object]]:
+def get_recipes() -> dict[str, dict[str, object]]:
     """Return the in-memory recipes dictionary."""
 
     return _recipes
 
 
-def get_recipe_ingredients(name: str) -> Optional[List[str]]:
+def get_recipe_ingredients(name: str) -> list[str] | None:
     """Return a list of ingredients for ``name`` if it exists."""
 
     recipe = _recipes.get(name)
@@ -91,7 +91,7 @@ def get_recipe_ingredients(name: str) -> Optional[List[str]]:
     return None
 
 
-def get_recipe_directions(name: str) -> Optional[str]:
+def get_recipe_directions(name: str) -> str | None:
     """Return cooking directions for ``name`` if they exist."""
 
     recipe = _recipes.get(name)
@@ -100,7 +100,7 @@ def get_recipe_directions(name: str) -> Optional[str]:
     return None
 
 
-def get_recipe_categories(name: str) -> Optional[List[str]]:
+def get_recipe_categories(name: str) -> list[str] | None:
     """Return categories for ``name`` if present."""
 
     recipe = _recipes.get(name)
@@ -111,9 +111,9 @@ def get_recipe_categories(name: str) -> Optional[List[str]]:
 
 def add_recipe(
     name: str,
-    ingredients: List[str],
+    ingredients: list[str],
     directions: str = "",
-    categories: Optional[List[str]] = None,
+    categories: list[str] | None = None,
     *,
     persist: bool = True,
 ) -> None:
@@ -157,9 +157,9 @@ def remove_recipe(name: str, *, persist: bool = True) -> None:
 
 def update_recipe(
     name: str,
-    ingredients: Optional[List[str]] | None = None,
-    directions: Optional[str] | None = None,
-    categories: Optional[List[str]] | None = None,
+    ingredients: list[str] | None = None,
+    directions: str | None = None,
+    categories: list[str] | None = None,
     *,
     persist: bool = True,
 ) -> None:
@@ -306,10 +306,7 @@ def get_missing_ingredients(recipe_name: str, owned: set[str]) -> set[str]:
         ing_lower = ing.lower()
         if ing_lower in owned_lower:
             return True
-        for o in owned_lower:
-            if o in ing_lower or ing_lower in o:
-                return True
-        return False
+        return any(o in ing_lower or ing_lower in o for o in owned_lower)
 
     return {ing for ing in recipe_ings if not has_ingredient(ing)}
 
@@ -459,7 +456,11 @@ def search_recipes_advanced(
         # Time filter
         if time_filter:
             time_cat = recipe.get("time_category", "")
-            if (time_filter == "10-min" and time_cat != "10-min") or (time_filter == "30-min" and time_cat not in ("10-min", "30-min")) or (time_filter == "60-min" and time_cat not in ("10-min", "30-min", "60-min")):
+            if (
+                (time_filter == "10-min" and time_cat != "10-min")
+                or (time_filter == "30-min" and time_cat not in ("10-min", "30-min"))
+                or (time_filter == "60-min" and time_cat not in ("10-min", "30-min", "60-min"))
+            ):
                 continue
             # "60-plus" or empty means no time restriction
 
@@ -469,12 +470,10 @@ def search_recipes_advanced(
         if owned_ingredients is not None and filter_mode != "all":
             missing_count = _get_recipe_missing_count(name)
 
-            if filter_mode == "can_make":
-                if missing_count > 0:
-                    continue
-            elif filter_mode == "almost":
-                if missing_count == 0 or missing_count > max_missing:
-                    continue
+            if (filter_mode == "can_make" and missing_count > 0) or (
+                filter_mode == "almost" and (missing_count == 0 or missing_count > max_missing)
+            ):
+                continue
 
         results.append((name, missing_count))
 
@@ -629,10 +628,7 @@ def possible_dinners_with_crafting(owned: set[str] | None = None) -> list[str]:
         ing_lower = ing.lower()
         if ing_lower in effective_lower:
             return True
-        for e in effective_lower:
-            if e in ing_lower or ing_lower in e:
-                return True
-        return False
+        return any(e in ing_lower or ing_lower in e for e in effective_lower)
 
     return [
         name
