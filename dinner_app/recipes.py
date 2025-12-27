@@ -9,6 +9,7 @@ from typing import Dict, List, Optional
 RECIPES_FILE = Path(__file__).with_name("recipes.json")
 EXTRA_ING_FILE = Path(__file__).with_name("extra_ingredients.json")
 SELECTED_FILE = Path(__file__).with_name("selected_ingredients.json")
+CRAFTABLE_FILE = Path(__file__).with_name("craftable.json")
 
 
 
@@ -34,6 +35,10 @@ def save_recipes(recipes: Dict[str, Dict[str, object]]) -> None:
 
 _recipes = load_recipes()
 
+# Precompute lowercase ingredients for each recipe (optimization)
+_recipe_ings_lower: dict[str, set[str]] = {}
+for _name, _recipe in _recipes.items():
+    _recipe_ings_lower[_name] = {ing.lower() for ing in _recipe.get("ingredients", [])}
 
 
 def load_selected_ingredients() -> set[str]:
@@ -119,8 +124,12 @@ def add_recipe(
 def reset_recipes() -> None:
     """Reload recipes from disk, discarding in-memory changes."""
 
-    global _recipes
+    global _recipes, _recipe_ings_lower
     _recipes = load_recipes()
+    # Rebuild precomputed lowercase ingredients
+    _recipe_ings_lower = {}
+    for name, recipe in _recipes.items():
+        _recipe_ings_lower[name] = {ing.lower() for ing in recipe.get("ingredients", [])}
 
 
 def remove_recipe(name: str, *, persist: bool = True) -> None:
@@ -276,12 +285,23 @@ def choose_random_recipe(
 
 
 def get_missing_ingredients(recipe_name: str, owned: set[str]) -> set[str]:
-    """Return ingredients missing for a recipe."""
+    """Return ingredients missing for a recipe using fuzzy matching."""
     recipe = _recipes.get(recipe_name)
     if not recipe:
         return set()
-    recipe_ings = set(recipe.get("ingredients", []))
-    return recipe_ings - owned
+    recipe_ings = recipe.get("ingredients", [])
+    owned_lower = {o.lower() for o in owned}
+
+    def has_ingredient(ing: str) -> bool:
+        ing_lower = ing.lower()
+        if ing_lower in owned_lower:
+            return True
+        for o in owned_lower:
+            if o in ing_lower or ing_lower in o:
+                return True
+        return False
+
+    return {ing for ing in recipe_ings if not has_ingredient(ing)}
 
 
 def find_almost_makeable(owned: set[str], max_missing: int = 4) -> list[tuple[str, set[str]]]:
@@ -303,6 +323,74 @@ def find_almost_makeable(owned: set[str], max_missing: int = 4) -> list[tuple[st
     return results
 
 
+# Cache for ingredient matching - cleared when ingredients change
+_ingredient_match_cache: dict[str, bool] = {}
+_owned_lower_cache: frozenset[str] = frozenset()
+_owned_ingredients_hash: int = 0
+# Precomputed recipe missing counts
+_recipe_missing_cache: dict[str, int] = {}
+# Full search result cache
+_search_cache: dict[tuple, list] = {}
+
+
+def _build_owned_cache(owned_ingredients: set[str]) -> None:
+    """Build optimized cache for owned ingredients."""
+    global _owned_ingredients_hash, _ingredient_match_cache, _owned_lower_cache, _recipe_missing_cache, _search_cache
+
+    new_hash = hash(frozenset(owned_ingredients))
+    if new_hash != _owned_ingredients_hash:
+        _ingredient_match_cache.clear()
+        _recipe_missing_cache.clear()
+        _search_cache.clear()
+        _owned_ingredients_hash = new_hash
+        _owned_lower_cache = frozenset(o.lower() for o in owned_ingredients)
+
+
+def _has_ingredient_fast(ing_lower: str) -> bool:
+    """Fast ingredient check using pre-built cache."""
+    if ing_lower in _ingredient_match_cache:
+        return _ingredient_match_cache[ing_lower]
+
+    found = False
+    if ing_lower in _owned_lower_cache:
+        found = True
+    else:
+        for o in _owned_lower_cache:
+            if o in ing_lower or ing_lower in o:
+                found = True
+                break
+
+    _ingredient_match_cache[ing_lower] = found
+    return found
+
+
+def _get_recipe_missing_count(recipe_name: str) -> int:
+    """Get missing count for a recipe with caching."""
+    if recipe_name in _recipe_missing_cache:
+        return _recipe_missing_cache[recipe_name]
+
+    # Use precomputed lowercase ingredients
+    ings_lower = _recipe_ings_lower.get(recipe_name, set())
+    missing = 0
+    for ing_lower in ings_lower:
+        if not _has_ingredient_fast(ing_lower):
+            missing += 1
+
+    _recipe_missing_cache[recipe_name] = missing
+    return missing
+
+
+def _count_missing_ingredients(recipe_ings: set[str], owned_ingredients: set[str]) -> int:
+    """Count missing ingredients with caching."""
+    _build_owned_cache(owned_ingredients)
+
+    missing = 0
+    for ing in recipe_ings:
+        if not _has_ingredient_fast(ing.lower()):
+            missing += 1
+    return missing
+
+
 def search_recipes_advanced(
     query: str = "",
     category: str = "",
@@ -313,6 +401,15 @@ def search_recipes_advanced(
     time_filter: str = "",  # "10-min", "30-min", "60-min", "60-plus"
 ) -> list[tuple[str, int]]:
     """Advanced search returning (recipe_name, missing_count) tuples."""
+    # Check full result cache first
+    cache_key = (query, category, filter_mode, max_missing, diet_filter, time_filter, _owned_ingredients_hash)
+    if cache_key in _search_cache:
+        return _search_cache[cache_key]
+
+    # Build ingredient cache if needed
+    if owned_ingredients is not None:
+        _build_owned_cache(owned_ingredients)
+
     results = []
     query_lower = query.lower()
 
@@ -347,13 +444,11 @@ def search_recipes_advanced(
                 continue
             # "60-plus" or empty means no time restriction
 
-        # Ingredient filter
-        recipe_ings = set(recipe.get("ingredients", []))
+        # Ingredient filter - use recipe-level cache
         missing_count = 0
 
         if owned_ingredients is not None and filter_mode != "all":
-            missing = recipe_ings - owned_ingredients if recipe_ings else set()
-            missing_count = len(missing)
+            missing_count = _get_recipe_missing_count(name)
 
             if filter_mode == "can_make":
                 if missing_count > 0:
@@ -370,6 +465,8 @@ def search_recipes_advanced(
     else:
         results.sort(key=lambda x: x[0])
 
+    # Store in cache before returning
+    _search_cache[cache_key] = results
     return results
 
 
@@ -397,3 +494,126 @@ def get_recipe_time(name: str) -> tuple[int, str]:
     if recipe:
         return (recipe.get("cook_time", 30), recipe.get("time_category", "30-min"))
     return (30, "30-min")
+
+
+# ============== CRAFTABLE INGREDIENTS ==============
+
+def load_craftable() -> list[dict]:
+    """Load craftable ingredient definitions."""
+    if CRAFTABLE_FILE.exists():
+        with CRAFTABLE_FILE.open() as fh:
+            data = json.load(fh)
+            return data.get("craftable_ingredients", [])
+    return []
+
+
+def save_craftable(craftables: list[dict]) -> None:
+    """Save craftable ingredient definitions."""
+    with CRAFTABLE_FILE.open("w") as fh:
+        json.dump({"craftable_ingredients": craftables}, fh, indent=2)
+
+
+_craftables = load_craftable()
+
+
+def get_craftable_ingredients() -> list[dict]:
+    """Return all craftable ingredient definitions."""
+    return _craftables
+
+
+def _ingredient_match(ing: str, check: str) -> bool:
+    """Check if ingredient matches (case-insensitive, partial match)."""
+    ing_lower = ing.lower()
+    check_lower = check.lower()
+    return check_lower in ing_lower or ing_lower in check_lower
+
+
+def can_craft(craftable: dict, owned: set[str]) -> tuple[bool, list[str], list[str]]:
+    """
+    Check if we can craft an ingredient.
+    Returns (can_make, have_ingredients, missing_ingredients)
+    """
+    base_ings = craftable.get("base_ingredients", [])
+    min_required = craftable.get("min_required", len(base_ings))
+
+    have = []
+    missing = []
+
+    for base in base_ings:
+        found = False
+        for o in owned:
+            if _ingredient_match(base, o):
+                have.append(base)
+                found = True
+                break
+        if not found:
+            missing.append(base)
+
+    can_make = len(have) >= min_required
+    return can_make, have, missing
+
+
+def get_craftable_status(owned: set[str] | None = None) -> list[dict]:
+    """
+    Get status of all craftable ingredients.
+    Returns list of dicts with name, can_make, have, missing, directions.
+    """
+    if owned is None:
+        owned = load_selected_ingredients()
+
+    results = []
+    for craft in _craftables:
+        can_make, have, missing = can_craft(craft, owned)
+        results.append({
+            "name": craft["name"],
+            "aliases": craft.get("aliases", []),
+            "can_make": can_make,
+            "have": have,
+            "missing": missing,
+            "directions": craft.get("directions", ""),
+            "min_required": craft.get("min_required", len(craft.get("base_ingredients", []))),
+            "total_ingredients": len(craft.get("base_ingredients", []))
+        })
+    return results
+
+
+def get_effective_ingredients(owned: set[str] | None = None) -> set[str]:
+    """
+    Get all ingredients we effectively have - owned + craftable.
+    This expands our ingredient list with things we can make.
+    """
+    if owned is None:
+        owned = load_selected_ingredients()
+
+    effective = set(owned)
+
+    for craft in _craftables:
+        can_make, _, _ = can_craft(craft, owned)
+        if can_make:
+            # Add all aliases as available
+            effective.add(craft["name"])
+            for alias in craft.get("aliases", []):
+                effective.add(alias)
+
+    return effective
+
+
+def possible_dinners_with_crafting(owned: set[str] | None = None) -> list[str]:
+    """Return recipes makeable with owned ingredients + craftable ingredients."""
+    effective = get_effective_ingredients(owned)
+    effective_lower = {e.lower() for e in effective}
+
+    def has_ingredient(ing: str) -> bool:
+        ing_lower = ing.lower()
+        if ing_lower in effective_lower:
+            return True
+        for e in effective_lower:
+            if e in ing_lower or ing_lower in e:
+                return True
+        return False
+
+    return [
+        name
+        for name, recipe in _recipes.items()
+        if all(has_ingredient(ing) for ing in recipe.get("ingredients", []))
+    ]

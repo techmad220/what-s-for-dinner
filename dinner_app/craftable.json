@@ -1,0 +1,151 @@
+{
+  "craftable_ingredients": [
+    {
+      "name": "pizza sauce",
+      "aliases": ["pizza sauce", "1/2 cups pizza sauce"],
+      "base_ingredients": ["crushed tomatoes", "tomato paste", "garlic", "oregano", "basil", "olive oil", "salt"],
+      "min_required": 4,
+      "directions": "Blend crushed tomatoes with tomato paste. Add minced garlic, oregano, basil, olive oil, and salt. Simmer 15-20 minutes."
+    },
+    {
+      "name": "marinara sauce",
+      "aliases": ["marinara sauce", "jar marinara sauce", "Marinara sauce for dipping", "Marinara sauce for topping"],
+      "base_ingredients": ["crushed tomatoes", "tomato paste", "garlic", "onion", "basil", "oregano", "olive oil", "salt", "sugar"],
+      "min_required": 5,
+      "directions": "Sauté onion and garlic in olive oil. Add crushed tomatoes, tomato paste, basil, oregano, salt, and a pinch of sugar. Simmer 30 minutes."
+    },
+    {
+      "name": "pizza dough",
+      "aliases": ["pizza dough", "ball pizza dough", "pizza dough, room temperature"],
+      "base_ingredients": ["flour", "yeast", "water", "salt", "olive oil", "sugar"],
+      "min_required": 4,
+      "directions": "Mix flour, yeast, salt, sugar. Add warm water and olive oil. Knead 10 minutes. Let rise 1 hour."
+    },
+    {
+      "name": "bread dough",
+      "aliases": ["bread dough", "biscuit dough"],
+      "base_ingredients": ["flour", "yeast", "water", "salt", "sugar", "butter"],
+      "min_required": 4,
+      "directions": "Mix flour, yeast, salt, sugar. Add warm water and softened butter. Knead until smooth. Let rise 1-2 hours."
+    },
+    {
+      "name": "breadcrumbs",
+      "aliases": ["breadcrumbs", "panko breadcrumbs", "Italian breadcrumbs", "fresh breadcrumbs"],
+      "base_ingredients": ["bread"],
+      "min_required": 1,
+      "directions": "Toast bread slices, then pulse in food processor until fine crumbs. For Italian: add dried oregano, basil, garlic powder, parmesan."
+    },
+    {
+      "name": "chicken broth",
+      "aliases": ["chicken broth", "chicken stock"],
+      "base_ingredients": ["chicken", "onion", "carrot", "celery", "garlic", "bay leaves", "salt", "water"],
+      "min_required": 3,
+      "directions": "Simmer chicken bones/parts with vegetables and aromatics in water for 2-4 hours. Strain and season."
+    },
+    {
+      "name": "beef broth",
+      "aliases": ["beef broth", "beef stock"],
+      "base_ingredients": ["beef", "onion", "carrot", "celery", "garlic", "bay leaves", "tomato paste", "salt", "water"],
+      "min_required": 3,
+      "directions": "Roast beef bones. Simmer with vegetables and aromatics for 4-6 hours. Strain and season."
+    },
+    {
+      "name": "BBQ sauce",
+      "aliases": ["BBQ sauce", "bbq sauce", "BBQ sauce for dipping"],
+      "base_ingredients": ["ketchup", "brown sugar", "apple cider vinegar", "Worcestershire sauce", "mustard", "garlic powder", "onion powder", "smoked paprika"],
+      "min_required": 4,
+      "directions": "Combine ketchup, brown sugar, vinegar, Worcestershire, mustard, and spices. Simmer 15-20 minutes until thickened."
+    },
+    {
+      "name": "teriyaki sauce",
+      "aliases": ["teriyaki sauce"],
+      "base_ingredients": ["soy sauce", "sugar", "garlic", "ginger", "cornstarch"],
+      "min_required": 3,
+      "directions": "Combine soy sauce, sugar, minced garlic, grated ginger. Simmer until sugar dissolves. Thicken with cornstarch slurry."
+    },
+    {
+      "name": "ranch dressing",
+      "aliases": ["ranch dressing", "ranch dressing for dipping", "Ranch dressing for drizzling"],
+      "base_ingredients": ["mayonnaise", "sour cream", "milk", "garlic powder", "onion powder", "dill", "parsley", "chives"],
+      "min_required": 4,
+      "directions": "Mix mayonnaise, sour cream, and milk. Add garlic powder, onion powder, dill, parsley, salt and pepper. Chill 30 minutes."
+    },
+    {
+      "name": "aioli",
+      "aliases": ["aioli"],
+      "base_ingredients": ["mayonnaise", "garlic", "lemon juice", "salt"],
+      "min_required": 3,
+      "directions": "Mix mayonnaise with minced garlic, lemon juice, and salt. For homemade: emulsify egg yolk with oil, then add garlic and lemon."
+    },
+    {
+      "name": "chimichurri",
+      "aliases": ["chimichurri"],
+      "base_ingredients": ["parsley", "garlic", "olive oil", "red wine vinegar", "oregano", "red pepper flakes", "salt"],
+      "min_required": 5,
+      "directions": "Finely chop parsley and garlic. Mix with olive oil, red wine vinegar, oregano, red pepper flakes, and salt."
+    },
+    {
+      "name": "guacamole",
+      "aliases": ["guacamole", "guacamole for serving"],
+      "base_ingredients": ["avocado", "lime", "cilantro", "onion", "jalapeño", "salt", "garlic"],
+      "min_required": 3,
+      "directions": "Mash avocados. Add lime juice, diced onion, cilantro, minced jalapeño, garlic, and salt. Mix well."
+    },
+    {
+      "name": "salsa verde",
+      "aliases": ["salsa verde", "green salsa", "green salsa (salsa verde)", "salsa verde for serving"],
+      "base_ingredients": ["tomatillo", "jalapeño", "onion", "garlic", "cilantro", "lime", "salt"],
+      "min_required": 4,
+      "directions": "Roast tomatillos and jalapeños. Blend with onion, garlic, cilantro, lime juice, and salt."
+    },
+    {
+      "name": "salsa roja",
+      "aliases": ["red salsa", "salsa roja", "red salsa (salsa roja)", "salsa"],
+      "base_ingredients": ["tomato", "onion", "jalapeño", "garlic", "cilantro", "lime", "salt", "cumin"],
+      "min_required": 4,
+      "directions": "Roast tomatoes, onion, and jalapeños. Blend with garlic, cilantro, lime juice, cumin, and salt."
+    },
+    {
+      "name": "pesto",
+      "aliases": ["pesto", "basil pesto"],
+      "base_ingredients": ["basil", "garlic", "parmesan", "olive oil", "pine nuts", "salt"],
+      "min_required": 4,
+      "directions": "Blend fresh basil, garlic, parmesan, and pine nuts. Slowly drizzle in olive oil while blending. Season with salt."
+    },
+    {
+      "name": "white sauce",
+      "aliases": ["white sauce", "béchamel", "cream sauce"],
+      "base_ingredients": ["butter", "flour", "milk", "salt", "nutmeg"],
+      "min_required": 4,
+      "directions": "Melt butter, whisk in flour to make roux. Gradually add milk, whisking constantly. Season with salt and nutmeg."
+    },
+    {
+      "name": "cheese sauce",
+      "aliases": ["cheese sauce", "nacho cheese sauce"],
+      "base_ingredients": ["butter", "flour", "milk", "cheddar cheese", "salt"],
+      "min_required": 4,
+      "directions": "Make white sauce (butter, flour, milk). Stir in shredded cheese until melted. Season with salt and pepper."
+    },
+    {
+      "name": "gravy",
+      "aliases": ["gravy", "brown gravy", "beef gravy"],
+      "base_ingredients": ["butter", "flour", "beef broth", "salt", "black pepper"],
+      "min_required": 4,
+      "directions": "Melt butter, whisk in flour. Cook 1 minute. Gradually add broth, whisking until thickened. Season to taste."
+    },
+    {
+      "name": "taco seasoning",
+      "aliases": ["taco seasoning", "packet taco seasoning"],
+      "base_ingredients": ["chili powder", "cumin", "paprika", "garlic powder", "onion powder", "oregano", "salt", "black pepper", "cayenne pepper"],
+      "min_required": 5,
+      "directions": "Mix 2 tbsp chili powder, 1 tbsp cumin, 1 tsp paprika, 1 tsp each garlic/onion powder, 1/2 tsp oregano, salt, pepper, pinch cayenne."
+    },
+    {
+      "name": "Italian seasoning",
+      "aliases": ["Italian seasoning"],
+      "base_ingredients": ["basil", "oregano", "thyme", "rosemary", "sage"],
+      "min_required": 3,
+      "directions": "Mix equal parts dried basil, oregano, thyme, rosemary, and sage."
+    }
+  ]
+}

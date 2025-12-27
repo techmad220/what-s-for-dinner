@@ -12,6 +12,8 @@ from .recipes import (
     get_all_recipe_names,
     get_all_time_categories,
     get_available_ingredients,
+    get_craftable_status,
+    get_effective_ingredients,
     get_extra_ingredients,
     get_missing_ingredients,
     get_recipe_categories,
@@ -49,6 +51,7 @@ class DinnerApp(ctk.CTk):
         self.time_var = ctk.StringVar(value="All")
         self.filter_mode_var = ctk.StringVar(value="all")
         self.max_missing_var = ctk.IntVar(value=4)
+        self.include_homemade_var = ctk.BooleanVar(value=True)
         self.selected_ingredients: set[str] = load_selected_ingredients()
 
         # Ingredient checkbox vars
@@ -62,6 +65,10 @@ class DinnerApp(ctk.CTk):
         # Cache
         self._all_ingredients: list[str] = []
         self._categories_cache: list[str] = []
+        self._current_results: list[tuple[str, int]] = []
+        self._visible_start: int = 0
+        self._visible_count: int = 20
+        self._recipe_frames: list = []
 
         self._setup_ui()
         self._load_initial_data()
@@ -149,9 +156,34 @@ class DinnerApp(ctk.CTk):
         )
         self.count_label.grid(row=5, column=0, padx=20, pady=5)
 
+        # Homemade toggle
+        self.homemade_frame = ctk.CTkFrame(self.sidebar, fg_color="transparent")
+        self.homemade_frame.grid(row=6, column=0, padx=20, pady=(5, 5), sticky="ew")
+
+        self.homemade_switch = ctk.CTkSwitch(
+            self.homemade_frame,
+            text="Include Homemade",
+            variable=self.include_homemade_var,
+            command=self._on_homemade_toggle,
+            font=ctk.CTkFont(size=12)
+        )
+        self.homemade_switch.pack(side="left")
+
+        self.homemade_info_btn = ctk.CTkButton(
+            self.homemade_frame,
+            text="?",
+            width=25,
+            height=25,
+            font=ctk.CTkFont(size=12),
+            fg_color="transparent",
+            border_width=1,
+            command=self._show_homemade_info
+        )
+        self.homemade_info_btn.pack(side="right")
+
         # Add/Remove buttons
         self.custom_frame = ctk.CTkFrame(self.sidebar, fg_color="transparent")
-        self.custom_frame.grid(row=6, column=0, padx=20, pady=(5, 20), sticky="ew")
+        self.custom_frame.grid(row=7, column=0, padx=20, pady=(5, 20), sticky="ew")
 
         ctk.CTkButton(
             self.custom_frame,
@@ -534,14 +566,76 @@ class DinnerApp(ctk.CTk):
         if self.filter_mode_var.get() != "all":
             self._refresh_recipes()
 
-    def _refresh_recipes(self) -> None:
-        """Refresh recipe list - optimized."""
-        # Clear existing
-        for widget in self.recipe_scroll.winfo_children():
-            widget.destroy()
-        self.recipe_buttons.clear()
-        self.selected_recipe = None
+    def _on_homemade_toggle(self) -> None:
+        """Handle homemade ingredients toggle."""
+        self._refresh_recipes()
 
+    def _show_homemade_info(self) -> None:
+        """Show info popup about homemade ingredients."""
+        status = get_craftable_status(self.selected_ingredients)
+        can_make = [s for s in status if s['can_make']]
+
+        popup = ctk.CTkToplevel(self)
+        popup.title("Homemade Ingredients")
+        popup.geometry("500x500")
+        popup.transient(self)
+        popup.after(100, lambda: self._safe_grab(popup))
+
+        content = ctk.CTkScrollableFrame(popup, fg_color="transparent")
+        content.pack(fill="both", expand=True, padx=20, pady=20)
+
+        ctk.CTkLabel(
+            content,
+            text="Homemade Ingredients",
+            font=ctk.CTkFont(size=18, weight="bold")
+        ).pack(pady=(0, 10))
+
+        ctk.CTkLabel(
+            content,
+            text="When enabled, recipes that need these ingredients\ncount as 'makeable' since you can make them!",
+            font=ctk.CTkFont(size=12),
+            text_color="gray"
+        ).pack(pady=(0, 15))
+
+        ctk.CTkLabel(
+            content,
+            text=f"You can make {len(can_make)} ingredients:",
+            font=ctk.CTkFont(size=14, weight="bold")
+        ).pack(anchor="w", pady=(10, 5))
+
+        for s in can_make:
+            frame = ctk.CTkFrame(content, fg_color="#1f2937", corner_radius=8)
+            frame.pack(fill="x", pady=3)
+
+            ctk.CTkLabel(
+                frame,
+                text=f"✓ {s['name'].title()}",
+                font=ctk.CTkFont(size=13, weight="bold"),
+                text_color="#10b981"
+            ).pack(anchor="w", padx=10, pady=(8, 2))
+
+            ctk.CTkLabel(
+                frame,
+                text=f"From: {', '.join(s['have'][:5])}{'...' if len(s['have']) > 5 else ''}",
+                font=ctk.CTkFont(size=11),
+                text_color="gray"
+            ).pack(anchor="w", padx=10, pady=(0, 8))
+
+        ctk.CTkButton(
+            content,
+            text="Close",
+            width=100,
+            command=popup.destroy
+        ).pack(pady=15)
+
+    def _get_effective_ingredients(self) -> set[str]:
+        """Get ingredients including homemade if enabled."""
+        if self.include_homemade_var.get():
+            return get_effective_ingredients(self.selected_ingredients)
+        return self.selected_ingredients
+
+    def _refresh_recipes(self) -> None:
+        """Refresh recipe list - optimized with virtual scrolling."""
         query = self.search_var.get()
         category = self.category_var.get()
         filter_mode = self.filter_mode_var.get()
@@ -556,20 +650,45 @@ class DinnerApp(ctk.CTk):
         time_map = {"All": "", "≤10 min": "10-min", "≤30 min": "30-min", "≤60 min": "60-min"}
         time_filter = time_map.get(time_raw, "")
 
-        results = search_recipes_advanced(
+        # Use effective ingredients (includes homemade if enabled)
+        effective_ings = self._get_effective_ingredients()
+
+        self._current_results = search_recipes_advanced(
             query=query,
             category=category,
-            owned_ingredients=self.selected_ingredients,
+            owned_ingredients=effective_ings,
             filter_mode=filter_mode,
             max_missing=max_missing,
             diet_filter=diet_filter,
             time_filter=time_filter
         )
 
-        # Limit display for performance
-        display_results = results[:150]
+        # Reset scroll position
+        self._visible_start = 0
+        self.selected_recipe = None
 
-        for i, (recipe_name, missing_count) in enumerate(display_results):
+        # Render visible items
+        self._render_visible_recipes()
+
+        total = len(get_all_recipe_names())
+        self.recipe_count_label.configure(text=f"{len(self._current_results)} of {total} recipes")
+
+    def _render_visible_recipes(self) -> None:
+        """Render only the visible portion of recipes for performance."""
+        # Clear existing
+        for widget in self.recipe_scroll.winfo_children():
+            widget.destroy()
+        self.recipe_buttons.clear()
+        self._recipe_frames.clear()
+
+        filter_mode = self.filter_mode_var.get()
+
+        # Only render visible items (batch of 50 for smooth scrolling)
+        visible_batch = 50
+        start = self._visible_start
+        end = min(start + visible_batch, len(self._current_results))
+
+        for i, (recipe_name, missing_count) in enumerate(self._current_results[start:end]):
             frame = ctk.CTkFrame(self.recipe_scroll, fg_color="transparent", height=45)
             frame.grid(row=i, column=0, sticky="ew", pady=1)
             frame.grid_columnconfigure(0, weight=1)
@@ -613,18 +732,28 @@ class DinnerApp(ctk.CTk):
             view_btn.grid(row=0, column=2, padx=(0, 5))
 
             self.recipe_buttons.append(btn)
+            self._recipe_frames.append(frame)
 
-        total = len(get_all_recipe_names())
-        shown = len(display_results)
-        if len(results) > 150:
-            self.recipe_count_label.configure(text=f"{shown} of {len(results)} matches ({total} total)")
-        else:
-            self.recipe_count_label.configure(text=f"{len(results)} of {total} recipes")
+        # Add load more button if there are more results
+        if end < len(self._current_results):
+            remaining = len(self._current_results) - end
+            load_more_btn = ctk.CTkButton(
+                self.recipe_scroll,
+                text=f"Load more ({remaining} remaining)",
+                height=40,
+                command=self._load_more_recipes
+            )
+            load_more_btn.grid(row=len(self._recipe_frames), column=0, sticky="ew", pady=10)
 
         # Update category menu if needed
         if not self._categories_cache or len(self._categories_cache) < 2:
             self._categories_cache = self._get_category_options()
             self.category_menu.configure(values=self._categories_cache)
+
+    def _load_more_recipes(self) -> None:
+        """Load more recipes into the list."""
+        self._visible_start += 50
+        self._render_visible_recipes()
 
     def _select_recipe(self, name: str) -> None:
         self.selected_recipe = name
@@ -637,6 +766,7 @@ class DinnerApp(ctk.CTk):
     def _choose_random(self, mode: str = "all") -> None:
         category = self.category_var.get()
         max_missing = self.max_missing_var.get()
+        effective_ings = self._get_effective_ingredients()
 
         # Get diet and time filters
         diet_raw = self.diet_var.get()
@@ -648,9 +778,9 @@ class DinnerApp(ctk.CTk):
         if mode == "all":
             results = search_recipes_advanced(query="", category=category, owned_ingredients=None, filter_mode="all", diet_filter=diet_filter, time_filter=time_filter)
         elif mode == "can_make":
-            results = search_recipes_advanced(query="", category=category, owned_ingredients=self.selected_ingredients, filter_mode="can_make", diet_filter=diet_filter, time_filter=time_filter)
+            results = search_recipes_advanced(query="", category=category, owned_ingredients=effective_ings, filter_mode="can_make", diet_filter=diet_filter, time_filter=time_filter)
         else:
-            results = search_recipes_advanced(query="", category=category, owned_ingredients=self.selected_ingredients, filter_mode="almost", max_missing=max_missing, diet_filter=diet_filter, time_filter=time_filter)
+            results = search_recipes_advanced(query="", category=category, owned_ingredients=effective_ings, filter_mode="almost", max_missing=max_missing, diet_filter=diet_filter, time_filter=time_filter)
 
         if not results:
             messages = {
@@ -662,7 +792,7 @@ class DinnerApp(ctk.CTk):
             return
 
         choice = random.choice(results)
-        self._show_recipe_popup(choice[0], is_random=True)
+        self._show_recipe_popup(choice[0], is_random=True, random_mode=mode)
 
     def _safe_grab(self, window) -> None:
         """Safely grab focus for a window."""
@@ -672,13 +802,14 @@ class DinnerApp(ctk.CTk):
         except Exception:
             pass
 
-    def _show_recipe_popup(self, name: str, is_random: bool = False) -> None:
+    def _show_recipe_popup(self, name: str, is_random: bool = False, random_mode: str = "all") -> None:
         ingredients = get_recipe_ingredients(name) or []
         directions = get_recipe_directions(name) or "No directions yet - add your own!"
         categories = get_recipe_categories(name) or []
         diets = get_recipe_diets(name)
         cook_time, time_cat = get_recipe_time(name)
-        missing = get_missing_ingredients(name, self.selected_ingredients)
+        effective_ings = self._get_effective_ingredients()
+        missing = get_missing_ingredients(name, effective_ings)
 
         # Create popup
         popup = ctk.CTkToplevel(self)
@@ -810,9 +941,7 @@ class DinnerApp(ctk.CTk):
                 btn_frame,
                 text="Pick Another",
                 width=120,
-                command=lambda: [popup.destroy(), self._choose_random(
-                    "can_make" if not missing else "almost" if len(missing) <= self.max_missing_var.get() else "all"
-                )]
+                command=lambda m=random_mode: [popup.destroy(), self._choose_random(m)]
             ).pack(side="left", padx=5)
 
         if missing:
